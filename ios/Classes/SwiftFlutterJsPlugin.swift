@@ -1,6 +1,6 @@
 import Flutter
 import UIKit
-// import JSContextFoundation
+import JavaScriptCore
 
 public class SwiftFlutterJsPlugin: NSObject, FlutterPlugin {
   private jsEngineMap = [Int: JSContextFoundation] = [:]
@@ -32,14 +32,13 @@ public class SwiftFlutterJsPlugin: NSObject, FlutterPlugin {
                                              details: nil))
                  }
 
-                let resultJS:String = jsEngine.evaluateScript(command)
-                result(resultJS)
+                let resultJsValue:JSValue = jsEngine.evaluateScript(command)
+                result(resultJsValue.toString())
             } else {
                 result(FlutterError(code: "EvaluateError",
                          message: "jsEngine with id \(enginedId) was not found",
                          details: nil))
             }
-            result(resultJS)
             break;
         case "close":
             break;
