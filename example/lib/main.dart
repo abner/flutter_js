@@ -12,27 +12,21 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  String _jsResult = '';
   int _idJsEngine = -1;
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    initJsEngine();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await FlutterJs.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
+  Future<void> initJsEngine() async {
+  
 
     try {
       _idJsEngine = await FlutterJs.initEngine();
-    } on PlatformException catch (e)  {
+    } on PlatformException catch (e) {
       print('Failed to init js engine: ${e.details}');
     }
 
@@ -41,9 +35,7 @@ class _MyAppState extends State<MyApp> {
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
-    setState(() {
-      _platformVersion = platformVersion;
-    });
+
   }
 
   @override
@@ -51,22 +43,37 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('FlutterJS Example'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text('JS Evaluate Result: $_jsResult\n'),
+              SizedBox(height: 20,),
+              Padding(padding: EdgeInsets.all(10), child: Text('Click on the big JS Yellow Button to evaluate the expression bellow using the flutter_js plugin'),),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text("Math.trunc(Math.random() * 100).toString();", style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),),
+              )
+            ],
+          ),
         ),
-        floatingActionButton: IconButton(icon: Icon(Icons.extension), onPressed: () async {
-          try {
-            String result = await FlutterJs.evaluate(
-                "Math.trunc(Math.random() * 100).toString();", _idJsEngine);
-            setState(() {
-              ,_platformVersion = result;
-            });
-          } on PlatformException catch (e) {
-            print('ERRO: ${e.details}');
-          }
-        },),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.transparent, 
+          child: Image.asset('assets/js.ico'),
+          onPressed: () async {
+            try {
+              String result = await FlutterJs.evaluate(
+                  "Math.trunc(Math.random() * 100).toString();", _idJsEngine);
+              setState(() {
+                _jsResult = result;
+              });
+            } on PlatformException catch (e) {
+              print('ERRO: ${e.details}');
+            }
+          },
+        ),
       ),
     );
   }

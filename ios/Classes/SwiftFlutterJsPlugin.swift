@@ -3,7 +3,7 @@ import UIKit
 import JavaScriptCore
 
 public class SwiftFlutterJsPlugin: NSObject, FlutterPlugin {
-  private jsEngineMap = [Int: JSContextFoundation] = [:]
+  private var jsEngineMap = [Int: JSContextFoundation]()
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "io.abner.flutter_js", binaryMessenger: registrar.messenger())
     let instance = SwiftFlutterJsPlugin()
@@ -36,7 +36,7 @@ public class SwiftFlutterJsPlugin: NSObject, FlutterPlugin {
                 result(resultJsValue.toString())
             } else {
                 result(FlutterError(code: "EvaluateError",
-                         message: "jsEngine with id \(enginedId) was not found",
+                         message: "jsEngine was not found",
                          details: nil))
             }
             break;

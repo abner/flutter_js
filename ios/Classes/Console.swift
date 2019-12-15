@@ -33,7 +33,7 @@ import JavaScriptCore
     }
 
     func insert(_ jsContext: JSContext) {
-        jsContext.setObject(self, forKeyedSubscript:"$console" as (NSCopying & NSObjectProtocol)!)
+        jsContext.setObject(self, forKeyedSubscript:"$console" as (NSCopying & NSObjectProtocol))
         jsContext.evaluateScript(
             "var console = {" +
                 "log: function() { $console.outputArguments(0, arguments); }," +
