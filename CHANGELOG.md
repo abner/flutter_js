@@ -1,3 +1,3 @@
-## 0.0.1
+## 0.0.1+1
 
-* TODO: Describe initial release.
+* Initial version only provides a very simple api which allow to init the javascript engine and evaluate javascript expressions and get the result as String.
