@@ -11,7 +11,7 @@ On IOS this library relies on the native JavascriptCore provided by iOS SDK. In 
 
 
 
-![](docs/flutter_js.png)
+![](doc/flutter_js.png)
 
 
 ## Features:
