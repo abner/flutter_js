@@ -144,6 +144,23 @@ Based on jerryscript which is slower than quickjs. The jsengine package does not
 
 
 
+## Small Apk size
+
+A hello world flutter app, according flutter docs has 4.2 Mb or 4.6 Mb in size.
+
+https://flutter.dev/docs/perf/app-size#android
+
+
+Bellow you can see the apk sizes of the `example app` generated with *flutter_js*:
+
+```bash
+
+|master ✓| → flutter build apk --split-per-abi
+
+✓ Built build/app/outputs/apk/release/app-armeabi-v7a-release.apk (5.4MB).
+✓ Built build/app/outputs/apk/release/app-arm64-v8a-release.apk (5.9MB).
+✓ Built build/app/outputs/apk/release/app-x86_64-release.apk (6.1MB).
+```
 
 
 
