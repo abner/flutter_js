@@ -146,3 +146,12 @@ Based on jerryscript which is slower than quickjs. The jsengine package does not
 
 
 
+
+## Next Steps
+
+Recently we found this repository which brings quickjs integration to Android to a new level (Close to what JavascriptCore offers in iOS):
+
+- oasis-jsbridge-android: https://github.com/p7s1digital/oasis-jsbridge-android
+
+But, we found it works but has a memory footprint way bigger than the `seven332:quickjs-android` (app cosumes almost 30Mb when the engine is initialized). So we are keeping it on hold for now.
+
