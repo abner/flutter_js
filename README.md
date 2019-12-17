@@ -31,7 +31,7 @@ minSdkVersion 18
 ```
 
 
-### Example
+## Example
 
 Here is a small flutter app showing how to evaluate javascript code inside a flutter app
 
@@ -119,5 +119,30 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-
 ```
+
+
+## Alternatives
+
+There were another packages which provides alternatives to evaluate javascript in flutter projects:
+
+### https://pub.dev/packages/flutter_liquidcore
+
+Good, is based on https://github.com/LiquidPlayer/LiquidCore
+
+It is based on V8 engine so the exectuable library is huge (20Mb). So the final app will be huge too.
+
+
+### https://pub.dev/packages/interactive_webview
+
+Allows to evaluate javascript in a hidden webview. Does not add weight to size of the app, but a webview means a entire browser is in memory just to evaluate javascript code. So we think an embeddable engine is a way better solution.
+
+### https://pub.dev/packages/jsengine
+
+Based on jerryscript which is slower than quickjs. The jsengine package does not have implementation to iOS.
+
+
+
+
+
+
