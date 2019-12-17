@@ -45,7 +45,7 @@ public class FlutterJsPlugin: FlutterPlugin, MethodCallHandler {
       result.success(engineId)
     } else if (call.method == "evaluate") {
       try {
-        Log.d("FlutterJs", cshareall.arguments.toString())
+        Log.d("FlutterJs", call.arguments.toString())
         val jsCommand: String = call.argument<String>("command")!!
         val engineId: Int = call.argument<Int>("engineId")!!
         val resultJS = jsEngineMap[engineId]!!.eval(jsCommand)
