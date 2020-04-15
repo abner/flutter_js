@@ -42,5 +42,6 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.github.seven332:quickjs-android:89ba8b6b8f'
+    //implementation 'com.github.seven332:quickjs-android:89ba8b6b8f'
+    implementation 'com.github.abner.oasis-jsbridge-android:oasis-jsbridge-quickjs:0.9.68'
 }

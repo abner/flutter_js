@@ -3,17 +3,27 @@ package io.abner.flutter_js
 import android.util.Log
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
+
 /** FlutterJsPlugin */
-public class FlutterJsPlugin: FlutterPlugin, MethodCallHandler {
+class FlutterJsPlugin: FlutterPlugin, MethodCallHandler {
+  private var applicationContext: android.content.Context? = null
+  private var methodChannel: MethodChannel? = null
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    val channel = MethodChannel(flutterPluginBinding.getFlutterEngine().getDartExecutor(), "io.abner.flutter_js")
-    channel.setMethodCallHandler(FlutterJsPlugin());
+    onAttachedToEngine(flutterPluginBinding.applicationContext, flutterPluginBinding.binaryMessenger)
+  }
+
+  private fun onAttachedToEngine(applicationContext: android.content.Context, messenger: BinaryMessenger) {
+    this.applicationContext = applicationContext
+    methodChannel = MethodChannel(messenger, "io.abner.flutter_js")
+    methodChannel!!.setMethodCallHandler(this)
   }
 
   // This static function is optional and equivalent to onAttachedToEngine. It supports the old
@@ -28,8 +38,8 @@ public class FlutterJsPlugin: FlutterPlugin, MethodCallHandler {
   companion object {
     @JvmStatic
     fun registerWith(registrar: Registrar) {
-      val channel = MethodChannel(registrar.messenger(), "flutter_js")
-      channel.setMethodCallHandler(FlutterJsPlugin())
+      val instance = FlutterJsPlugin()
+      instance.onAttachedToEngine(registrar.context(), registrar.messenger())
     }
 
     private var jsEngineMap = mutableMapOf<Int, JSEngine>()
@@ -41,7 +51,7 @@ public class FlutterJsPlugin: FlutterPlugin, MethodCallHandler {
     } else if (call.method == "initEngine") {
       Log.d("FlutterJS", call.arguments.toString())
       val engineId = call.arguments as Int
-      jsEngineMap[engineId] = JSEngine()
+      jsEngineMap[engineId] = JSEngine(applicationContext!!)
       result.success(engineId)
     } else if (call.method == "evaluate") {
       try {
@@ -49,7 +59,7 @@ public class FlutterJsPlugin: FlutterPlugin, MethodCallHandler {
         val jsCommand: String = call.argument<String>("command")!!
         val engineId: Int = call.argument<Int>("engineId")!!
         val resultJS = jsEngineMap[engineId]!!.eval(jsCommand)
-        result.success(resultJS)
+        result.success(resultJS.toString())
       } catch (e: Exception) {
         result.error("FlutterJSException", e.message, null)
       }
@@ -58,7 +68,7 @@ public class FlutterJsPlugin: FlutterPlugin, MethodCallHandler {
         val engineId: Int = call.argument<Int>("engineId")!!
         if (jsEngineMap.containsKey(engineId)) {
           val jsEngine = jsEngineMap[engineId]!!
-          jsEngine.close()
+          jsEngine.release()
           jsEngineMap.remove(engineId)
         }
       }
@@ -68,9 +78,6 @@ public class FlutterJsPlugin: FlutterPlugin, MethodCallHandler {
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-    // close all quickjs contexts
-    jsEngineMap.forEach { engine -> engine.value.close() }
-    // close the quickjs runtime and the quickjs instance itself
-    JSEngine.closeEngine()
+    jsEngineMap.forEach { engine -> engine.value.release() }
   }
 }

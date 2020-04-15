@@ -1,54 +1,37 @@
 package io.abner.flutter_js
 
-import com.hippo.quickjs.android.JSContext
-import com.hippo.quickjs.android.JSRuntime
-import com.hippo.quickjs.android.QuickJS
+import de.prosiebensat1digital.oasisjsbridge.JsBridge
+import de.prosiebensat1digital.oasisjsbridge.JsBridgeError
 
-class JSEngine() {
+import kotlinx.coroutines.Dispatchers
+import android.util.Log
+import de.prosiebensat1digital.oasisjsbridge.JsonObjectWrapper
 
-    private lateinit var runtime: JSRuntime
-    private lateinit var context: JSContext
+class JSEngine(context: android.content.Context) {
+
+    private lateinit var runtime: JsBridge
+
     var runtimeInitialized = false
     init {
-        initEngine()
-    }
+        runtime = JsBridge(context)
+        runtime!!.start()
 
-    companion object {
-
-        private var quickJS: QuickJS? = null
-        @JvmStatic
-        fun closeEngine() {
-            if (quickJS != null) {
-                quickJS!!.close()
-                quickJS = null
+        val errorListener = object : JsBridge.ErrorListener(Dispatchers.Main) {
+            override fun onError(error: JsBridgeError) {
+                Log.e("MainActivity", error.errorString())
             }
         }
-
-        @JvmStatic
-        fun initEngine() {
-            if (quickJS == null) {
-                quickJS = QuickJS.Builder().build()
-            }
-        }
+        runtime!!.registerErrorListener(errorListener)
     }
 
-    fun initRuntime() {
-        initEngine()
-        if (!runtimeInitialized) {
-            runtime = quickJS!!.createJSRuntime()
-            context = runtime.createJSContext()
-            runtimeInitialized = true
-        }
 
+
+    fun eval(script: String): JsonObjectWrapper {
+        return runtime!!.evaluateBlocking(script, JsonObjectWrapper::class.java) as JsonObjectWrapper
     }
 
-    fun eval(script: String): String {
-        initRuntime()
-        return context.evaluate(script, "JSEngine-${this.hashCode()}.js", String::class.java)
-    }
-
-    fun close() {
-        runtime.close()
+    fun release() {
+        runtime!!.release()
 
     }
 
