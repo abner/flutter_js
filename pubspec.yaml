@@ -18,5 +18,9 @@ dev_dependencies:
 
 flutter:
   plugin:
-    androidPackage: io.abner.flutter_js
-    pluginClass: FlutterJsPlugin
+    platforms:
+      android:
+        package: io.abner.flutter_js
+        pluginClass: FlutterJsPlugin
+      ios:
+        pluginClass: FlutterJsPlugin
