@@ -7,13 +7,8 @@ In this very early stage version we only get the result of evaluated expressions
 
 But it is good enough to take advantage of great javascript libraries such as ajv (json schema validation), moment (DateTime parser and operations) in Flutter applications running on mobile devices, both Android and iOS.
 
-On IOS this library relies on the native JavascriptCore provided by iOS SDK. In Android it uses the amazing and small Javascript Engine QuickJS [https://bellard.org/quickjs/](https://bellard.org/quickjs/) (A spetacular work of the Fabrice Bellard and Charlie Gordon). 
-It was ported to be used in Android through jni in this project i recently found on Github: [https://github.com/seven332/quickjs-android](https://github.com/seven332/quickjs-android). 
-We used seven332/quickjs-android in the very first versions of flutter_js. Thanks to [seven332](https://github.com/seven332)
+On IOS this library relies on the native JavascriptCore provided by iOS SDK. In Android it uses the amazing and small Javascript Engine QuickJS [https://bellard.org/quickjs/](https://bellard.org/quickjs/) (A spetacular work of the Fabrice Bellard and Charlie Gordon). It was ported to be used in Android through jni in this project i recently found on Github: [https://github.com/seven332/quickjs-android](https://github.com/seven332/quickjs-android). Thanks to [seven332](https://github.com/seven332)
 
-Recently we found the [oasis-jsbridge-android](https://github.com/p7s1digital/oasis-jsbridge-android) repository which brings quickjs integration to Android to a new level (Close to what JavascriptCore offers in iOS). So,
-since version 0.0.2+1 we are using oasis-jsbridge-android quickjs library as our javascript engine under the hood. So thanks to the guys of [p7s1digital](https://github.com/p7s1digital/) team to theirs
-amazing work.  
 
 
 ![](doc/flutter_js.png)
@@ -168,8 +163,12 @@ Bellow you can see the apk sizes of the `example app` generated with *flutter_js
 ```
 
 
+
 ## Next Steps
 
-Add examples of use integrated with ajv.js and moment.js
+Recently we found this repository which brings quickjs integration to Android to a new level (Close to what JavascriptCore offers in iOS):
 
+- oasis-jsbridge-android: https://github.com/p7s1digital/oasis-jsbridge-android
+
+But, we found it works but has a memory footprint way bigger than the `seven332:quickjs-android` (app cosumes almost 30Mb when the engine is initialized). So we are keeping it on hold for now.
 
