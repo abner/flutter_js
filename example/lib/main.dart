@@ -49,8 +49,26 @@ class _MyAppState extends State<MyApp> {
           _idJsEngine);
       await FlutterJs.evaluate(ajvJS + "", _idJsEngine);
       await FlutterJs.evaluate("""
-      var ajv = new global.Ajv({ allErrors: true});
-      ajv.addSchema({required: ["name", "age","id", "address"]}, "obj1");
+      var ajv = new global.Ajv({ allErrors: true, coerceTypes: true });
+      ajv.addSchema(
+        {
+          required: ["name", "age","id", "email"], 
+          "properties": {
+            "id": {
+              "minimum": 0,
+              "type": "number" 
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "age": {
+              "minimum": 0,
+              "type": "number" 
+            }
+       
+          }
+      }, "obj1");
       """, _idJsEngine);
     } on PlatformException catch (e) {
       print('Failed to init js engine: ${e.details}');
@@ -111,7 +129,8 @@ class _MyAppState extends State<MyApp> {
                                         field,
                                         result
                                             .where((element) => element.message
-                                                .contains("'$field'"))
+                                                .contains("'$field'") ||
+                                              element.dataPath == ".$field")
                                             .toList()));
                               });
                               return [];
@@ -119,7 +138,7 @@ class _MyAppState extends State<MyApp> {
                             fields: [
                               'id',
                               'name',
-                              'address',
+                              'email',
                               'age',
                             ]),
                       ],
