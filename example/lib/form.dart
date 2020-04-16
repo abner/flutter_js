@@ -30,21 +30,20 @@ class ValidationResult {
 
 class FormWidget extends StatefulWidget {
   FormWidget({
-    // @required this.formWidgetKey,
+    @required this.formWidgetKey,
     @required this.formKey,
     @required this.validateFunction,
     @required this.fields,
-  });
+  }): super(key: formWidgetKey);
 
   final List<String> fields;
   final GlobalKey<FormState> formKey;
 
-  //final GlobalKey<FormWidgetState> formWidgetKey;
+  final GlobalKey<FormWidgetState> formWidgetKey;
   final List<ValidationResult> Function(
       String key,
       String value,
-      Map<String, String> form,
-      FormWidgetState formWidgetState) validateFunction;
+      Map<String, String> form) validateFunction;
 
   @override
   FormWidgetState createState() => FormWidgetState();
@@ -57,12 +56,11 @@ class FormWidgetState extends State<FormWidget> {
   Map<String, List<ValidationResult>> _errorsMap = {};
   Map<String, bool> _stateFromAsync = {};
 
-  //final GlobalKey<FormWidgetState> key;
 
   setErrorAsync(String field, List<ValidationResult> errors) {
     _errorsMap[field] = errors;
     _stateFromAsync[field] = true;
-    _fieldsStates[field].currentState.validate();
+    _fieldsStates[field].currentState?.validate();
   }
 
   _validatorFor(String field) {
@@ -74,7 +72,7 @@ class FormWidgetState extends State<FormWidget> {
       _savedValues[field] = null;
       _fieldValues[field] = value;
       _errorsMap[field] =
-          widget.validateFunction(field, value, _fieldValues, this) ?? [];
+          widget.validateFunction(field, value, _fieldValues) ?? [];
       return _errorsMap[field].length > 0 ? 'Campo inválido' : null;
     };
   }

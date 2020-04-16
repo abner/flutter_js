@@ -25,6 +25,7 @@ class _MyAppState extends State<MyApp> {
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   GlobalKey<FormState> _formKey = GlobalKey();
+  GlobalKey<FormWidgetState> _formWidgetKey = GlobalKey();
 
   Future<dynamic> _loadingFuture;
 
@@ -80,6 +81,42 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
   }
 
+  _validateFunctionFor() {
+    return (String field, String valor, Map<String, String> data) {
+      var formData = {};
+      formData.addAll(data);
+      formData.removeWhere((key, value) => value.trim().isEmpty);
+      final expression = """ajv.validate(
+                         "obj1",
+                         ${json.encode(formData)}
+                         );
+                         ajv.errors;
+                         """;
+      FlutterJs.evaluate(expression, _idJsEngine, convertTo: "array")
+          .then((res) {
+        _jsResult = res;
+
+        if (res == null || res == 'null') {
+          _formWidgetKey.currentState.setErrorAsync(field, []);
+          return null;
+        }
+
+        final List<ValidationResult> result = ValidationResult.listFromJson(json.decode(res));
+        Timer(
+            Duration(milliseconds: 100),
+            () => _formWidgetKey.currentState.setErrorAsync(
+                field,
+                result
+                    .where((element) =>
+                        element.message.contains("'$field'") ||
+                        element.dataPath == ".$field")
+                    .toList()));
+      });
+      final result = List<ValidationResult>();
+      return result;
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -91,59 +128,25 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: FutureBuilder(
             future: _loadingFuture,
-            builder: (_, snapshot) => snapshot.connectionState ==
-                    ConnectionState.waiting
-                ? Center(child: Text('Aguarde...'))
-                : SingleChildScrollView(
-                    child: Column(
-                      children: <Widget>[
-                        FormWidget(
-                            formKey: _formKey,
-                            validateFunction:
-                                (field, value, data, formWidgetState) {
-                              var formData = {};
-                              formData.addAll(data);
-                              formData.removeWhere(
-                                  (key, value) => value.trim().isEmpty);
-                              final expression = """ajv.validate(
-                                                 "obj1",
-                                                 ${json.encode(formData)}
-                                                 );
-                                                 ajv.errors;
-                                                 """;
-                              FlutterJs.evaluate(expression, _idJsEngine,
-                                      convertTo: "array")
-                                  .then((res) {
-                                _jsResult = res;
-
-                                if (res == null || res == 'null') {
-                                  formWidgetState.setErrorAsync(field, []);
-                                  return null;
-                                }
-
-                                final result = ValidationResult.listFromJson(
-                                    json.decode(res));
-                                Timer(
-                                    Duration(milliseconds: 100),
-                                    () => formWidgetState.setErrorAsync(
-                                        field,
-                                        result
-                                            .where((element) => element.message
-                                                .contains("'$field'") ||
-                                              element.dataPath == ".$field")
-                                            .toList()));
-                              });
-                              return [];
-                            },
-                            fields: [
-                              'id',
-                              'name',
-                              'email',
-                              'age',
-                            ]),
-                      ],
-                    ),
-                  ),
+            builder: (_, snapshot) =>
+                snapshot.connectionState == ConnectionState.waiting
+                    ? Center(child: Text('Aguarde...'))
+                    : SingleChildScrollView(
+                        child: Column(
+                          children: <Widget>[
+                            FormWidget(
+                                formWidgetKey: _formWidgetKey,
+                                formKey: _formKey,
+                                validateFunction: _validateFunctionFor(),
+                                fields: [
+                                  'id',
+                                  'name',
+                                  'email',
+                                  'age',
+                                ]),
+                          ],
+                        ),
+                      ),
           ),
         ),
         floatingActionButton: FloatingActionButton(
@@ -163,4 +166,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
