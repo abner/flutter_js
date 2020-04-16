@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 
@@ -17,13 +19,17 @@ class FlutterJs {
     return engineId;
   }
 
-  static Future<String> evaluate(String command, int id) async {
+  static Future<String> evaluate(String command, int id, {String convertTo = ""}) async {
     var arguments = {
       "engineId": id,
-      "command": command
+      "command": command,
+      "convertTo": convertTo
     };
-    final String jsResult = await _channel.invokeMethod("evaluate", arguments); 
+    final rs = await _channel.invokeMethod("evaluate", arguments);
+    final String jsResult = rs is Map || rs is List
+        ? json.encode(rs)
+        : rs;
     print("JS RESULT : $jsResult");
-    return jsResult;
+    return jsResult ?? "null";
   }
 }

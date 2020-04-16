@@ -10,7 +10,9 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
-
+import kotlinx.coroutines.runBlocking
+import android.os.Looper
+import android.os.Handler
 
 /** FlutterJsPlugin */
 class FlutterJsPlugin: FlutterPlugin, MethodCallHandler {
@@ -54,27 +56,37 @@ class FlutterJsPlugin: FlutterPlugin, MethodCallHandler {
       jsEngineMap[engineId] = JSEngine(applicationContext!!)
       result.success(engineId)
     } else if (call.method == "evaluate") {
-      try {
-        Log.d("FlutterJs", call.arguments.toString())
-        val jsCommand: String = call.argument<String>("command")!!
-        val engineId: Int = call.argument<Int>("engineId")!!
-        val resultJS = jsEngineMap[engineId]!!.eval(jsCommand)
-        result.success(resultJS.toString())
-      } catch (e: Exception) {
-        result.error("FlutterJSException", e.message, null)
-      }
-    } else if (call.method == "close") {
-      if (call.hasArgument("engineId")) {
-        val engineId: Int = call.argument<Int>("engineId")!!
-        if (jsEngineMap.containsKey(engineId)) {
-          val jsEngine = jsEngineMap[engineId]!!
-          jsEngine.release()
-          jsEngineMap.remove(engineId)
+      Thread {
+        //runBlocking {
+          try {
+            Log.d("FlutterJs", call.arguments.toString())
+            val jsCommand: String = call.argument<String>("command")!!
+            val engineId: Int = call.argument<Int>("engineId")!!
+            val resultJS = jsEngineMap[engineId]!!.eval(jsCommand)
+            Handler(Looper.getMainLooper()).post {
+              result.success(resultJS.toString())
+              // Call the desired channel message here.
+            }
+          } catch (e: Exception) {
+            Handler(Looper.getMainLooper()).post {
+              result.error("FlutterJSException", e.message, null)
+            }
+          }
+
+        //}
+        }.start();
+      } else if (call.method == "close") {
+        if (call.hasArgument("engineId")) {
+          val engineId: Int = call.argument<Int>("engineId")!!
+          if (jsEngineMap.containsKey(engineId)) {
+            val jsEngine = jsEngineMap[engineId]!!
+            jsEngine.release()
+            jsEngineMap.remove(engineId)
+          }
         }
+      } else {
+        result.notImplemented()
       }
-    } else {
-      result.notImplemented()
-    }
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
