@@ -36,16 +36,14 @@ class FormWidget extends StatefulWidget {
     @required this.formKey,
     @required this.validateFunction,
     @required this.fields,
-  }): super(key: formWidgetKey);
+  }) : super(key: formWidgetKey);
 
   final List<String> fields;
   final GlobalKey<FormState> formKey;
 
   final GlobalKey<FormWidgetState> formWidgetKey;
   final List<ValidationResult> Function(
-      String key,
-      String value,
-      Map<String, String> form) validateFunction;
+      String key, String value, Map<String, String> form) validateFunction;
 
   @override
   FormWidgetState createState() => FormWidgetState();
@@ -58,7 +56,6 @@ class FormWidgetState extends State<FormWidget> {
   Map<String, List<ValidationResult>> _errorsMap = {};
   Map<String, bool> _stateFromAsync = {};
   Map<String, Debouncer> _fieldsDebounces = {};
-
 
   setErrorAsync(String field, List<ValidationResult> errors) {
     _errorsMap[field] = errors;
@@ -90,10 +87,9 @@ class FormWidgetState extends State<FormWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    widget.fields
-        .forEach((fieldName) {
-          _fieldsStates[fieldName] = GlobalKey();
-          _fieldsDebounces[fieldName]  = Debouncer(milliseconds: 500);
+    widget.fields.forEach((fieldName) {
+      _fieldsStates[fieldName] = GlobalKey();
+      _fieldsDebounces[fieldName] = Debouncer(milliseconds: 500);
     });
   }
 
@@ -108,16 +104,69 @@ class FormWidgetState extends State<FormWidget> {
             child: Column(
               children: widget.fields
                   .map(
-                    (field) => TextFormField(
-                        key: _fieldsStates[field],
-                        decoration: InputDecoration(labelText: field),
-                        validator: _validatorFor(field),
-                        onChanged: (  value) {
-                          _fieldsDebounces[field].run(() => _fieldsStates[field].currentState.validate());
-                        },
-                        onEditingComplete: () => _fieldsStates[field].currentState.validate(),
-
-                        onSaved: _onSavedFor(field)),
+                    (field) => Padding(
+                      padding: const EdgeInsets.fromLTRB(4.0, 4, 4, 8),
+                      child: TextFormField(
+                          key: _fieldsStates[field],
+                          decoration: InputDecoration(
+                              labelText: field,
+                              //border: InputBorder.none,
+                              suffixIcon: (field == 'age')
+                                  ? GestureDetector(
+                                      child: Icon(
+                                        Icons.warning,
+                                        color: Colors.orange,
+                                      ),
+                                      onTap: () {
+//                                  Scaffold.of(context).removeCurrentSnackBar();
+//                                  Scaffold.of(context).showSnackBar(SnackBar(
+//                                      behavior: SnackBarBehavior.fixed,
+//                                      content:
+//                                          Text('Aviso no campo $field!!!!')));
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: const Text('Aviso'),
+                                            content:
+                                                Text('Aviso no campo $field'),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : null,
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).accentColor,
+                                    width: 1.5),
+                              ),
+                              contentPadding: EdgeInsets.fromLTRB(8, 1, 8, 2),
+                              alignLabelWithHint: true,
+//                            focusedBorder: OutlineInputBorder(
+//                              borderSide: BorderSide(
+//                                  color: Theme.of(context).accentColor, width: 1.5),
+//                            ),
+//                            errorBorder: OutlineInputBorder(
+//                              borderRadius: BorderRadius.circular(3.1),
+//                              borderSide: BorderSide(
+//                                  color: Theme.of(context).colorScheme.onError, width: 1.5),
+//                            ),
+//                            enabledBorder: OutlineInputBorder(
+//                              borderSide: BorderSide(
+//                                  color: Theme.of(context).primaryColor,
+//                                  width: 1.0),
+//                            ),
+                              ),
+                          validator: _validatorFor(field),
+                          onChanged: (value) {
+                            _fieldsDebounces[field].run(() =>
+                                _fieldsStates[field].currentState.validate());
+                          },
+                          onEditingComplete: () =>
+                              _fieldsStates[field].currentState.validate(),
+                          onSaved: _onSavedFor(field)),
+                    ),
                   )
                   .toList(),
             )),
@@ -131,7 +180,7 @@ class Debouncer {
   VoidCallback action;
   Timer _timer;
 
-  Debouncer({ this.milliseconds });
+  Debouncer({this.milliseconds});
 
   run(VoidCallback action) {
     if (_timer != null) {

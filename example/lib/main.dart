@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_js_example/ajv_result_screen.dart';
 import 'package:flutter_js_example/form.dart';
-import 'package:flutter_js_example/json_viewer.dart';
 
 void main() => runApp(MyApp());
 
@@ -119,6 +118,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
