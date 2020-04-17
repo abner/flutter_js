@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 class FlutterJs {
+
+  static bool DEBUG = false;
   static const MethodChannel _channel =
       const MethodChannel('io.abner.flutter_js');
     
@@ -29,7 +31,9 @@ class FlutterJs {
     final String jsResult = rs is Map || rs is List
         ? json.encode(rs)
         : rs;
-    print("${DateTime.now().toIso8601String()} - JS RESULT : $jsResult");
+    if (DEBUG) {
+      print("${DateTime.now().toIso8601String()} - JS RESULT : $jsResult");
+    }
     return jsResult ?? "null";
   }
 }
