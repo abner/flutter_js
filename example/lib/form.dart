@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class ValidationResult {
@@ -55,6 +57,7 @@ class FormWidgetState extends State<FormWidget> {
   Map<String, GlobalKey<FormFieldState>> _fieldsStates = {};
   Map<String, List<ValidationResult>> _errorsMap = {};
   Map<String, bool> _stateFromAsync = {};
+  Map<String, Debouncer> _fieldsDebounces = {};
 
 
   setErrorAsync(String field, List<ValidationResult> errors) {
@@ -88,7 +91,10 @@ class FormWidgetState extends State<FormWidget> {
     // TODO: implement initState
     super.initState();
     widget.fields
-        .forEach((fieldName) => _fieldsStates[fieldName] = GlobalKey());
+        .forEach((fieldName) {
+          _fieldsStates[fieldName] = GlobalKey();
+          _fieldsDebounces[fieldName]  = Debouncer(milliseconds: 500);
+    });
   }
 
   @override
@@ -98,7 +104,7 @@ class FormWidgetState extends State<FormWidget> {
         padding: const EdgeInsets.all(8.0),
         child: Form(
             key: widget.formKey,
-            autovalidate: true,
+            autovalidate: false,
             child: Column(
               children: widget.fields
                   .map(
@@ -106,11 +112,32 @@ class FormWidgetState extends State<FormWidget> {
                         key: _fieldsStates[field],
                         decoration: InputDecoration(labelText: field),
                         validator: _validatorFor(field),
+                        onChanged: (  value) {
+                          _fieldsDebounces[field].run(() => _fieldsStates[field].currentState.validate());
+                        },
+                        onEditingComplete: () => _fieldsStates[field].currentState.validate(),
+
                         onSaved: _onSavedFor(field)),
                   )
                   .toList(),
             )),
       ),
     );
+  }
+}
+
+class Debouncer {
+  final int milliseconds;
+  VoidCallback action;
+  Timer _timer;
+
+  Debouncer({ this.milliseconds });
+
+  run(VoidCallback action) {
+    if (_timer != null) {
+      _timer.cancel();
+    }
+
+    _timer = Timer(Duration(milliseconds: milliseconds), action);
   }
 }

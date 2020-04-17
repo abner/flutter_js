@@ -29,7 +29,7 @@ class FlutterJs {
     final String jsResult = rs is Map || rs is List
         ? json.encode(rs)
         : rs;
-    print("JS RESULT : $jsResult");
+    print("${DateTime.now().toIso8601String()} - JS RESULT : $jsResult");
     return jsResult ?? "null";
   }
 }

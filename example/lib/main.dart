@@ -50,26 +50,26 @@ class _MyAppState extends State<MyApp> {
           _idJsEngine);
       await FlutterJs.evaluate(ajvJS + "", _idJsEngine);
       await FlutterJs.evaluate("""
-      var ajv = new global.Ajv({ allErrors: true, coerceTypes: true });
-      ajv.addSchema(
-        {
-          required: ["name", "age","id", "email"], 
-          "properties": {
-            "id": {
-              "minimum": 0,
-              "type": "number" 
-            },
-            "email": {
-              "type": "string",
-              "format": "email"
-            },
-            "age": {
-              "minimum": 0,
-              "type": "number" 
-            }
-       
-          }
-      }, "obj1");
+                    var ajv = new global.Ajv({ allErrors: true, coerceTypes: true });
+                    ajv.addSchema(
+                      {
+                        required: ["name", "age","id", "email"], 
+                        "properties": {
+                          "id": {
+                            "minimum": 0,
+                            "type": "number" 
+                          },
+                          "email": {
+                            "type": "string",
+                            "format": "email"
+                          },
+                          "age": {
+                            "minimum": 0,
+                            "type": "number" 
+                          }
+                     
+                        }
+                    }, "obj1");
       """, _idJsEngine);
     } on PlatformException catch (e) {
       print('Failed to init js engine: ${e.details}');
@@ -101,16 +101,15 @@ class _MyAppState extends State<MyApp> {
           return null;
         }
 
-        final List<ValidationResult> result = ValidationResult.listFromJson(json.decode(res));
-        Timer(
-            Duration(milliseconds: 100),
-            () => _formWidgetKey.currentState.setErrorAsync(
-                field,
-                result
-                    .where((element) =>
-                        element.message.contains("'$field'") ||
-                        element.dataPath == ".$field")
-                    .toList()));
+        final List<ValidationResult> result =
+            ValidationResult.listFromJson(json.decode(res));
+        _formWidgetKey.currentState.setErrorAsync(
+            field,
+            result
+                .where((element) =>
+                    element.message.contains("'$field'") ||
+                    element.dataPath == ".$field")
+                .toList());
       });
       final result = List<ValidationResult>();
       return result;
@@ -125,29 +124,27 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('FlutterJS Example'),
         ),
-        body: Center(
-          child: FutureBuilder(
-            future: _loadingFuture,
-            builder: (_, snapshot) =>
-                snapshot.connectionState == ConnectionState.waiting
-                    ? Center(child: Text('Aguarde...'))
-                    : SingleChildScrollView(
-                        child: Column(
-                          children: <Widget>[
-                            FormWidget(
-                                formWidgetKey: _formWidgetKey,
-                                formKey: _formKey,
-                                validateFunction: _validateFunctionFor(),
-                                fields: [
-                                  'id',
-                                  'name',
-                                  'email',
-                                  'age',
-                                ]),
-                          ],
-                        ),
+        body: FutureBuilder(
+          future: _loadingFuture,
+          builder: (_, snapshot) =>
+              snapshot.connectionState == ConnectionState.waiting
+                  ? Center(child: Text('Aguarde...'))
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: <Widget>[
+                          FormWidget(
+                              formWidgetKey: _formWidgetKey,
+                              formKey: _formKey,
+                              validateFunction: _validateFunctionFor(),
+                              fields: [
+                                'id',
+                                'name',
+                                'email',
+                                'age',
+                              ]),
+                        ],
                       ),
-          ),
+                    ),
         ),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.warning),
