@@ -106,8 +106,7 @@ class _AjvExampleState extends State<AjvExample> {
                     element.dataPath == ".$field")
                 .toList());
       });
-      final result = List<ValidationResult>();
-      return result;
+      return null;
     };
   }
 

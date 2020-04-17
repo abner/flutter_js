@@ -72,7 +72,7 @@ class FormWidgetState extends State<FormWidget> {
       _savedValues[field] = null;
       _fieldValues[field] = value;
       _errorsMap[field] =
-          widget.validateFunction(field, value, _fieldValues) ?? [];
+          widget.validateFunction(field, value, _fieldValues) ?? _errorsMap[field] ?? [];
       return _errorsMap[field].length > 0 ? 'Campo inválido' : null;
     };
   }
