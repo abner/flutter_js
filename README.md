@@ -170,8 +170,8 @@ Bellow you can see the apk sizes of the `example app` generated with *flutter_js
 
 ## Ajv
 
-We just added an example of use of the amazing js [Ajv](https://ajv.js.org/) library which allow to bring state of the art json schema validation features
-to Flutter world.
+We just added an example of use of the amazing js library [Ajv](https://ajv.js.org/) which allow to bring state of the art json schema validation features
+to the Flutter world.
 
 
 See bellow the screens we added to the example app:
