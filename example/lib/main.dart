@@ -147,7 +147,7 @@ class _MyAppState extends State<MyApp> {
                     ),
         ),
         floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.warning),
+          child: Icon(Icons.info_outline),
           onPressed: () async {
             Navigator.of(_scaffoldKey.currentContext).push(
               MaterialPageRoute(

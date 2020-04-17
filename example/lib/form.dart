@@ -109,55 +109,42 @@ class FormWidgetState extends State<FormWidget> {
                       child: TextFormField(
                           key: _fieldsStates[field],
                           decoration: InputDecoration(
-                              labelText: field,
-                              //border: InputBorder.none,
-                              suffixIcon: (field == 'age')
-                                  ? GestureDetector(
-                                      child: Icon(
-                                        Icons.warning,
-                                        color: Colors.orange,
-                                      ),
-                                      onTap: () {
-//                                  Scaffold.of(context).removeCurrentSnackBar();
-//                                  Scaffold.of(context).showSnackBar(SnackBar(
-//                                      behavior: SnackBarBehavior.fixed,
-//                                      content:
-//                                          Text('Aviso no campo $field!!!!')));
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                            title: const Text('Aviso'),
-                                            content:
-                                                Text('Aviso no campo $field'),
+                            labelText: field,
+                            suffixIcon: (field == 'age')
+                                ? GestureDetector(
+                                    child: Icon(
+                                      Icons.warning,
+                                      color: Colors.orange,
+                                    ),
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text('Aviso'),
+                                          content: Text(
+                                            'Aviso no campo $field',
                                           ),
-                                        );
-                                      },
-                                    )
-                                  : null,
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.always,
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Theme.of(context).accentColor,
-                                    width: 1.5),
-                              ),
-                              contentPadding: EdgeInsets.fromLTRB(8, 1, 8, 2),
-                              alignLabelWithHint: true,
-//                            focusedBorder: OutlineInputBorder(
-//                              borderSide: BorderSide(
-//                                  color: Theme.of(context).accentColor, width: 1.5),
-//                            ),
-//                            errorBorder: OutlineInputBorder(
-//                              borderRadius: BorderRadius.circular(3.1),
-//                              borderSide: BorderSide(
-//                                  color: Theme.of(context).colorScheme.onError, width: 1.5),
-//                            ),
-//                            enabledBorder: OutlineInputBorder(
-//                              borderSide: BorderSide(
-//                                  color: Theme.of(context).primaryColor,
-//                                  width: 1.0),
-//                            ),
-                              ),
+                                          actions: <Widget>[
+                                            FlatButton(
+                                              child: const Text('OK'),
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : null,
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).accentColor,
+                                  width: 1.5),
+                            ),
+                            contentPadding: EdgeInsets.fromLTRB(8, 1, 8, 2),
+                            alignLabelWithHint: true,
+                          ),
                           validator: _validatorFor(field),
                           onChanged: (value) {
                             _fieldsDebounces[field].run(() =>
