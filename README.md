@@ -168,8 +168,24 @@ Bellow you can see the apk sizes of the `example app` generated with *flutter_js
 ```
 
 
-## Next Steps
+## Ajv
 
-Add examples of use integrated with ajv.js and moment.js
+We just added an example of use of the amazing js [Ajv](https://ajv.js.org/) library which allow to bring state of the art json schema validation features
+to Flutter world.
+
+
+See bellow the screens we added to the example app:
+
+### IOS
+
+![ios_form](doc/ios_ajv_form.png)
+
+![ios_ajv_result](doc/ios_ajv_result.png)
+
+### Android
+
+![android_form](doc/android_ajv_form.png)
+
+![android_ajv_result](doc/android_ajv_result.png)
 
 
