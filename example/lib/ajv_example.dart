@@ -126,6 +126,7 @@ class _AjvExampleState extends State<AjvExample> {
                       child: Column(
                         children: <Widget>[
                           FormWidget(
+                              operation: FormWidgetOperation.New,
                               formWidgetKey: _formWidgetKey,
                               formKey: _formKey,
                               validateFunction: _validateFunctionFor(),

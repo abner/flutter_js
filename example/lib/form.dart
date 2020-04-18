@@ -30,14 +30,18 @@ class ValidationResult {
   }
 }
 
+enum FormWidgetOperation { New, Edit }
+
 class FormWidget extends StatefulWidget {
   FormWidget({
+    @required this.operation,
     @required this.formWidgetKey,
     @required this.formKey,
     @required this.validateFunction,
     @required this.fields,
   }) : super(key: formWidgetKey);
 
+  final FormWidgetOperation operation;
   final List<String> fields;
   final GlobalKey<FormState> formKey;
 
@@ -56,6 +60,7 @@ class FormWidgetState extends State<FormWidget> {
   Map<String, List<ValidationResult>> _errorsMap = {};
   Map<String, bool> _stateFromAsync = {};
   Map<String, Debouncer> _fieldsDebounces = {};
+  Map<String, FocusNode> _fieldsFocusNodes = {};
 
   setErrorAsync(String field, List<ValidationResult> errors) {
     _errorsMap[field] = errors;
@@ -71,8 +76,9 @@ class FormWidgetState extends State<FormWidget> {
       }
       _savedValues[field] = null;
       _fieldValues[field] = value;
-      _errorsMap[field] =
-          widget.validateFunction(field, value, _fieldValues) ?? _errorsMap[field] ?? [];
+      _errorsMap[field] = widget.validateFunction(field, value, _fieldValues) ??
+          _errorsMap[field] ??
+          [];
       return _errorsMap[field].length > 0 ? 'Campo inválido' : null;
     };
   }
@@ -89,8 +95,14 @@ class FormWidgetState extends State<FormWidget> {
     super.initState();
     widget.fields.forEach((fieldName) {
       _fieldsStates[fieldName] = GlobalKey();
-      _fieldsDebounces[fieldName] = Debouncer(milliseconds: 500);
+      _fieldsDebounces[fieldName] = Debouncer(milliseconds: 200);
+      _fieldsFocusNodes[fieldName] = FocusNode();
     });
+  }
+
+  bool shouldFocus(String fieldName) {
+    return widget.fields.first == fieldName &&
+        widget.operation == FormWidgetOperation.New;
   }
 
   @override
@@ -107,32 +119,48 @@ class FormWidgetState extends State<FormWidget> {
                     (field) => Padding(
                       padding: const EdgeInsets.fromLTRB(4.0, 4, 4, 8),
                       child: TextFormField(
+                          autofocus: shouldFocus(field),
+                          focusNode: _fieldsFocusNodes[field],
                           key: _fieldsStates[field],
                           decoration: InputDecoration(
                             labelText: field,
                             suffixIcon: (field == 'age')
-                                ? GestureDetector(
-                                    child: Icon(
+                                ? IconButton(
+                                    autofocus: false,
+                                    icon: Icon(
                                       Icons.warning,
                                       color: Colors.orange,
                                     ),
-                                    onTap: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => AlertDialog(
-                                          title: const Text('Aviso'),
-                                          content: Text(
-                                            'Aviso no campo $field',
-                                          ),
-                                          actions: <Widget>[
-                                            FlatButton(
-                                              child: const Text('OK'),
-                                              onPressed: () =>
-                                                  Navigator.of(context).pop(),
+                                    onPressed: () {
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                        WidgetsBinding
+                                            .instance.focusManager.primaryFocus
+                                            ?.unfocus();
+                                        FocusScope.of(context)
+                                            .requestFocus(FocusNode());
+
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: const Text('Aviso'),
+                                            content: Text(
+                                              'Aviso no campo $field',
                                             ),
-                                          ],
-                                        ),
-                                      );
+                                            actions: <Widget>[
+                                              FlatButton(
+                                                child: const Text('OK'),
+                                                onPressed: () =>
+                                                    Navigator.of(context).pop(),
+                                              ),
+                                            ],
+                                          ),
+                                        ).then((_) {
+                                          FocusScope.of(context).requestFocus(
+                                            _fieldsFocusNodes[field],
+                                          );
+                                        });
+                                      });
                                     },
                                   )
                                 : null,
