@@ -48,7 +48,7 @@ class _AjvExampleState extends State<AjvExample> {
                     var ajv = new global.Ajv({ allErrors: true, coerceTypes: true });
                     ajv.addSchema(
                       {
-                        required: ["name", "age","id", "email"], 
+                        required: ["name", "age","id", "email", "student", "worker"], 
                         "properties": {
                           "id": {
                             "minimum": 0,
@@ -61,6 +61,12 @@ class _AjvExampleState extends State<AjvExample> {
                           "age": {
                             "minimum": 0,
                             "type": "number" 
+                          },
+                          "student": {
+                            "type": "boolean"
+                          },
+                          "worker": {
+                            "type": "boolean"
                           }
                      
                         }
@@ -135,6 +141,8 @@ class _AjvExampleState extends State<AjvExample> {
                                 'name',
                                 'email',
                                 'age',
+                                "student",
+                                "worker"
                               ]),
                         ],
                       ),

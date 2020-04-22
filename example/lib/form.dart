@@ -44,6 +44,7 @@ class FormWidget extends StatefulWidget {
   final FormWidgetOperation operation;
   final List<String> fields;
   final GlobalKey<FormState> formKey;
+  final _focusScopeNode = FocusScopeNode();
 
   final GlobalKey<FormWidgetState> formWidgetKey;
   final List<ValidationResult> Function(
@@ -110,83 +111,118 @@ class FormWidgetState extends State<FormWidget> {
     return Container(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Form(
-            key: widget.formKey,
-            autovalidate: false,
-            child: Column(
-              children: widget.fields
-                  .map(
-                    (field) => Padding(
-                      padding: const EdgeInsets.fromLTRB(4.0, 4, 4, 8),
-                      child: TextFormField(
-                          autofocus: shouldFocus(field),
-                          focusNode: _fieldsFocusNodes[field],
-                          key: _fieldsStates[field],
-                          decoration: InputDecoration(
-                            labelText: field,
-                            suffixIcon: (field == 'age')
-                                ? IconButton(
-                                    autofocus: false,
-                                    icon: Icon(
-                                      Icons.warning,
-                                      color: Colors.orange,
-                                    ),
-                                    onPressed: () {
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback((_) {
-                                        WidgetsBinding
-                                            .instance.focusManager.primaryFocus
-                                            ?.unfocus();
-                                        FocusScope.of(context)
-                                            .requestFocus(FocusNode());
-
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                            title: const Text('Aviso'),
-                                            content: Text(
-                                              'Aviso no campo $field',
-                                            ),
-                                            actions: <Widget>[
-                                              FlatButton(
-                                                child: const Text('OK'),
-                                                onPressed: () =>
-                                                    Navigator.of(context).pop(),
-                                              ),
-                                            ],
-                                          ),
-                                        ).then((_) {
-                                          FocusScope.of(context).requestFocus(
-                                            _fieldsFocusNodes[field],
-                                          );
-                                        });
-                                      });
-                                    },
-                                  )
-                                : null,
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Theme.of(context).accentColor,
-                                  width: 1.5),
-                            ),
-                            contentPadding: EdgeInsets.fromLTRB(8, 1, 8, 2),
-                            alignLabelWithHint: true,
-                          ),
-                          validator: _validatorFor(field),
-                          onChanged: (value) {
-                            _fieldsDebounces[field].run(() =>
-                                _fieldsStates[field].currentState.validate());
-                          },
-                          onEditingComplete: () =>
-                              _fieldsStates[field].currentState.validate(),
-                          onSaved: _onSavedFor(field)),
-                    ),
-                  )
-                  .toList(),
-            )),
+        child: FocusScope(
+          node: widget._focusScopeNode,
+          child: Form(
+              key: widget.formKey,
+              autovalidate: false,
+              child: Column(
+                children: widget.fields
+                    .map(
+                      (field) => Padding(
+                        padding: const EdgeInsets.fromLTRB(4.0, 4, 4, 8),
+                        child: getInputWidgetForField(field),
+                      ),
+                    )
+                    .toList(),
+              )),
+        ),
       ),
     );
+  }
+
+  Widget getInputWidgetForField(String field) {
+    if (field == "worker" || field == "student") {
+      return getCheckboxField(field);
+    } else {
+      return getTextFormField(field);
+    }
+  }
+
+  Widget getCheckboxField(String field) {
+    return CheckboxListTile(
+      value: _fieldValues[field] == "true",
+      onChanged: (value) {
+        setState(() {
+          _fieldValues[field] = value.toString();
+        });
+      },
+      title: Text(field),
+      subtitle: Text(
+        'Requerido',
+        style: TextStyle(color: Colors.red),
+      ),
+    );
+  }
+
+  Widget getTextFormField(String field) {
+    return TextFormField(
+        autofocus: shouldFocus(field),
+        focusNode: _fieldsFocusNodes[field],
+        textInputAction: widget.fields.last == field
+            ? TextInputAction.done
+            : TextInputAction.next,
+        key: _fieldsStates[field],
+        decoration: InputDecoration(
+          labelText: field,
+          suffixIcon: (field == 'age')
+              ? IconButton(
+                  autofocus: false,
+                  icon: Icon(
+                    Icons.warning,
+                    color: Colors.orange,
+                  ),
+                  onPressed: () {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      WidgetsBinding.instance.focusManager.primaryFocus
+                          ?.unfocus();
+                      FocusScope.of(context).requestFocus(FocusNode());
+
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Aviso'),
+                          content: Text(
+                            'Aviso no campo $field',
+                          ),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: const Text('OK'),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                          ],
+                        ),
+                      ).then((_) {
+                        FocusScope.of(context).requestFocus(
+                          _fieldsFocusNodes[field],
+                        );
+                      });
+                    });
+                  },
+                )
+              : null,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          border: OutlineInputBorder(
+            borderSide:
+                BorderSide(color: Theme.of(context).accentColor, width: 1.5),
+          ),
+          contentPadding: EdgeInsets.fromLTRB(8, 1, 8, 2),
+          alignLabelWithHint: true,
+        ),
+        validator: _validatorFor(field),
+        onChanged: (value) {
+          _fieldsDebounces[field]
+              .run(() => _fieldsStates[field].currentState.validate());
+        },
+        onEditingComplete: () {
+          _fieldsStates[field].currentState.validate();
+          if (widget.fields.last == field) {
+            widget._focusScopeNode.unfocus();
+          } else {
+            widget._focusScopeNode.nextFocus();
+          }
+        },
+        onSaved: _onSavedFor(field));
   }
 }
 
