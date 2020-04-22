@@ -59,7 +59,7 @@ class FlutterJsPlugin: FlutterPlugin, MethodCallHandler {
       Thread {
         //runBlocking {
           try {
-            Log.d("FlutterJs", call.arguments.toString())
+            //Log.d("FlutterJs", call.arguments.toString())
             val jsCommand: String = call.argument<String>("command")!!
             val engineId: Int = call.argument<Int>("engineId")!!
             val resultJS = jsEngineMap[engineId]!!.eval(jsCommand)
