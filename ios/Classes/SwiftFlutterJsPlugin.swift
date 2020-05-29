@@ -50,9 +50,8 @@ public class SwiftFlutterJsPlugin: NSObject, FlutterPlugin {
                                     details: nil))
             }
         case "close":
+            result(FlutterMethodNotImplemented)
             break
-        case "getPlatformVersion":
-            result("iOS " + UIDevice.current.systemVersion)
         default:
             result(FlutterMethodNotImplemented)
         }
