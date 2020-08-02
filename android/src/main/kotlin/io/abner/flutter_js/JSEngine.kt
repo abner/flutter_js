@@ -5,34 +5,31 @@ import de.prosiebensat1digital.oasisjsbridge.JsBridgeError
 
 import kotlinx.coroutines.Dispatchers
 import android.util.Log
+import de.prosiebensat1digital.oasisjsbridge.JsBridgeConfig
 import de.prosiebensat1digital.oasisjsbridge.JsonObjectWrapper
 
 class JSEngine(context: android.content.Context) {
 
-    private lateinit var runtime: JsBridge
+    private var runtime: JsBridge = JsBridge(JsBridgeConfig.standardConfig())
 
     var runtimeInitialized = false
     init {
-        runtime = JsBridge(context)
-        runtime!!.start()
-
         val errorListener = object : JsBridge.ErrorListener(Dispatchers.Main) {
             override fun onError(error: JsBridgeError) {
                 Log.e("MainActivity", error.errorString())
             }
         }
-        runtime!!.registerErrorListener(errorListener)
+        runtime.registerErrorListener(errorListener)
     }
 
 
 
     fun eval(script: String): JsonObjectWrapper {
-        return runtime!!.evaluateBlocking(script, JsonObjectWrapper::class.java) as JsonObjectWrapper
+        return runtime.evaluateBlocking(script, JsonObjectWrapper::class.java) as JsonObjectWrapper
     }
 
     fun release() {
-        runtime!!.release()
-
+        runtime.release()
     }
 
 }
