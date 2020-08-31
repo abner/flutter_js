@@ -26,13 +26,17 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        main.jniLibs.srcDirs = ['jniLibs']
     }
     defaultConfig {
         minSdkVersion 21
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
@@ -43,5 +47,7 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     //implementation 'com.github.seven332:quickjs-android:89ba8b6b8f'
-    implementation 'com.github.abner.oasis-jsbridge-android:oasis-jsbridge-quickjs:0.9.68'
+    //implementation 'com.github.abner.oasis-jsbridge-android:oasis-jsbridge-quickjs:0.9.68'
+    implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-quickjs:0.1.0"
+    //implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc:0.1.0"
 }

@@ -1,8 +1,4 @@
-
-
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_js/flutter_js.dart';
@@ -16,9 +12,7 @@ class AjvExample extends StatefulWidget {
 }
 
 class _AjvExampleState extends State<AjvExample> {
-
   String _jsResult = '';
-  int _idJsEngine = -1;
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   GlobalKey<FormState> _formKey = GlobalKey();
@@ -26,24 +20,24 @@ class _AjvExampleState extends State<AjvExample> {
 
   Future<dynamic> _loadingFuture;
 
+  JavascriptRuntime jsRuntime;
+
   @override
   void initState() {
     super.initState();
     _loadingFuture = initJsEngine();
   }
+
 // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initJsEngine() async {
     try {
-      _idJsEngine = await FlutterJs.initEngine();
+      jsRuntime = getJavascriptRuntime();
       String ajvJS = await rootBundle.loadString("assets/js/ajv.js");
 
-      await FlutterJs.evaluate("var global = window = {};", _idJsEngine);
+      jsRuntime.evaluate("var window = global = globalThis;");
 
-      await FlutterJs.evaluate(
-          "console = { log: function(){}, error: function(){}, warn: function() {}};",
-          _idJsEngine);
-      await FlutterJs.evaluate(ajvJS + "", _idJsEngine);
-      await FlutterJs.evaluate("""
+      jsRuntime.evaluate(ajvJS + "");
+      final evalAjv = jsRuntime.evaluate("""
                     var ajv = new global.Ajv({ allErrors: true, coerceTypes: true });
                     ajv.addSchema(
                       {
@@ -52,6 +46,9 @@ class _AjvExampleState extends State<AjvExample> {
                           "id": {
                             "minimum": 0,
                             "type": "number" 
+                          },
+                          "name": {
+                            "type": "string" 
                           },
                           "email": {
                             "type": "string",
@@ -70,7 +67,8 @@ class _AjvExampleState extends State<AjvExample> {
                      
                         }
                     }, "obj1");
-      """, _idJsEngine);
+      """);
+      print(evalAjv.stringResult);
     } on PlatformException catch (e) {
       print('Failed to init js engine: ${e.details}');
     }
@@ -85,81 +83,84 @@ class _AjvExampleState extends State<AjvExample> {
     return (String field, String valor, Map<String, String> data) {
       var formData = {};
       formData.addAll(data);
-      formData.removeWhere((key, value) => value.trim().isEmpty);
+      formData.removeWhere((key, value) => value.toString().trim().isEmpty);
+      if (valor != null && valor.length > 0) {
+       formData[field] = valor;
+      }
       final expression = """ajv.validate(
                          "obj1",
                          ${json.encode(formData)}
                          );
-                         ajv.errors;
+                         JSON.stringify(ajv.errors);
                          """;
-      FlutterJs.evaluate(expression, _idJsEngine, convertTo: "array")
-          .then((res) {
-        _jsResult = res;
+      JsEvalResult jsResult = jsRuntime.evaluate(expression);
 
-        if (res == null || res == 'null') {
-          _formWidgetKey.currentState.setErrorAsync(field, []);
-          return null;
-        }
+      print(jsResult.stringResult);
 
-        final List<ValidationResult> result =
-            ValidationResult.listFromJson(json.decode(res));
-        _formWidgetKey.currentState.setErrorAsync(
-            field,
-            result
-                .where((element) =>
-                    element.message.contains("'$field'") ||
-                    element.dataPath == ".$field")
-                .toList());
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          _jsResult = jsResult.stringResult;
+        });
       });
-      return null;
+
+      final List<ValidationResult> result =
+          ValidationResult.listFromJson(json.decode(jsResult.stringResult));
+
+      final errorsForField = result
+          .where((element) =>
+              element.message.contains("$field") || element.params['missingProperty'] == field ||
+              element.dataPath == ".$field")
+          .toList();
+
+      return errorsForField;
     };
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          title: const Text('Ajv Example'),
-        ),
-        body: FutureBuilder(
-          future: _loadingFuture,
-          builder: (_, snapshot) =>
-              snapshot.connectionState == ConnectionState.waiting
-                  ? Center(child: Text('Aguarde...'))
-                  : SingleChildScrollView(
-                      child: Column(
-                        children: <Widget>[
-                          FormWidget(
-                              operation: FormWidgetOperation.New,
-                              formWidgetKey: _formWidgetKey,
-                              formKey: _formKey,
-                              validateFunction: _validateFunctionFor(),
-                              fields: [
-                                'id',
-                                'name',
-                                'email',
-                                'age',
-                                "student",
-                                "worker"
-                              ]),
-                        ],
-                      ),
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: const Text('Ajv Example'),
+      ),
+      body: FutureBuilder(
+        future: _loadingFuture,
+        builder: (_, snapshot) =>
+            snapshot.connectionState == ConnectionState.waiting
+                ? Center(child: Text('Aguarde...'))
+                : SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        FormWidget(
+                            operation: FormWidgetOperation.New,
+                            formWidgetKey: _formWidgetKey,
+                            formKey: _formKey,
+                            validateFunction: _validateFunctionFor(),
+                            fields: [
+                              'id',
+                              'name',
+                              'email',
+                              'age',
+                              "student",
+                              "worker"
+                            ]),
+                      ],
                     ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.info_outline),
-          onPressed: () async {
-            Navigator.of(_scaffoldKey.currentContext).push(
-              MaterialPageRoute(
-                builder: (context) => AjvResultScreen(
-                  "{\"errors\": ${_jsResult == "" ? null : _jsResult}}",
-                  notRoot: false,
-                ),
+                  ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.info_outline),
+        onPressed: () async {
+          Navigator.of(_scaffoldKey.currentContext).push(
+            MaterialPageRoute(
+              builder: (context) => AjvResultScreen(
+                "{\"errors\": ${_jsResult == "" ? null : _jsResult}}",
+                notRoot: false,
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

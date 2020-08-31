@@ -8,13 +8,14 @@ class ValidationResult {
       this.property = "",
       this.keyword = "",
       this.dataPath = "",
-      this.schemaPath = ""})
+      this.schemaPath = "", this.params})
       : super();
   final String message;
   final String property;
   final String keyword;
   final String dataPath;
   final String schemaPath;
+  final Map<String,dynamic> params;
 
   static ValidationResult fromJson(Map<String, dynamic> map) {
     return ValidationResult(
@@ -22,11 +23,13 @@ class ValidationResult {
         property: map['property'],
         dataPath: map['dataPath'],
         schemaPath: map['schemaMap'],
-        keyword: map['keyword']);
+        keyword: map['keyword'],
+        params: map['params'] ?? {});
   }
 
   static List<ValidationResult> listFromJson(List<dynamic> jsonList) {
-    return jsonList.map((el) => fromJson(el)).toList();
+
+    return jsonList == null ? [] : jsonList.map((el) => fromJson(el)).toList();
   }
 }
 
@@ -60,23 +63,18 @@ class FormWidgetState extends State<FormWidget> {
   Map<String, GlobalKey<FormFieldState>> _fieldsStates = {};
   Map<String, List<ValidationResult>> _errorsMap = {};
   Map<String, bool> _stateFromAsync = {};
-  Map<String, Debouncer> _fieldsDebounces = {};
+  //Map<String, Debouncer> _fieldsDebounces = {};
   Map<String, FocusNode> _fieldsFocusNodes = {};
 
-  setErrorAsync(String field, List<ValidationResult> errors) {
-    _errorsMap[field] = errors;
-    _stateFromAsync[field] = true;
-    _fieldsStates[field].currentState?.validate();
-  }
+  // setErrorAsync(String field, List<ValidationResult> errors) {
+  //   _errorsMap[field] = errors;
+  //   _stateFromAsync[field] = true;
+  //   _fieldsStates[field].currentState?.validate();
+  // }
 
   _validatorFor(String field) {
     return (String value) {
-      if (_stateFromAsync[field] ?? false) {
-        _stateFromAsync[field] = false;
-        return _errorsMap[field].length > 0 ? 'Some Error from Ajv' : null;
-      }
-      _savedValues[field] = null;
-      _fieldValues[field] = value;
+     _fieldValues[field] = value;
       _errorsMap[field] = widget.validateFunction(field, value, _fieldValues) ??
           _errorsMap[field] ??
           [];
@@ -96,7 +94,7 @@ class FormWidgetState extends State<FormWidget> {
     super.initState();
     widget.fields.forEach((fieldName) {
       _fieldsStates[fieldName] = GlobalKey();
-      _fieldsDebounces[fieldName] = Debouncer(milliseconds: 200);
+      //_fieldsDebounces[fieldName] = Debouncer(milliseconds: 200);
       _fieldsFocusNodes[fieldName] = FocusNode();
     });
   }
@@ -115,7 +113,7 @@ class FormWidgetState extends State<FormWidget> {
           node: widget._focusScopeNode,
           child: Form(
               key: widget.formKey,
-              autovalidate: false,
+              autovalidate: true,
               child: Column(
                 children: widget.fields
                     .map(
@@ -210,10 +208,10 @@ class FormWidgetState extends State<FormWidget> {
           alignLabelWithHint: true,
         ),
         validator: _validatorFor(field),
-        onChanged: (value) {
-          _fieldsDebounces[field]
-              .run(() => _fieldsStates[field].currentState.validate());
-        },
+        // onChanged: (value) {
+        //   addPostFrameCallback
+        //   _fieldsStates[field].currentState.validate();
+        // },
         onEditingComplete: () {
           _fieldsStates[field].currentState.validate();
           if (widget.fields.last == field) {

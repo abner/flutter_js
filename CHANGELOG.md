@@ -1,3 +1,7 @@
+# 0.1.0+0
+
+- Changed to use Dart FFI to call the Javascript Runtimes: QuickJS by Default in Android and JavascriptCore in iOS
+
 # 0.0.3+1
 
 - Updated to use a new version of oasis-jsbridge-android which brings *quickjs* (js engine for Android) 

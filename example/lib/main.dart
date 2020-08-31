@@ -31,30 +31,14 @@ class FlutterJsHomeScreen extends StatefulWidget {
 class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
 
   String _jsResult = '';
-  int _idJsEngine = -1;
+  JavascriptRuntime flutterJs;
   @override
   void initState() {
     super.initState();
-    initJsEngine();
+
+    flutterJs = getJavascriptRuntime();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initJsEngine() async {
-
-
-    try {
-      _idJsEngine = await FlutterJs.initEngine();
-    } on PlatformException catch (e) {
-      print('Failed to init js engine: ${e.details}');
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,10 +65,10 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
         child: Image.asset('assets/js.ico'),
         onPressed: () async {
           try {
-            String result = await FlutterJs.evaluate(
-                "Math.trunc(Math.random() * 100).toString();", _idJsEngine);
+            JsEvalResult jsResult = flutterJs.evaluate(
+                "Math.trunc(Math.random() * 100).toString();");
             setState(() {
-              _jsResult = result;
+              _jsResult = jsResult.stringResult;
             });
           } on PlatformException catch (e) {
             print('ERRO: ${e.details}');

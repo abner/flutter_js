@@ -3,17 +3,36 @@
 A Javascript engine to use with flutter. It uses quickjs on Android and JavascriptCore on IOS
 
 
-In this very early stage version we only get the result of evaluated expressions as String.
+Now the evaluation is executed through dart ffi, which makes the javascript a native citzen inside Flutter Mobile Apps.
 
-But it is good enough to take advantage of great javascript libraries such as ajv (json schema validation), moment (DateTime parser and operations) in Flutter applications running on mobile devices, both Android and iOS.
 
-On IOS this library relies on the native JavascriptCore provided by iOS SDK. In Android it uses the amazing and small Javascript Engine QuickJS [https://bellard.org/quickjs/](https://bellard.org/quickjs/) (A spetacular work of the Fabrice Bellard and Charlie Gordon). 
-It was ported to be used in Android through jni in this project i recently found on Github: [https://github.com/seven332/quickjs-android](https://github.com/seven332/quickjs-android). 
-We used seven332/quickjs-android in the very first versions of flutter_js. Thanks to [seven332](https://github.com/seven332)
+In the previous versions we only get the result of evaluated expressions as String.
 
-Recently we found the [oasis-jsbridge-android](https://github.com/p7s1digital/oasis-jsbridge-android) repository which brings quickjs integration to Android to a new level (Close to what JavascriptCore offers in iOS). So,
-since version 0.0.2+1 we are using oasis-jsbridge-android quickjs library as our javascript engine under the hood. So thanks to the guys of [p7s1digital](https://github.com/p7s1digital/) team to theirs
-amazing work.  
+BUT NOW we can do more with  flutter_js like run xhr and fetch http calls through Dart http library. We are supporting Promises as well.
+
+We can take advantage of great javascript libraries such as ajv (json schema validation), moment (DateTime parser and operations) in Flutter applications running on mobile devices, both Android and iOS.
+
+~~On IOS this library relies on the native JavascriptCore provided by iOS SDK. In Android it uses the amazing and small Javascript Engine QuickJS [https://bellard.org/quickjs/](https://bellard.org/quickjs/) (A spetacular work of the Fabrice Bellard and Charlie Gordon).~~
+~~It was ported to be used in Android through jni in this project i recently found on Github: [https://github.com/seven332/quickjs-android](https://github.com/seven332/quickjs-android).~~
+~~We used seven332/quickjs-android in the very first versions of flutter_js. Thanks to [seven332](https://github.com/seven332)~~
+
+~~Recently we found the [oasis-jsbridge-android](https://github.com/p7s1digital/oasis-jsbridge-android) repository which brings quickjs integration to Android to a new level (Close to what JavascriptCore offers in iOS). So,
+since version 0.0.2+1 we are using oasis-jsbridge-android quickjs library as our javascript engine under the hood. So thanks to the guys of [p7s1digital](https://github.com/p7s1digital/) team to theirs amazing work.~~  
+
+
+On Android it uses the amazing and small Javascript Engine QuickJS [https://bellard.org/quickjs/](https://bellard.org/quickjs/).  On IOS, it uses the Javascript Core. In both platforms we rely on dart ffi to make calls to the js runtime engines, which make javascript code evaluation an first class citzen inside Flutter Mobile Apps. We could use it
+to execute validations logic of TextFormField, also we can execute rule engines or redux logic shared from our web applications. The opportunities are huge.
+
+
+The project is open source under MIT license. 
+
+The bindings for use to communicate with JavascriptCore through dart:ffi we took it from the package [flutter_jscore](https://pub.dev/packages/flutter_jscore).
+
+Flutter JS provided the implementation to the QuickJS dart ffi bindings ourselves and also constructed a wrapper API to Dart which
+provides a unified API to evaluate javascript and communicate between Dart and Javascript. 
+
+This library also allows to call xhr and fetch on Javascript through Dart Http calls. We also provide the implementation
+which allows to evaluate promises returns.
 
 
 ![](doc/flutter_js.png)
@@ -22,6 +41,11 @@ amazing work.
 ## Features:
 
 ## Instalation
+
+```yaml
+dependencies:
+  flutter_js: 0.1.0+0
+```
 
 ### iOS
 
@@ -58,29 +82,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _jsResult = '';
-  int _idJsEngine = -1;
+  JavascriptRuntime flutterJs;
   @override
   void initState() {
     super.initState();
-    initJsEngine();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initJsEngine() async {
-  
-
-    try {
-      _idJsEngine = await FlutterJs.initEngine();
-    } on PlatformException catch (e) {
-      print('Failed to init js engine: ${e.details}');
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-
+    
+    flutterJs = getJavascriptRuntime();
   }
 
   @override
@@ -109,10 +116,10 @@ class _MyAppState extends State<MyApp> {
           child: Image.asset('assets/js.ico'),
           onPressed: () async {
             try {
-              String result = await FlutterJs.evaluate(
-                  "Math.trunc(Math.random() * 100).toString();", _idJsEngine);
+              JsEvalResult jsResult = flutterJs.evaluate(
+                  "Math.trunc(Math.random() * 100).toString();");
               setState(() {
-                _jsResult = result;
+                _jsResult = jsResult.stringResult;
               });
             } on PlatformException catch (e) {
               print('ERRO: ${e.details}');
@@ -127,7 +134,7 @@ class _MyAppState extends State<MyApp> {
 ```
 
 
-## Alternatives
+## Alternatives (and also why we think our library is better)
 
 There were another packages which provides alternatives to evaluate javascript in flutter projects:
 
@@ -145,6 +152,12 @@ Allows to evaluate javascript in a hidden webview. Does not add weight to size o
 ### https://pub.dev/packages/jsengine
 
 Based on jerryscript which is slower than quickjs. The jsengine package does not have implementation to iOS.
+
+### https://pub.dev/packages/flutter_jscore
+
+Uses Javascript Core in Android and IOS. We got the JavascriptCore bindings from this amazing package. But, by
+default we provides QuickJS as the javascript runtime on Android because it provides a smaller footprint. Also 
+our library adds support to ConsoleLog, SetTimeout, Xhr, Fetch and Promises.
 
 
 
@@ -171,7 +184,7 @@ Bellow you can see the apk sizes of the `example app` generated with *flutter_js
 ## Ajv
 
 We just added an example of use of the amazing js library [Ajv](https://ajv.js.org/) which allow to bring state of the art json schema validation features
-to the Flutter world.
+to the Flutter world. We can see the Ajv examples here: https://github.com/abner/flutter_js/blob/master/example/lib/ajv_example.dart 
 
 
 See bellow the screens we added to the example app:

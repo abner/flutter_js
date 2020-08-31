@@ -1,39 +1,28 @@
-import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/services.dart';
+import 'package:flutter_js/javascript_runtime.dart';
+import 'package:flutter_js/javascriptcore/jscore_runtime.dart';
+import 'package:flutter_js/quickjs/quickjs_runtime.dart';
 
-class FlutterJs {
+import './extensions/fetch.dart';
+import './extensions/handle_promises.dart';
 
-  static bool DEBUG = false;
-  static const MethodChannel _channel =
-      const MethodChannel('io.abner.flutter_js');
-    
+export './javascript_runtime.dart';
 
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
+export './quickjs/quickjs_runtime.dart';
+
+export './extensions/handle_promises.dart';
+
+JavascriptRuntime getJavascriptRuntime(
+    {bool forceJavascriptCoreOnAndroid = false, bool xhr = true}) {
+  JavascriptRuntime runtime;
+  if ((Platform.isAndroid || Platform.isWindows) && !forceJavascriptCoreOnAndroid) {
+    runtime = QuickJsRuntime('fileQuickjs.js');
+  } else {
+    runtime = JavascriptCoreRuntime();
   }
-
-  static Future<int> initEngine() async {
-    final int engineId = await _channel.invokeMethod("initEngine", 1);
-    return engineId;
-  }
-
-  static Future<String> evaluate(String command, int id, {String convertTo = ""}) async {
-    var arguments = {
-      "engineId": id,
-      "command": command,
-      "convertTo": convertTo
-    };
-    final rs = await _channel.invokeMethod("evaluate", arguments);
-    final String jsResult = rs is Map || rs is List
-        ? json.encode(rs)
-        : rs;
-    if (DEBUG) {
-      print("${DateTime.now().toIso8601String()} - JS RESULT : $jsResult");
-    }
-    return jsResult ?? "null";
-  }
+  setFetchDebug(true);
+  if (xhr) runtime.enableFetch();
+  runtime.enableHandlePromises();
+  return runtime;
 }

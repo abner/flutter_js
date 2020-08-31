@@ -1,6 +1,6 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_js (0.0.1):
+  - flutter_js (0.1.0):
     - Flutter
 
 DEPENDENCIES:
@@ -15,8 +15,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  flutter_js: eb1d2d30ead7b5e597f7e7bfed642589ca15efe2
+  flutter_js: 95929d4e146e8ceb1c8e1889d8c2065c5d840076
 
-PODFILE CHECKSUM: 1b66dae606f75376c5f2135a8290850eeb09ae83
+PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
 
-COCOAPODS: 1.7.5
+COCOAPODS: 1.9.1
