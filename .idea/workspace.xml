@@ -3,17 +3,45 @@
   <component name="AndroidLogFilters">
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="f91e2026-091f-45ea-8cd2-74b829682137" name="Default Changelist" comment="updated to use oasisjsbridge as quickjs wrapper, as it allows better interoperability between js and native code on Android (as JavascriptCore does within IOS). The version of oasisjsbridge is also updated to 2020-04-12 quickjs version">
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/io/abner/flutter_js/JSEngine.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/io/abner/flutter_js/JSEngine.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/c/quickjs/cutils.h" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/c/quickjs/cutils.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/c/quickjs/libregexp.c" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/c/quickjs/libregexp.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/c/quickjs/quickjs-atom.h" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/c/quickjs/quickjs-atom.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/c/quickjs/quickjs.c" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/c/quickjs/quickjs.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/c/quickjs/quickjs.h" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/c/quickjs/quickjs.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/lib/ajv_example.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/ajv_example.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/lib/form.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/form.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flutter_js.iml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_js.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/flutter_js.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/flutter_js.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/javascript_runtime.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/javascript_runtime.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,10 +60,20 @@
     <option name="width" value="1880" />
     <option name="height" value="989" />
   </component>
+  <component name="ProjectId" id="1grkl9yiiwUPLmgVFWdTEriK06b" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="flattenPackages" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
+    <property name="dart.analysis.tool.window.visible" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Project" />
@@ -65,55 +103,98 @@
     <option name="localTasksCounter" value="2" />
     <servers />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="updated to use oasisjsbridge as quickjs wrapper, as it allows better interoperability between js and native code on Android (as JavascriptCore does within IOS). The version of oasisjsbridge is also updated to 2020-04-12 quickjs version" />
     <option name="LAST_COMMIT_MESSAGE" value="updated to use oasisjsbridge as quickjs wrapper, as it allows better interoperability between js and native code on Android (as JavascriptCore does within IOS). The version of oasisjsbridge is also updated to 2020-04-12 quickjs version" />
   </component>
+  <component name="WindowStateProjectService">
+    <state x="663" y="301" width="263" height="328" key="#Notifications" timestamp="1598887074826">
+      <screen x="0" y="25" width="1600" height="875" />
+    </state>
+    <state x="663" y="301" width="263" height="328" key="#Notifications/0.25.1600.875@0.25.1600.875" timestamp="1598887074826" />
+    <state width="1554" height="208" key="GridCell.Tab.0.bottom" timestamp="1598889678901">
+      <screen x="0" y="25" width="1600" height="875" />
+    </state>
+    <state width="1554" height="208" key="GridCell.Tab.0.bottom/0.25.1600.875@0.25.1600.875" timestamp="1598889678901" />
+    <state width="1554" height="208" key="GridCell.Tab.0.center" timestamp="1598889678901">
+      <screen x="0" y="25" width="1600" height="875" />
+    </state>
+    <state width="1554" height="208" key="GridCell.Tab.0.center/0.25.1600.875@0.25.1600.875" timestamp="1598889678901" />
+    <state width="1554" height="208" key="GridCell.Tab.0.left" timestamp="1598889678901">
+      <screen x="0" y="25" width="1600" height="875" />
+    </state>
+    <state width="1554" height="208" key="GridCell.Tab.0.left/0.25.1600.875@0.25.1600.875" timestamp="1598889678901" />
+    <state width="1554" height="208" key="GridCell.Tab.0.right" timestamp="1598889678901">
+      <screen x="0" y="25" width="1600" height="875" />
+    </state>
+    <state width="1554" height="208" key="GridCell.Tab.0.right/0.25.1600.875@0.25.1600.875" timestamp="1598889678901" />
+    <state width="1554" height="237" key="GridCell.Tab.1.bottom" timestamp="1598889678898">
+      <screen x="0" y="25" width="1600" height="875" />
+    </state>
+    <state width="1554" height="237" key="GridCell.Tab.1.bottom/0.25.1600.875@0.25.1600.875" timestamp="1598889678898" />
+    <state width="1554" height="237" key="GridCell.Tab.1.center" timestamp="1598889678897">
+      <screen x="0" y="25" width="1600" height="875" />
+    </state>
+    <state width="1554" height="237" key="GridCell.Tab.1.center/0.25.1600.875@0.25.1600.875" timestamp="1598889678897" />
+    <state width="1554" height="237" key="GridCell.Tab.1.left" timestamp="1598889678897">
+      <screen x="0" y="25" width="1600" height="875" />
+    </state>
+    <state width="1554" height="237" key="GridCell.Tab.1.left/0.25.1600.875@0.25.1600.875" timestamp="1598889678897" />
+    <state width="1554" height="237" key="GridCell.Tab.1.right" timestamp="1598889678897">
+      <screen x="0" y="25" width="1600" height="875" />
+    </state>
+    <state width="1554" height="237" key="GridCell.Tab.1.right/0.25.1600.875@0.25.1600.875" timestamp="1598889678897" />
+    <state width="800" height="437" key="XDebugger.FullValuePopup" timestamp="1598887273059">
+      <screen x="0" y="25" width="1600" height="875" />
+    </state>
+    <state width="800" height="437" key="XDebugger.FullValuePopup/0.25.1600.875@0.25.1600.875" timestamp="1598887273059" />
+    <state x="349" y="112" width="891" height="706" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1598887104114">
+      <screen x="0" y="25" width="1600" height="875" />
+    </state>
+    <state x="349" y="112" width="891" height="706" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.25.1600.875@0.25.1600.875" timestamp="1598887104114" />
+    <state x="977" y="154" width="594" height="544" key="find.popup" timestamp="1598888839804">
+      <screen x="0" y="25" width="1600" height="875" />
+    </state>
+    <state x="977" y="154" width="594" height="544" key="find.popup/0.25.1600.875@0.25.1600.875" timestamp="1598888839804" />
+    <state x="463" y="212" width="672" height="678" key="search.everywhere.popup" timestamp="1598913848659">
+      <screen x="0" y="25" width="1600" height="875" />
+    </state>
+    <state x="463" y="212" width="672" height="678" key="search.everywhere.popup/0.25.1600.875@0.25.1600.875" timestamp="1598913848659" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/android/src/main/kotlin/io/abner/flutter_js/FlutterJsPlugin.kt</url>
-          <line>50</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/android/src/main/kotlin/io/abner/flutter_js/FlutterJsPlugin.kt</url>
-          <line>48</line>
-          <option name="timeStamp" value="2" />
+        <line-breakpoint enabled="true" suspend="THREAD" type="Dart">
+          <condition expression="jsonDecode(jsResult.stringResult) is int" language="Dart" />
+          <url>file://$PROJECT_DIR$/example/lib/ajv_example.dart</url>
+          <line>106</line>
+          <option name="timeStamp" value="10" />
         </line-breakpoint>
       </breakpoints>
+      <default-breakpoints>
+        <breakpoint enabled="true" suspend="THREAD" type="CidrExceptionBreakpoint" />
+      </default-breakpoints>
     </breakpoint-manager>
     <watches-manager>
       <configuration name="FlutterRunConfigurationType">
-        <watch expression="await _channel.invokeMethod(&quot;evaluate&quot;, arguments)" language="Dart" />
+        <watch expression="jsonDecode(jsResult.stringResult)" language="Dart" />
         <watch expression="expression" language="Dart" />
-        <watch expression="result" language="Dart" />
+        <watch expression="jsResult.stringResult" language="Dart" />
+        <watch expression="jsonDecode(jsResult.stringResult) is int" language="Dart" />
+        <watch expression="jsonList" language="Dart" />
       </configuration>
     </watches-manager>
-  </component>
-  <component name="debuggerHistoryManager">
-    <expressions id="watch">
-      <expression>
-        <expression-string>result</expression-string>
-        <language-id>Dart</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>expression</expression-string>
-        <language-id>Dart</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>json.encode(data)</expression-string>
-        <language-id>Dart</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>await _channel.invokeMethod(&quot;evaluate&quot;, arguments)</expression-string>
-        <language-id>Dart</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-    </expressions>
   </component>
 </project>

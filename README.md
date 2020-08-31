@@ -1,6 +1,6 @@
 # Flutter JS plugin
 
-A Javascript engine to use with flutter. It uses quickjs on Android and JavascriptCore on IOS. The Javascript runtimes runs synchronously through the dart ffi in both platforms. So now you can run javascript code as a native citzen inside yours Flutter Mobile Apps.
+A Javascript engine to use with flutter. It uses JavascriptCore both on Android (we intend to use QuickJS for a small footprint - but it is crashing on some devices) and IOS. The Javascript runtimes runs synchronously through the dart ffi in both platforms. So now you can run javascript code as a native citzen inside yours Flutter Mobile Apps.
 
 In the previous versions we only get the result of evaluated expressions as String. 
 
@@ -16,7 +16,7 @@ With flutter_js Flutter applications can take advantage of great javascript libr
 since version 0.0.2+1 we are using oasis-jsbridge-android quickjs library as our javascript engine under the hood. So thanks to the guys of [p7s1digital](https://github.com/p7s1digital/) team to theirs amazing work.~~  
 
 
-On Android it uses the amazing and small Javascript Engine QuickJS [https://bellard.org/quickjs/](https://bellard.org/quickjs/).  On IOS, it uses the Javascript Core. In both platforms we rely on dart ffi to make calls to the js runtime engines, which make javascript code evaluation an first class citzen inside Flutter Mobile Apps. We could use it
+On Android it uses JavascriptCore also (soon it will be replaced by the amazing and small Javascript Engine QuickJS [https://bellard.org/quickjs/](https://bellard.org/quickjs/)).  On IOS, it uses the Javascript Core. In both platforms we rely on dart ffi to make calls to the js runtime engines, which make javascript code evaluation an first class citzen inside Flutter Mobile Apps. We could use it
 to execute validations logic of TextFormField, also we can execute rule engines or redux logic shared from our web applications. The opportunities are huge.
 
 

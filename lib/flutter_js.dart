@@ -13,15 +13,24 @@ export './quickjs/quickjs_runtime.dart';
 
 export './extensions/handle_promises.dart';
 
-JavascriptRuntime getJavascriptRuntime(
-    {bool forceJavascriptCoreOnAndroid = false, bool xhr = true}) {
-  JavascriptRuntime runtime;
-  if ((Platform.isAndroid || Platform.isWindows) && !forceJavascriptCoreOnAndroid) {
-    runtime = QuickJsRuntime('fileQuickjs.js');
-  } else {
-    runtime = JavascriptCoreRuntime();
-  }
-  setFetchDebug(true);
+//JavascriptRuntime getJavascriptRuntime(
+//    {bool forceJavascriptCoreOnAndroid = false, bool xhr = true}) {
+//  JavascriptRuntime runtime;
+//  if ((Platform.isAndroid || Platform.isWindows) &&
+//      !forceJavascriptCoreOnAndroid) {
+//    runtime = QuickJsRuntime('fileQuickjs.js');
+//  } else {
+//    runtime = JavascriptCoreRuntime();
+//  }
+////  setFetchDebug(true);
+////  if (xhr) runtime.enableFetch();
+//  runtime.enableHandlePromises();
+//  return runtime;
+//}
+
+JavascriptRuntime getJavascriptRuntime({bool xhr = true}) {
+  JavascriptRuntime runtime = JavascriptCoreRuntime();
+  // setFetchDebug(true);
   if (xhr) runtime.enableFetch();
   runtime.enableHandlePromises();
   return runtime;

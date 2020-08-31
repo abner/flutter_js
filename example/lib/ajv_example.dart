@@ -85,7 +85,7 @@ class _AjvExampleState extends State<AjvExample> {
       formData.addAll(data);
       formData.removeWhere((key, value) => value.toString().trim().isEmpty);
       if (valor != null && valor.length > 0) {
-       formData[field] = valor;
+        formData[field] = valor;
       }
       final expression = """ajv.validate(
                          "obj1",
@@ -103,12 +103,14 @@ class _AjvExampleState extends State<AjvExample> {
         });
       });
 
-      final List<ValidationResult> result =
-          ValidationResult.listFromJson(json.decode(jsResult.stringResult));
+      final List<ValidationResult> result = ValidationResult.listFromJson(
+        json.decode(jsResult.stringResult),
+      );
 
       final errorsForField = result
           .where((element) =>
-              element.message.contains("$field") || element.params['missingProperty'] == field ||
+              element.message.contains("$field") ||
+              element.params['missingProperty'] == field ||
               element.dataPath == ".$field")
           .toList();
 

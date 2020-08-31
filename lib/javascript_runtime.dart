@@ -86,7 +86,8 @@ abstract class JavascriptRuntime {
         } catch (e) {
           console.error('ERROR HERE',e.message);
         }
-      }
+      };
+      1
     """);
     print('SET TIMEOUT EVAL RESULT: $setTImeoutResult');
     onMessage('SetTimeout', (dynamic args) {

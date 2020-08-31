@@ -8,14 +8,15 @@ class ValidationResult {
       this.property = "",
       this.keyword = "",
       this.dataPath = "",
-      this.schemaPath = "", this.params})
+      this.schemaPath = "",
+      this.params})
       : super();
   final String message;
   final String property;
   final String keyword;
   final String dataPath;
   final String schemaPath;
-  final Map<String,dynamic> params;
+  final Map<String, dynamic> params;
 
   static ValidationResult fromJson(Map<String, dynamic> map) {
     return ValidationResult(
@@ -28,7 +29,6 @@ class ValidationResult {
   }
 
   static List<ValidationResult> listFromJson(List<dynamic> jsonList) {
-
     return jsonList == null ? [] : jsonList.map((el) => fromJson(el)).toList();
   }
 }
@@ -74,7 +74,7 @@ class FormWidgetState extends State<FormWidget> {
 
   _validatorFor(String field) {
     return (String value) {
-     _fieldValues[field] = value;
+      _fieldValues[field] = value;
       _errorsMap[field] = widget.validateFunction(field, value, _fieldValues) ??
           _errorsMap[field] ??
           [];
@@ -199,7 +199,7 @@ class FormWidgetState extends State<FormWidget> {
                   },
                 )
               : null,
-          floatingLabelBehavior: FloatingLabelBehavior.always,
+          //floatingLabelBehavior: FloatingLabelBehavior.always,
           border: OutlineInputBorder(
             borderSide:
                 BorderSide(color: Theme.of(context).accentColor, width: 1.5),
