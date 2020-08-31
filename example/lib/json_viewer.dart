@@ -9,15 +9,12 @@ typedef OnBuildNode = Widget Function(
 class JsonViewerRoot extends StatefulWidget {
   JsonViewerRoot({
     /// json object
-    /// 要展示的对象
     @required this.jsonObj,
 
     /// Auto-expand level
-    /// 自动展开层级
     this.expandDeep = 2,
 
     /// Build node callback
-    /// 构建节点的回调
     this.onBuildNode,
   }) {
     if (this.onBuildNode == null) {
@@ -29,7 +26,6 @@ class JsonViewerRoot extends StatefulWidget {
   final int expandDeep;
   OnBuildNode onBuildNode;
 
-  /// 默认的构建节点的回调, 当需要创建新的节点时触发
   Widget onBuildNodeDefault(
       JsonNode parent,
       String nodeName,
