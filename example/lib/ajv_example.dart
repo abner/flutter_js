@@ -37,9 +37,8 @@ class _AjvExampleState extends State<AjvExample> {
       _idJsEngine = await FlutterJs.initEngine();
       String ajvJS = await rootBundle.loadString("assets/js/ajv.js");
 
-      if (Platform.isIOS) {
-        await FlutterJs.evaluate("var global = window = {};", _idJsEngine);
-      }
+      await FlutterJs.evaluate("var global = window = {};", _idJsEngine);
+
       await FlutterJs.evaluate(
           "console = { log: function(){}, error: function(){}, warn: function() {}};",
           _idJsEngine);

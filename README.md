@@ -29,12 +29,12 @@ Since flutter_js uses the native JavascriptCore, no action is needed.
 
 ### Android
 
-Change the minimum Android sdk version to 18 (or higher) in your `android/app/build.gradle` file.
+Change the minimum Android sdk version to 21 (or higher) in your `android/app/build.gradle` file.
 
 ```
-minSdkVersion 18
+minSdkVersion 21
 ```
-
+ 
 
 ## Example
 
