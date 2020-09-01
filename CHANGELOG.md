@@ -1,3 +1,8 @@
+# 0.1.0+1
+
+- Add example of onMessage (bridge which allow javascript code to call Dart) 
+in the README.md
+
 # 0.1.0+0
 
 - Changed to use Dart FFI to call the Javascript Runtimes: QuickJS by Default in Android and JavascriptCore in iOS
