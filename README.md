@@ -56,7 +56,7 @@ minSdkVersion 21
 ```
  
 
-## Example
+## Examples
 
 Here is a small flutter app showing how to evaluate javascript code inside a flutter app
 
@@ -130,6 +130,24 @@ class _MyAppState extends State<MyApp> {
 ```
 
 
+**How to call dart from Javascript**
+
+You can add a channel on `JavascriptRuntime` objects to receive calls from the Javascript engine:
+
+In the dart side:
+
+```dart
+javascriptRuntime.onMessage('someChannelName', (dynamic args) {
+     print(args);
+});
+```
+
+
+Now, if ou javascript code call `sendMessage('someChannelName', JSON.stringify([1,2,3]);` the dart function above will be called
+with a List with the elements 1, 2 and 3.
+
+
+
 ## Alternatives (and also why we think our library is better)
 
 There were another packages which provides alternatives to evaluate javascript in flutter projects:
@@ -153,7 +171,9 @@ Based on jerryscript which is slower than quickjs. The jsengine package does not
 
 Uses Javascript Core in Android and IOS. We got the JavascriptCore bindings from this amazing package. But, by
 default we provides QuickJS as the javascript runtime on Android because it provides a smaller footprint. Also 
-our library adds support to ConsoleLog, SetTimeout, Xhr, Fetch and Promises.
+our library adds support to ConsoleLog, SetTimeout, Xhr, Fetch and Promises to be used in the scripts evaluation 
+and allows your Flutter app to provide dartFunctions as channels through `onMessage` function to be called inside
+your javascript code.
 
 
 
