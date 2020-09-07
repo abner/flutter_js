@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_js_example/ajv_example.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
-
   GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
   @override
   _MyAppState createState() => _MyAppState();
@@ -29,14 +30,16 @@ class FlutterJsHomeScreen extends StatefulWidget {
 }
 
 class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
-
   String _jsResult = '';
-  JavascriptRuntime flutterJs;
+  QuickJsService flutterJs;
   @override
   void initState() {
     super.initState();
-
-    flutterJs = getJavascriptRuntime();
+    FlutterJs engine = FlutterJs();
+    flutterJs = QuickJsService(engine);
+    flutterJs.onMessage('ConsoleLog2', (args) {
+      print('ConsoleLog2 (Dart Side): $args');
+    });
   }
 
   @override
@@ -50,13 +53,29 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text('JS Evaluate Result: $_jsResult\n'),
-            SizedBox(height: 20,),
-            Padding(padding: EdgeInsets.all(10), child: Text('Click on the big JS Yellow Button to evaluate the expression bellow using the flutter_js plugin'),),
+            SizedBox(
+              height: 20,
+            ),
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Text(
+                  'Click on the big JS Yellow Button to evaluate the expression bellow using the flutter_js plugin'),
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text("Math.trunc(Math.random() * 100).toString();", style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),),
+              child: Text(
+                "Math.trunc(Math.random() * 100).toString();",
+                style: TextStyle(
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
-            RaisedButton(onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => AjvExample())), child: const Text('See Ajv Example'),),
+            RaisedButton(
+              onPressed: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (ctx) => AjvExample())),
+              child: const Text('See Ajv Example'),
+            ),
           ],
         ),
       ),
@@ -65,10 +84,12 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
         child: Image.asset('assets/js.ico'),
         onPressed: () async {
           try {
-            JsEvalResult jsResult = flutterJs.evaluate(
-                "Math.trunc(Math.random() * 100).toString();");
+            String jsResult = flutterJs
+                .evaluate(
+                    "console.log(sendMessage('ConsoleLog2', JSON.stringify(['info', 'message'])));Math.trunc(Math.random() * 100).toString();")
+                .stringResult;
             setState(() {
-              _jsResult = jsResult.stringResult;
+              _jsResult = jsResult;
             });
           } on PlatformException catch (e) {
             print('ERRO: ${e.details}');

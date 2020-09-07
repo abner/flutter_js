@@ -103,9 +103,9 @@ class _AjvExampleState extends State<AjvExample> {
         });
       });
 
-      final List<ValidationResult> result = ValidationResult.listFromJson(
-        json.decode(jsResult.stringResult),
-      );
+      final valueResult = json.decode(jsResult.stringResult);
+      final List<ValidationResult> result =
+          ValidationResult.listFromJson(valueResult is int ? [] : valueResult);
 
       final errorsForField = result
           .where((element) =>
