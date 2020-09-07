@@ -143,6 +143,9 @@ class FormWidgetState extends State<FormWidget> {
       onChanged: (value) {
         setState(() {
           _fieldValues[field] = value.toString();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            widget.formKey.currentState.validate();
+          });
         });
       },
       title: Text(field),

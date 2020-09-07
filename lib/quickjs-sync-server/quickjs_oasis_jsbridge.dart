@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
-
-import 'package:flutter_isolate/flutter_isolate.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:sync_http/sync_http.dart';
 
@@ -27,7 +25,7 @@ class QuickJsService extends JavascriptRuntime {
   SendPort _callServerSendPort;
 
   bool _ready = false;
-  String _address;
+  String _dartAddress;
 
   final FlutterJs _flutterJs;
 
@@ -42,8 +40,8 @@ class QuickJsService extends JavascriptRuntime {
   bool get isReady => _ready;
   _startServer() async {
     _receivePort.listen((message) async {
-      if (_address == null) {
-        _address = message;
+      if (_dartAddress == null) {
+        _dartAddress = message;
         _ready = true;
         return;
       }
@@ -51,18 +49,17 @@ class QuickJsService extends JavascriptRuntime {
         _callServerSendPort = message;
       }
     });
-    return await FlutterIsolate.spawn(startQuickJsServer, 'init');
+    Isolate.spawn(startQuickJsServer, _receivePort.sendPort);
   }
 
   void dispose() {
     this._callServerSendPort.send('STOP');
+    _flutterJs.dispose();
   }
 
   JsEvalResult evaluate(String code) {
-    if (!isReady)
-      return JsEvalResult("string", null, isError: true, isPromise: false);
     var request = SyncHttpClient.postUrl(new Uri.http(
-      _address,
+      "localhost:${FlutterJs.httpPort}",
       "",
       {
         "id": _flutterJs.id.toString(),
@@ -70,8 +67,14 @@ class QuickJsService extends JavascriptRuntime {
     ));
     request..write(code);
     var response = request.close();
-    return JsEvalResult(response.body, null,
-        isPromise: response.body == 'isPromise', isError: false);
+    return JsEvalResult(
+      response.body != null && response.body.isNotEmpty
+          ? json.decode(response.body)
+          : "",
+      null,
+      isPromise: response.body == 'isPromise',
+      isError: response.statusCode != 200,
+    );
   }
 
   @override
@@ -117,27 +120,43 @@ class QuickJsService extends JavascriptRuntime {
   }
 
   @override
-  bool setupBridge(String channelName, void Function(dynamic args) fn) {
+  bool setupBridge(String channelName, dynamic Function(dynamic args) fn) {
     // final channelFunctionCallbacks =
     //     JavascriptRuntime.channelFunctionsRegistered[getEngineInstanceId()];
     // if (channelFunctionCallbacks.keys.contains(channelName)) return false;
 
     // channelFunctionCallbacks[channelName] = fn;
-    _flutterJs.addChannel(channelName, (arg) {
-      return Future.value(fn(arg) as String);
-    });
+    _flutterJs.addChannel(channelName, (args) {
+      final mapArgs = json.decode(args);
+      final res = fn(mapArgs);
+      this.evaluate("""
+         FLUTTERJS_pendingMessages['${mapArgs['id']}'].resolve(${json.encode(res)});
+      """
+          .trim());
+      return Future.value(res);
+    }, dartChannelAddress: 'http://$_dartAddress/channelName');
 
     return true;
   }
+
+  @override
+  Future<JsEvalResult> evaluateAsync(String code) async {
+    String strResult = await _flutterJs.eval(code);
+    return JsEvalResult(
+      strResult,
+      null,
+      isError: strResult.startsWith('ERROR:'),
+      isPromise: strResult == '[object Promise]',
+    );
+  }
 }
 
-void startQuickJsServer(String arg) async {
+void startQuickJsServer(SendPort sendPort) async {
   var server = new QuickJsSyncServer();
 
   server.serve().then((address) {
-    IsolateNameServer.lookupPortByName('QuickJsService').send(address);
-    IsolateNameServer.lookupPortByName('QuickJsService')
-        .send(server.dispatchSendPort);
+    sendPort.send(address);
+    sendPort.send(server.dispatchSendPort);
   });
 }
 
@@ -187,41 +206,22 @@ class QuickJsSyncServer {
     String path = request.requestedUri.path.replaceFirst('/', '');
 
     if (path == '') {
-      path = 'eval';
+      path = 'callDart';
     }
 
-    if (path == 'eval') {
+    if (path == 'callDart') {
       try {
-        String code = await utf8.decoder.bind(request).join();
+        // if not is eval it should be call to Dart
+        String message = await utf8.decoder.bind(request).join();
         String idEngine = request.uri.queryParameters['id'];
+        String channel = request.uri.queryParameters['channel'];
 
-        String result =
-            json.decode(await FlutterJs.evaluate(code, int.parse(idEngine)));
+        final callDartPort =
+            IsolateNameServer.lookupPortByName('QuickJsServiceCallDart');
 
-        var response = request.response;
-        response
-          ..contentLength = result.length
-          ..write(result)
-          ..close();
-      } catch (err) {
-        request.response
-          ..statusCode = 500
-          ..write("ERROR")
-          ..close();
-      }
-    } else {
-      // if not is eval it should be call to Dart
-      String message = await utf8.decoder.bind(request).join();
-      String idEngine = request.uri.queryParameters['id'];
-      String channel = request.uri.queryParameters['channel'];
+        callDartPort
+            .send("$idEngine:$channel:${base64.encode(utf8.encode(message))}");
 
-      final callDartPort =
-          IsolateNameServer.lookupPortByName('QuickJsServiceCallDart');
-
-      callDartPort
-          .send("$idEngine:$channel:${base64.encode(utf8.encode(message))}");
-
-      try {
         final result = await _receiveCallDartResponsePort.take(1).first;
 
         var response = request.response;
@@ -235,6 +235,6 @@ class QuickJsSyncServer {
           ..write("ERROR")
           ..close();
       }
-    }
+    } else {}
   }
 }

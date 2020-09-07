@@ -274,4 +274,9 @@ class QuickJsRuntime extends JavascriptRuntime {
   T convertValue<T>(JsEvalResult evalResult) {
     return convertToValue<T>(_context, evalResult);
   }
+
+  @override
+  Future<JsEvalResult> evaluateAsync(String code) {
+    return Future.value(evaluate(code));
+  }
 }

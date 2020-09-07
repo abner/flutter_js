@@ -39,6 +39,8 @@ abstract class JavascriptRuntime {
 
   JsEvalResult evaluate(String code);
 
+  Future<JsEvalResult> evaluateAsync(String code);
+
   JsEvalResult callFunction(Pointer fn, Pointer obj);
 
   T convertValue<T>(JsEvalResult jsValue);

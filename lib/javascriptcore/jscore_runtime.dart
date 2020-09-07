@@ -258,4 +258,9 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     JSValue objValue = JSValuePointer(jsValue.rawResult).getValue(context);
     return objValue.createJSONString(null).string;
   }
+
+  @override
+  Future<JsEvalResult> evaluateAsync(String code) {
+    return Future.value(evaluate(code));
+  }
 }

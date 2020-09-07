@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
@@ -31,15 +33,21 @@ class FlutterJsHomeScreen extends StatefulWidget {
 
 class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   String _jsResult = '';
-  QuickJsService flutterJs;
+  JavascriptRuntime javascriptRuntime;
   @override
   void initState() {
     super.initState();
-    FlutterJs engine = FlutterJs();
-    flutterJs = QuickJsService(engine);
-    flutterJs.onMessage('ConsoleLog2', (args) {
+    javascriptRuntime = getJavascriptRuntime();
+    javascriptRuntime.onMessage('ConsoleLog2', (args) {
       print('ConsoleLog2 (Dart Side): $args');
+      return json.encode(args);
     });
+  }
+
+  @override
+  dispose() {
+    super.dispose();
+    javascriptRuntime.dispose();
   }
 
   @override
@@ -72,8 +80,13 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
               ),
             ),
             RaisedButton(
-              onPressed: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (ctx) => AjvExample())),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => AjvExample(
+                    javascriptRuntime,
+                  ),
+                ),
+              ),
               child: const Text('See Ajv Example'),
             ),
           ],
@@ -84,10 +97,11 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
         child: Image.asset('assets/js.ico'),
         onPressed: () async {
           try {
-            String jsResult = flutterJs
-                .evaluate(
-                    "console.log(sendMessage('ConsoleLog2', JSON.stringify(['info', 'message'])));Math.trunc(Math.random() * 100).toString();")
-                .stringResult;
+            String jsResult = javascriptRuntime.evaluate("""
+                    (async function() {
+                      globalThis.objSendMsg1 = await sendMessage('ConsoleLog2', JSON.stringify(['info', 'message']));
+                      console.log('OBJ: ', objSendMsg1);
+                    })();Math.trunc(Math.random() * 100).toString();""").stringResult;
             setState(() {
               _jsResult = jsResult;
             });

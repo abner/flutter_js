@@ -1,28 +1,26 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_js/javascript_runtime.dart';
 import 'package:flutter_js/javascriptcore/jscore_runtime.dart';
-import 'package:flutter_js/quickjs/quickjs_runtime.dart';
-
-import './extensions/fetch.dart';
-import './extensions/handle_promises.dart';
+import 'package:flutter_js/quickjs-sync-server/quickjs_oasis_jsbridge.dart';
 
 export './javascript_runtime.dart';
 
 export './quickjs/quickjs_runtime.dart';
 
 export './extensions/handle_promises.dart';
-export './quickjs-sync-server/local_server.dart';
+export 'quickjs-sync-server/quickjs_oasis_jsbridge.dart';
 
 JavascriptRuntime getJavascriptRuntime(
     {bool forceJavascriptCoreOnAndroid = false, bool xhr = true}) {
   JavascriptRuntime runtime;
   if ((Platform.isAndroid || Platform.isWindows) &&
       !forceJavascriptCoreOnAndroid) {
-    runtime = QuickJsRuntime('fileQuickjs.js');
+    // runtime = QuickJsRuntime('fileQuickjs.js');
+    FlutterJs engine = FlutterJs();
+    runtime = QuickJsService(engine);
   } else {
     runtime = JavascriptCoreRuntime();
   }
@@ -50,7 +48,10 @@ MethodChannel _methodChannel = const MethodChannel('io.abner.flutter_js')
       final message = call.arguments[2] as String;
 
       if (_engineMap[engineId] != null) {
-        return _engineMap[engineId].onMessageReceived(channel, message);
+        return _engineMap[engineId].onMessageReceived(
+          channel,
+          message,
+        );
       } else {
         return Future.value('Error: no engine found with id: $engineId');
       }
@@ -60,10 +61,15 @@ MethodChannel _methodChannel = const MethodChannel('io.abner.flutter_js')
 
 bool messageHandlerRegistered = false;
 
-typedef FlutterJsChannelCallbak = Future<String> Function(String message);
+typedef FlutterJsChannelCallbak = Future<String> Function(
+  String args,
+);
 
 class FlutterJs {
   int _engineId;
+  static int _httpPort;
+
+  static int get httpPort => _httpPort;
 
   static var _engineCount = -1;
   bool _ready = false;
@@ -79,13 +85,19 @@ class FlutterJs {
     _engineMap[_engineId] = this;
   }
 
-  addChannel(String name, FlutterJsChannelCallbak fn) {
+  dispose() {
+    FlutterJs.close(_engineId);
+  }
+
+  addChannel(String name, FlutterJsChannelCallbak fn,
+      {String dartChannelAddress}) {
     _channels[name] = fn;
     _methodChannel.invokeMethod(
       "registerChannel",
       {
         "engineId": id,
         "channelName": name,
+        "dartChannelAddress": dartChannelAddress
       },
     );
   }
@@ -113,7 +125,14 @@ class FlutterJs {
   }
 
   static Future<int> initEngine(int engineId) async {
-    await _methodChannel.invokeMethod("initEngine", engineId);
+    Map<dynamic, dynamic> mapResult =
+        await _methodChannel.invokeMethod("initEngine", engineId);
+    _httpPort = mapResult['httpPort'] as int;
+    return engineId;
+  }
+
+  static Future<int> close(int engineId) async {
+    await _methodChannel.invokeMethod("close", engineId);
     return engineId;
   }
 

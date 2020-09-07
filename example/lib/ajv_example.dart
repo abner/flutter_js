@@ -6,7 +6,8 @@ import 'ajv_result_screen.dart';
 import 'form.dart';
 
 class AjvExample extends StatefulWidget {
-  AjvExample({Key key}) : super(key: key);
+  final JavascriptRuntime jsRuntime;
+  AjvExample(this.jsRuntime, {Key key}) : super(key: key);
 
   _AjvExampleState createState() => _AjvExampleState();
 }
@@ -20,8 +21,6 @@ class _AjvExampleState extends State<AjvExample> {
 
   Future<dynamic> _loadingFuture;
 
-  JavascriptRuntime jsRuntime;
-
   @override
   void initState() {
     super.initState();
@@ -31,13 +30,12 @@ class _AjvExampleState extends State<AjvExample> {
 // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initJsEngine() async {
     try {
-      jsRuntime = getJavascriptRuntime();
       String ajvJS = await rootBundle.loadString("assets/js/ajv.js");
 
-      jsRuntime.evaluate("var window = global = globalThis;");
+      widget.jsRuntime.evaluate("var window = global = globalThis;");
 
-      jsRuntime.evaluate(ajvJS + "");
-      final evalAjv = jsRuntime.evaluate("""
+      await widget.jsRuntime.evaluateAsync(ajvJS + "");
+      final evalAjv = widget.jsRuntime.evaluate("""
                     var ajv = new global.Ajv({ allErrors: true, coerceTypes: true });
                     ajv.addSchema(
                       {
@@ -68,7 +66,6 @@ class _AjvExampleState extends State<AjvExample> {
                         }
                     }, "obj1");
       """);
-      print(evalAjv.stringResult);
     } on PlatformException catch (e) {
       print('Failed to init js engine: ${e.details}');
     }
@@ -93,9 +90,7 @@ class _AjvExampleState extends State<AjvExample> {
                          );
                          JSON.stringify(ajv.errors);
                          """;
-      JsEvalResult jsResult = jsRuntime.evaluate(expression);
-
-      print(jsResult.stringResult);
+      JsEvalResult jsResult = widget.jsRuntime.evaluate(expression);
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
