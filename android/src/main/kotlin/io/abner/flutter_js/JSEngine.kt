@@ -3,6 +3,7 @@ package io.abner.flutter_js
 import android.util.Log
 import de.prosiebensat1digital.oasisjsbridge.*
 import kotlinx.coroutines.Dispatchers
+import java.util.*
 import java.util.logging.Logger
 
 
@@ -28,6 +29,10 @@ class JSEngine(context: android.content.Context) {
         }
         runtime.registerErrorListener(errorListener)
 
+        val getUUID = JsValue.fromNativeFunction0(runtime) {
+            UUID.randomUUID().toString()
+        }.assignToGlobal("FLUTTERJS_getUUID")
+
         val sendMessage = JsValue.fromNativeFunction2(runtime) { channelName: String, message: String ->
 
             try {
@@ -47,14 +52,8 @@ class JSEngine(context: android.content.Context) {
         runtime.evaluateBlocking(
                 """
                     var FLUTTERJS_pendingMessages = {};
-                    function FLUTTERJS_uuidv4() {
-                      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-                        return v.toString(16);
-                      });
-                    }
                     function sendMessage(channel, message) {
-                        var idMessage = FLUTTERJS_uuidv4();
+                        var idMessage = FLUTTERJS_getUUID();
                         return new Promise((resolve, reject) => {
                             FLUTTERJS_pendingMessages[idMessage] = { 
                                 resolve: (v) => { resolve(v); return v;}, 
