@@ -63,14 +63,20 @@ class QuickJsService extends JavascriptRuntime {
       "",
       {
         "id": _flutterJs.id.toString(),
+        "password": FlutterJs.httpPassword,
       },
     ));
     request..write(code);
     var response = request.close();
+
+    var result = response.body;
+
+    try {
+      result = json.decode(result);
+    } catch (e) {}
+
     return JsEvalResult(
-      response.body != null && response.body.isNotEmpty
-          ? json.decode(response.body)
-          : "",
+      response.body != null && response.body.isNotEmpty ? result : "",
       null,
       isPromise: response.body == 'isPromise',
       isError: response.statusCode != 200,
@@ -134,7 +140,7 @@ class QuickJsService extends JavascriptRuntime {
       """
           .trim());
       return Future.value(res);
-    }, dartChannelAddress: 'http://$_dartAddress/channelName');
+    }, dartChannelAddress: 'http://$_dartAddress');
 
     return true;
   }

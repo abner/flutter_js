@@ -70,8 +70,11 @@ class FlutterJs {
   static int _httpPort;
 
   static int get httpPort => _httpPort;
+  static String get httpPassword => _httpPassword;
 
   static var _engineCount = -1;
+  static String _httpPassword;
+
   bool _ready = false;
 
   int get id => _engineId;
@@ -128,6 +131,7 @@ class FlutterJs {
     Map<dynamic, dynamic> mapResult =
         await _methodChannel.invokeMethod("initEngine", engineId);
     _httpPort = mapResult['httpPort'] as int;
+    _httpPassword = mapResult['httpPassword'] as String;
     return engineId;
   }
 

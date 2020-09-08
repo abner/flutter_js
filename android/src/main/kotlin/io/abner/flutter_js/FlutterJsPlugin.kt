@@ -1,5 +1,6 @@
 package io.abner.flutter_js
 
+import android.os.Build
 import android.util.Log
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -14,6 +15,8 @@ import android.os.Handler
 import fi.iki.elonen.NanoHTTPD
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.net.URLEncoder
+import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -89,7 +92,8 @@ class FlutterJsPlugin : FlutterPlugin, MethodCallHandler {
             Log.i("FLUTTERJS", "PORT of Running JsBridge Service: ${flutterJsServer.listeningPort}")
             result.success(mapOf(
                     "engineId" to engineId,
-                    "httpPort" to flutterJsServer.listeningPort
+                    "httpPort" to flutterJsServer.listeningPort,
+                    "httpPassword" to flutterJsServer.password
             ))
         } else if (call.method == "evaluate") {
             Thread {
@@ -180,12 +184,27 @@ suspend fun MethodChannel.invokeAsync(method: String, arguments: Any?): Any? =
         }
 
 class FlutterJsServer() : NanoHTTPD(0) {
+    val password: String
+
+    init {
+        val genUUID = UUID.randomUUID().toString()
+        password =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Base64.getUrlEncoder().encodeToString(genUUID.byteInputStream().readBytes())
+        } else {
+            URLEncoder.encode(genUUID, "UTF-8")
+        }
+    }
 
     override fun serve(session: IHTTPSession): Response {
         try {
             val bodyMap = mutableMapOf<String, String>()
             session.parseBody(bodyMap)
             val engineId = (session.parms["id"] ?: "0").toIntOrNull() ?: 0
+            val passwordParam = session.parms["password"]
+
+            if (passwordParam.isNullOrBlank() || (passwordParam ?: "") != password) {
+                return newFixedLengthResponse(Response.Status.FORBIDDEN, MIME_PLAINTEXT, "Unauthorized")
+            }
             val code = bodyMap["postData"]
             val evalResult = FlutterJsPlugin.jsEngineMap[engineId]!!.eval(code!!)
             return newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, evalResult.toString())
