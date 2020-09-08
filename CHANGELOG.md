@@ -1,3 +1,9 @@
+# 0.2.0+0
+
+- Updated to use QuickJS through PlatformChannel on Android (with this change, Android apk added size will return to be minimal )
+- Change QuickJS integration to call Android platform in a sync way through http
+- Added option to use JavascriptCore on Android
+
 # 0.1.0+2
 
 - Small fixes in the documentation on README.md

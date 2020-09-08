@@ -1,31 +1,29 @@
 # Flutter JS plugin
 
-A Javascript engine to use with flutter. It uses JavascriptCore both on Android (we intend to use QuickJS for a small footprint - but it is crashing on some devices) and IOS. The Javascript runtimes runs synchronously through the dart ffi in both platforms. So now you can run javascript code as a native citzen inside yours Flutter Mobile Apps.
+A Javascript engine to use with flutter. It uses QuickJS on Android using PlatformChannel (we intend to use QuickJS through Dart ffi - but it is crashing on arm based devices) and JavascriptCore IOS. The Javascript runtimes runs synchronously through the dart ffi in IOS and throguh http sync calls on Android. So now you can run javascript code as a native citzen inside yours Flutter Mobile Apps.
 
 In the previous versions we only get the result of evaluated expressions as String. 
 
-**BUT NOW** we can do more with  flutter_js, like run xhr and fetch http calls through Dart http library. We are supporting Promises as well.
+**BUT NOW** we can do more with  flutter_js, like run **xhr** and **fetch** http calls through Dart http library. We are supporting **Promises** as well.
 
-With flutter_js Flutter applications can take advantage of great javascript libraries such as ajv (json schema validation), moment (DateTime parser and operations) running natively (no PlatformChannels needed, so the javascript evaluation runs synchronously) on mobile devices, both Android and iOS.
+With flutter_js Flutter applications can take advantage of great javascript libraries such as ajv (json schema validation), moment (DateTime parser and operations) running natively (no PlatformChannels needed on IOS and on Android besides it is not running with Dart-ffi mechanism it will run synchronously) on mobile devices, both Android and iOS.
 
-~~On IOS this library relies on the native JavascriptCore provided by iOS SDK. In Android it uses the amazing and small Javascript Engine QuickJS [https://bellard.org/quickjs/](https://bellard.org/quickjs/) (A spetacular work of the Fabrice Bellard and Charlie Gordon).~~
-~~It was ported to be used in Android through jni in this project i recently found on Github: [https://github.com/seven332/quickjs-android](https://github.com/seven332/quickjs-android).~~
-~~We used seven332/quickjs-android in the very first versions of flutter_js. Thanks to [seven332](https://github.com/seven332)~~
+On IOS this library relies on the native JavascriptCore provided by iOS SDK. In Android it uses the amazing and small Javascript Engine QuickJS [https://bellard.org/quickjs/](https://bellard.org/quickjs/) (A spetacular work of the Fabrice Bellard and Charlie Gordon).
 
-~~Recently we found the [oasis-jsbridge-android](https://github.com/p7s1digital/oasis-jsbridge-android) repository which brings quickjs integration to Android to a new level (Close to what JavascriptCore offers in iOS). So,
-since version 0.0.2+1 we are using oasis-jsbridge-android quickjs library as our javascript engine under the hood. So thanks to the guys of [p7s1digital](https://github.com/p7s1digital/) team to theirs amazing work.~~  
+On Android we use the [oasis-jsbridge-android](https://github.com/p7s1digital/oasis-jsbridge-android) repository which brings quickjs integration to Android to a new level (Close to what JavascriptCore offers in iOS). So,
+since version 0.0.2+1 we are using oasis-jsbridge-android quickjs library as our javascript engine under the hood. So thanks to the guys of [p7s1digital](https://github.com/p7s1digital/) team to theirs amazing work.
 
 
-On Android it uses JavascriptCore also (soon it will be replaced by the amazing and small Javascript Engine QuickJS [https://bellard.org/quickjs/](https://bellard.org/quickjs/)).  On IOS, it uses the Javascript Core. In both platforms we rely on dart ffi to make calls to the js runtime engines, which make javascript code evaluation an first class citzen inside Flutter Mobile Apps. We could use it
-to execute validations logic of TextFormField, also we can execute rule engines or redux logic shared from our web applications. The opportunities are huge.
+On Android you could use JavascriptCore as well You just need add an Android dependency `implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc:0.1.0"` and pass `forceJavascriptCoreOnAndroid: true` to the function `getJavascriptRuntime`. 
+
+FLutterJS allows to use Javascript to execute validations logic of TextFormField, also we can execute rule engines or redux logic shared from our web applications. The opportunities are huge.
 
 
 The project is open source under MIT license. 
 
 The bindings for use to communicate with JavascriptCore through dart:ffi we took it from the package [flutter_jscore](https://pub.dev/packages/flutter_jscore).
 
-Flutter JS provided the implementation to the QuickJS dart ffi bindings ourselves and also constructed a wrapper API to Dart which
-provides a unified API to evaluate javascript and communicate between Dart and Javascript. 
+Flutter JS provided the implementation to the QuickJS dart ffi bindings ourselves and also constructed a wrapper API to Dart which provides a unified API to evaluate javascript and communicate between Dart and Javascript. 
 
 This library also allows to call xhr and fetch on Javascript through Dart Http calls. We also provide the implementation
 which allows to evaluate promises returns.
