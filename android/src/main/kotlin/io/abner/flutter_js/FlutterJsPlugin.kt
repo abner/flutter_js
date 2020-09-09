@@ -183,6 +183,11 @@ suspend fun MethodChannel.invokeAsync(method: String, arguments: Any?): Any? =
 
         }
 
+// TODO: Compare with server in Ktor + Netty: https://diamantidis.github.io/2019/11/10/running-an-http-server-on-an-android-app
+//       and SUN HttpServer https://medium.com/hacktive-devs/creating-a-local-http-server-on-android-49831fbad9ca
+//                          https://gist.github.com/joewalnes/4bf3ac8abc143225fe2c75592d314840
+//                          https://github.com/sonuauti/Android-Web-Server/tree/master/AndroidWebServer
+//       Another Kotlin Option: https://github.com/weeChanc/AndroidHttpServer   
 class FlutterJsServer() : NanoHTTPD(0) {
     val password: String
 
