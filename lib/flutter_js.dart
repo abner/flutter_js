@@ -4,7 +4,8 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter_js/javascript_runtime.dart';
 import 'package:flutter_js/javascriptcore/jscore_runtime.dart';
-import 'package:flutter_js/quickjs-sync-server/quickjs_oasis_jsbridge.dart';
+//import 'package:flutter_js/quickjs-sync-server/quickjs_oasis_jsbridge.dart';
+import 'package:flutter_js/quickjs/quickjs_runtime.dart';
 
 export './javascript_runtime.dart';
 
@@ -18,9 +19,9 @@ JavascriptRuntime getJavascriptRuntime(
   JavascriptRuntime runtime;
   if ((Platform.isAndroid || Platform.isWindows) &&
       !forceJavascriptCoreOnAndroid) {
-    // runtime = QuickJsRuntime('fileQuickjs.js');
-    FlutterJs engine = FlutterJs();
-    runtime = QuickJsService(engine);
+    runtime = QuickJsRuntime('fileQuickjs.js');
+    // FlutterJs engine = FlutterJs();
+    // runtime = QuickJsService(engine);
   } else {
     runtime = JavascriptCoreRuntime();
   }

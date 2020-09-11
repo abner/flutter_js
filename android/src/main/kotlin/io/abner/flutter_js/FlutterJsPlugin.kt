@@ -12,9 +12,9 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import android.os.Looper
 import android.os.Handler
-import fi.iki.elonen.NanoHTTPD
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+// import fi.iki.elonen.NanoHTTPD
+// import kotlinx.coroutines.Dispatchers
+// import kotlinx.coroutines.withContext
 import java.net.URLEncoder
 import java.util.*
 import kotlin.coroutines.resume
@@ -27,7 +27,7 @@ data class MethodChannelResult(val success: Boolean, val data: Any? = null)
 class FlutterJsPlugin : FlutterPlugin, MethodCallHandler {
     private var applicationContext: android.content.Context? = null
     private var methodChannel: MethodChannel? = null
-    val flutterJsServer = FlutterJsServer()
+    //val flutterJsServer = FlutterJsServer()
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         onAttachedToEngine(flutterPluginBinding.applicationContext, flutterPluginBinding.binaryMessenger)
     }
@@ -83,7 +83,7 @@ class FlutterJsPlugin : FlutterPlugin, MethodCallHandler {
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         if (call.method == "getPlatformVersion") {
             result.success("Android ${android.os.Build.VERSION.RELEASE}")
-        } else if (call.method == "initEngine") {
+        } /* else if (call.method == "initEngine") {
             Log.d("FlutterJS", call.arguments.toString())
             val engineId = call.arguments as Int
             jsEngineMap[engineId] = JSEngine(applicationContext!!)
@@ -152,70 +152,70 @@ class FlutterJsPlugin : FlutterPlugin, MethodCallHandler {
                     jsEngineMap.remove(engineId)
                 }
             }
-        } else {
+        }*/ else {
             result.notImplemented()
         }
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        jsEngineMap.forEach { engine -> engine.value.release() }
+        // jsEngineMap.forEach { engine -> engine.value.release() }
     }
 }
 
-suspend fun MethodChannel.invokeAsync(method: String, arguments: Any?): Any? =
-        withContext(Dispatchers.Main) {
-            suspendCoroutine<Any?> { continuation ->
-                invokeMethod(method, arguments, object : MethodChannel.Result {
+// suspend fun MethodChannel.invokeAsync(method: String, arguments: Any?): Any? =
+//         withContext(Dispatchers.Main) {
+//             suspendCoroutine<Any?> { continuation ->
+//                 invokeMethod(method, arguments, object : MethodChannel.Result {
 
-                    override fun notImplemented() {
-                        continuation.resumeWithException(NotImplementedError("$method , $arguments"))
-                    }
+//                     override fun notImplemented() {
+//                         continuation.resumeWithException(NotImplementedError("$method , $arguments"))
+//                     }
 
-                    override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {
-                        continuation.resumeWithException(Exception("$errorCode , $errorMessage , $errorDetails"))
-                    }
+//                     override fun error(errorCode: String?, errorMessage: String?, errorDetails: Any?) {
+//                         continuation.resumeWithException(Exception("$errorCode , $errorMessage , $errorDetails"))
+//                     }
 
-                    override fun success(result: Any?) {
-                        continuation.resume(result)
-                    }
-                })
-            }
+//                     override fun success(result: Any?) {
+//                         continuation.resume(result)
+//                     }
+//                 })
+//             }
 
-        }
+//         }
 
 // TODO: Compare with server in Ktor + Netty: https://diamantidis.github.io/2019/11/10/running-an-http-server-on-an-android-app
 //       and SUN HttpServer https://medium.com/hacktive-devs/creating-a-local-http-server-on-android-49831fbad9ca
 //                          https://gist.github.com/joewalnes/4bf3ac8abc143225fe2c75592d314840
 //                          https://github.com/sonuauti/Android-Web-Server/tree/master/AndroidWebServer
 //       Another Kotlin Option: https://github.com/weeChanc/AndroidHttpServer   
-class FlutterJsServer() : NanoHTTPD(0) {
-    val password: String
+// class FlutterJsServer() : NanoHTTPD(0) {
+//     val password: String
 
-    init {
-        val genUUID = UUID.randomUUID().toString()
-        password =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Base64.getUrlEncoder().encodeToString(genUUID.byteInputStream().readBytes())
-        } else {
-            URLEncoder.encode(genUUID, "UTF-8")
-        }
-    }
+//     init {
+//         val genUUID = UUID.randomUUID().toString()
+//         password =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//             Base64.getUrlEncoder().encodeToString(genUUID.byteInputStream().readBytes())
+//         } else {
+//             URLEncoder.encode(genUUID, "UTF-8")
+//         }
+//     }
 
-    override fun serve(session: IHTTPSession): Response {
-        try {
-            val bodyMap = mutableMapOf<String, String>()
-            session.parseBody(bodyMap)
-            val engineId = (session.parms["id"] ?: "0").toIntOrNull() ?: 0
-            val passwordParam = session.parms["password"]
+//     override fun serve(session: IHTTPSession): Response {
+//         try {
+//             val bodyMap = mutableMapOf<String, String>()
+//             session.parseBody(bodyMap)
+//             val engineId = (session.parms["id"] ?: "0").toIntOrNull() ?: 0
+//             val passwordParam = session.parms["password"]
 
-            if (passwordParam.isNullOrBlank() || (passwordParam ?: "") != password) {
-                return newFixedLengthResponse(Response.Status.FORBIDDEN, MIME_PLAINTEXT, "Unauthorized")
-            }
-            val code = bodyMap["postData"]
-            val evalResult = FlutterJsPlugin.jsEngineMap[engineId]!!.eval(code!!)
-            return newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, evalResult.toString())
-        } catch (e: Exception) {
-            return newFixedLengthResponse(Response.Status.BAD_REQUEST, MIME_PLAINTEXT, "ERROR: ${e.message}")
-        }
-    }
+//             if (passwordParam.isNullOrBlank() || (passwordParam ?: "") != password) {
+//                 return newFixedLengthResponse(Response.Status.FORBIDDEN, MIME_PLAINTEXT, "Unauthorized")
+//             }
+//             val code = bodyMap["postData"]
+//             val evalResult = FlutterJsPlugin.jsEngineMap[engineId]!!.eval(code!!)
+//             return newFixedLengthResponse(Response.Status.OK, MIME_PLAINTEXT, evalResult.toString())
+//         } catch (e: Exception) {
+//             return newFixedLengthResponse(Response.Status.BAD_REQUEST, MIME_PLAINTEXT, "ERROR: ${e.message}")
+//         }
+//     }
 
-}
+// }

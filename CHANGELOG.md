@@ -1,3 +1,7 @@
+# 0.2.1+0
+
+- Updated to use QuickJS through Dart ffi instead of Platform Channel
+
 # 0.2.0+0
 
 - Updated to use QuickJS through PlatformChannel on Android (with this change, Android apk added size will return to be minimal )

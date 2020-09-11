@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter_js/javascript_runtime.dart';
+import 'package:flutter_js/quickjs/utf8_null_terminated.dart';
 
 import 'qjs_typedefs.dart';
 
@@ -17,11 +18,11 @@ final Map<String, FnBridgeCallback> mapJsBridge = {};
 
 Pointer<JSValueConst> bridgeCallbackGlobalHandler(
   Pointer<JSContext> ctx,
-  Pointer<Utf8> channelName,
-  Pointer<Utf8> message,
+  Pointer<Utf8NullTerminated> channelName,
+  Pointer<Utf8NullTerminated> message,
 ) {
-  String channelNameStr = Utf8.fromUtf8(channelName);
-  String messageStr = Utf8.fromUtf8(message);
+  String channelNameStr = Utf8NullTerminated.fromUtf8(channelName);
+  String messageStr = Utf8NullTerminated.fromUtf8(message);
 
   if (mapJsBridge.containsKey(channelNameStr)) {
     String result = 'NO RESULT YET';
@@ -63,18 +64,18 @@ class QuickJsRuntime extends JavascriptRuntime {
     consoleLogBridgeFunction = Pointer.fromFunction<
         Pointer<JSValueConst> Function(
             Pointer<JSContext> ctx,
-            Pointer<Utf8> channel,
-            Pointer<Utf8> msg)>(bridgeCallbackGlobalHandler);
+            Pointer<Utf8NullTerminated> channel,
+            Pointer<Utf8NullTerminated> msg)>(bridgeCallbackGlobalHandler);
     setTimeoutBridgeFunction = Pointer.fromFunction<
         Pointer<JSValueConst> Function(
             Pointer<JSContext> ctx,
-            Pointer<Utf8> channel,
-            Pointer<Utf8> msg)>(bridgeCallbackGlobalHandler);
+            Pointer<Utf8NullTerminated> channel,
+            Pointer<Utf8NullTerminated> msg)>(bridgeCallbackGlobalHandler);
     sendNativeBridgeFunction = Pointer.fromFunction<
         Pointer<JSValueConst> Function(
             Pointer<JSContext> ctx,
-            Pointer<Utf8> channel,
-            Pointer<Utf8> msg)>(bridgeCallbackGlobalHandler);
+            Pointer<Utf8NullTerminated> channel,
+            Pointer<Utf8NullTerminated> msg)>(bridgeCallbackGlobalHandler);
     _context = _jsNewContext(
       _runtime,
       consoleLogBridgeFunction,
@@ -127,10 +128,10 @@ class QuickJsRuntime extends JavascriptRuntime {
     Pointer argument,
   ) {
     Pointer result = allocate<JSValueConst>();
-    Pointer<Pointer<Utf8>> stringResult = allocate<Pointer<Utf8>>();
+    Pointer<Pointer<Utf8NullTerminated>> stringResult = allocate<Pointer<Utf8NullTerminated>>();
     int operationResult =
         _callJsFunction1Arg(_context, function, argument, result, stringResult);
-    String resultStr = Utf8.fromUtf8(stringResult.value);
+    String resultStr = Utf8NullTerminated.fromUtf8(stringResult.value);
     return JsEvalResult(
       resultStr,
       result,
@@ -167,15 +168,15 @@ class QuickJsRuntime extends JavascriptRuntime {
   static JsEvalResult jsEval(
     Pointer<JSContext> ctx,
     String js, {
-    String fileName = 'nofile.js',
+    String  fileName = 'nofile.js',
   }) {
     Pointer<JSValueConst> result = allocate<JSValueConst>();
-    Pointer<Pointer<Utf8>> stringResult = allocate<Pointer<Utf8>>();
+    Pointer<Pointer<Utf8NullTerminated>> stringResult = allocate<Pointer<Utf8NullTerminated>>();
     Pointer<Int32> errors = allocate<Int32>();
-    _jsEvalWrapper(ctx, Utf8.toUtf8(js), js.length, Utf8.toUtf8(fileName), 0,
+    _jsEvalWrapper(ctx, Utf8NullTerminated.toUtf8(js), js.length, Utf8NullTerminated.toUtf8(fileName), 0,
         errors, result, stringResult);
 
-    final strResult = Utf8.fromUtf8(stringResult.value);
+    final strResult = Utf8NullTerminated.fromUtf8(stringResult.value);
     return JsEvalResult(
       strResult,
       result,
@@ -190,14 +191,14 @@ class QuickJsRuntime extends JavascriptRuntime {
 
     if (_jsIsArray(context, evalResult.rawResult) == 1) {
       Pointer<JSValueConst> stringifiedValue = allocate();
-      Pointer<Pointer<Utf8>> stringResultPointer = allocate();
+      Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = allocate();
       int res = _jSJSONStringify(
         context,
         evalResult.rawResult,
         stringifiedValue,
         stringResultPointer,
       );
-      final stringResult = Utf8.fromUtf8(stringResultPointer.value);
+      final stringResult = Utf8NullTerminated.fromUtf8(stringResultPointer.value);
       return jsonDecode(stringResult);
     }
     switch (type) {
@@ -211,7 +212,7 @@ class QuickJsRuntime extends JavascriptRuntime {
         return null;
       case Object:
         Pointer<JSValueConst> stringifiedValue = allocate<JSValueConst>();
-        Pointer<Pointer<Utf8>> stringResultPointer = allocate();
+        Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = allocate();
 
         int res = _jSJSONStringify(
           context,
@@ -219,7 +220,7 @@ class QuickJsRuntime extends JavascriptRuntime {
           stringifiedValue,
           stringResultPointer,
         );
-        final stringResult = Utf8.fromUtf8(stringResultPointer.value);
+        final stringResult = Utf8NullTerminated.fromUtf8(stringResultPointer.value);
         return jsonDecode(stringResult);
     }
     return null;
@@ -253,14 +254,14 @@ class QuickJsRuntime extends JavascriptRuntime {
   @override
   String jsonStringify(JsEvalResult jsValue) {
     Pointer<JSValueConst> stringifiedValue = allocate();
-    Pointer<Pointer<Utf8>> stringResultPointer = allocate();
+    Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = allocate();
     int res = _jSJSONStringify(
       _context,
       jsValue.rawResult,
       stringifiedValue,
       stringResultPointer,
     );
-    final stringResult = Utf8.fromUtf8(stringResultPointer.value);
+    final stringResult = Utf8NullTerminated.fromUtf8(stringResultPointer.value);
     return stringResult;
   }
 

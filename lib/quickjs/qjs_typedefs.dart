@@ -1,5 +1,5 @@
 import 'dart:ffi';
-import 'package:ffi/ffi.dart';
+import 'package:flutter_js/quickjs/utf8_null_terminated.dart';
 
 class JSContext extends Struct {}
 
@@ -40,8 +40,8 @@ typedef JS_NewRuntimeDartBridge = Pointer<JSRuntime> Function();
 
 typedef ChannelCallback = Pointer<JSValueConst> Function(
   Pointer<JSContext>,
-  Pointer<Utf8>,
-  Pointer<Utf8>,
+  Pointer<Utf8NullTerminated>,
+  Pointer<Utf8NullTerminated>,
 );
 
 typedef JS_NewContextFn = Pointer<JSContext> Function(
@@ -53,13 +53,13 @@ typedef JS_NewContextFn = Pointer<JSContext> Function(
 
 typedef JSEvalWrapper = Pointer Function(
     Pointer<JSContext> ctx,
-    Pointer<Utf8> input,
+    Pointer<Utf8NullTerminated> input,
     int inputLength,
-    Pointer<Utf8> filename,
+    Pointer<Utf8NullTerminated> filename,
     int evalFlags,
     Pointer<Int32> errors,
     Pointer<JSValueConst> result,
-    Pointer<Pointer<Utf8>> stringResult);
+    Pointer<Pointer<Utf8NullTerminated>> stringResult);
 
 typedef JS_GetNullValue = Pointer Function(
   Pointer<JSContext> ctx,
@@ -68,13 +68,13 @@ typedef JS_GetNullValue = Pointer Function(
 
 typedef JSEvalWrapperNative = Pointer Function(
     Pointer<JSContext> ctx,
-    Pointer<Utf8> input,
+    Pointer<Utf8NullTerminated> input,
     Int32 inputLength,
-    Pointer<Utf8> filename,
+    Pointer<Utf8NullTerminated> filename,
     Int32 evalFlags,
     Pointer<Int32> errors,
     Pointer<JSValueConst> result,
-    Pointer<Pointer<Utf8>> stringResult);
+    Pointer<Pointer<Utf8NullTerminated>> stringResult);
 
 typedef JSExecutePendingJob = int Function(
   Pointer<JSRuntime> rt,
@@ -91,7 +91,7 @@ typedef JSCallFunction1ArgNative = Uint32 Function(
   Pointer<JSValueConst> function,
   Pointer<JSValueConst> object,
   Pointer<JSValueConst> result,
-  Pointer<Pointer<Utf8>> stringResult,
+  Pointer<Pointer<Utf8NullTerminated>> stringResult,
 );
 
 typedef JSCallFunction1Arg = int Function(
@@ -99,7 +99,7 @@ typedef JSCallFunction1Arg = int Function(
   Pointer<JSValueConst> function,
   Pointer<JSValueConst> object,
   Pointer<JSValueConst> result,
-  Pointer<Pointer<Utf8>> stringResult,
+  Pointer<Pointer<Utf8NullTerminated>> stringResult,
 );
 
 typedef JSGetTypeTagNative = Int32 Function(Pointer<JSValueConst> jsValue);
@@ -114,11 +114,11 @@ typedef int JSJSONStringify(
   Pointer<JSContext> ctx,
   Pointer<JSValueConst> obj,
   Pointer<JSValueConst> res,
-  Pointer<Pointer<Utf8>> stringResult,
+  Pointer<Pointer<Utf8NullTerminated>> stringResult,
 );
 typedef Int32 JSJSONStringifyNative(
   Pointer<JSContext> ctx,
   Pointer<JSValueConst> obj,
   Pointer<JSValueConst> res,
-  Pointer<Pointer<Utf8>> stringResult,
+  Pointer<Pointer<Utf8NullTerminated>> stringResult,
 );

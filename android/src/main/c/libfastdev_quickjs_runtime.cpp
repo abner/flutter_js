@@ -4,6 +4,7 @@
 #include <string.h>
 #include <android/log.h>
 
+
 int QUICKJS_RUNTIME_DEBUG_ENABLED = 0;
 
 extern "C" __attribute__((visibility("default"))) __attribute__((used))
@@ -149,14 +150,23 @@ JSContext *JS_NewContextDartBridge(
 }
 
 
-
+extern "C" __attribute__((visibility("default"))) __attribute__((used))
+JSValue *copyToHeap(JSValueConst value)
+{
+    auto *result = static_cast<JSValue *>(malloc(sizeof(JSValueConst)));
+    if (result)
+    {
+        memcpy(result, &value, sizeof(JSValueConst));
+    }
+    return result;
+}
 extern "C" __attribute__((visibility("default"))) __attribute__((used))
 const void *JSEvalWrapper(JSContext *ctx, const char *input, size_t input_len,
                   const char *filename, int eval_flags,
                   int *errors, JSValueConst *result, char **stringResult) {
     
     //__android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Before Eval: %p", result);
-    *result = JS_Eval(ctx, input, input_len, filename, eval_flags);
+    result = copyToHeap(JS_Eval(ctx, input, input_len, filename, eval_flags));
     //__android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "After Eval: %p", result);
 
     *errors = 0;
@@ -166,7 +176,7 @@ const void *JSEvalWrapper(JSContext *ctx, const char *input, size_t input_len,
         // __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Inside is exception: %p", result);
         JS_FreeValue(ctx, *result);
         *errors = 1;
-        *result = JS_GetException(ctx);
+        result = copyToHeap(JS_GetException(ctx));
         * stringResult = (char*) "error";
         return nullptr;
         // __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "After get  exception: %p", result);
@@ -180,13 +190,13 @@ const void *JSEvalWrapper(JSContext *ctx, const char *input, size_t input_len,
 
 extern "C" __attribute__((visibility("default"))) __attribute__((used))
 void *JS_GetNullValue(JSContext *ctx, JSValue *result) {
-    * result = JS_Eval(
+    result = copyToHeap(JS_Eval(
         ctx,
         "null", 
         4,
         "f1.js",
         0
-    );
+    ));
     return nullptr;
 }
 
@@ -195,13 +205,13 @@ extern "C" __attribute__((visibility("default"))) __attribute__((used))
 int callJsFunction1Arg(JSContext *ctx, JSValueConst *function, JSValueConst *object, JSValueConst *result, char **stringResult) {
     JSValue globalObject = JS_GetGlobalObject(ctx);
     //JSValue function = JS_GetPropertyStr(ctx, globalObject, functionName);
-    * result = JS_Call(ctx, *function, globalObject, 1, object);
+    result = copyToHeap(JS_Call(ctx, *function, globalObject, 1, object));
     
     int successOperation = 1;
 
     if (JS_IsException(*result) == 1) {
         successOperation = 0;
-        * result = JS_GetException(ctx);
+        result = copyToHeap(JS_GetException(ctx));
     }
     *stringResult = (char*)JS_ToCString(ctx, *result);
     return successOperation;
@@ -248,7 +258,7 @@ int JS_JSONStringifyDartWrapper(
         if (QUICKJS_RUNTIME_DEBUG_ENABLED == 1) {
             __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "JS_JSONStringifyDartWrapper5 %p", result);
         }
-        * result = JS_Call(ctx, stringifyFn, globalObject, 1, obj);
+        result = copyToHeap(JS_Call(ctx, stringifyFn, globalObject, 1, obj));
         * stringResult = (char*)JS_ToCString(ctx, *result);
         if (QUICKJS_RUNTIME_DEBUG_ENABLED == 1) {
             __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "JS_JSONStringifyDartWrapper6 %p", result);
