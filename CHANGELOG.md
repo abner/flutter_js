@@ -1,3 +1,7 @@
+# 0.2.2+0
+
+- Updated QuickJS engine to version 2020-09-06
+
 # 0.2.1+0
 
 - Updated to use QuickJS through Dart ffi instead of Platform Channel
