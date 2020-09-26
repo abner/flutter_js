@@ -165,21 +165,19 @@ const void *JSEvalWrapper(JSContext *ctx, const char *input, size_t input_len,
                   const char *filename, int eval_flags,
                   int *errors, JSValueConst *result, char **stringResult) {
     
-    //__android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Before Eval: %p", result);
+    // __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Before Eval: %p", result);
     result = copyToHeap(JS_Eval(ctx, input, input_len, filename, eval_flags));
-    //__android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "After Eval: %p", result);
-
+    // __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "After Eval: %p", result);
     *errors = 0;
-
     
     if (JS_IsException(*result) == 1) {
         // __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Inside is exception: %p", result);
         JS_FreeValue(ctx, *result);
         *errors = 1;
-        result = copyToHeap(JS_GetException(ctx));
-        * stringResult = (char*) "error";
-        return nullptr;
+        * result = JS_GetException(ctx);
+        * stringResult = (char*)JS_ToCString(ctx, *result);
         // __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "After get  exception: %p", result);
+        return nullptr;       
     }
     // __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Before string result: %p", stringResult);
     *stringResult = (char*)JS_ToCString(ctx, *result);
