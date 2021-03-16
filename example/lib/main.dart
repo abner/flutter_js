@@ -98,10 +98,22 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
         onPressed: () async {
           try {
             String jsResult = javascriptRuntime.evaluate("""
-                    (async function() {
-                      globalThis.objSendMsg1 = await sendMessage('ConsoleLog2', JSON.stringify(['info', 'message']));
-                      console.log('OBJ: ', objSendMsg1);
-                    })();Math.trunc(Math.random() * 100).toString();""").stringResult;
+            if (typeof MyClass == 'undefined') {
+              var MyClass = class  {
+                constructor(id) {
+                  this.id = id;
+                }
+                
+                getId() { 
+                  return this.id;
+                }
+              }
+            }
+            var obj = new MyClass(1);
+            var jsonStringified = JSON.stringify(obj);
+            var value = Math.trunc(Math.random() * 100).toString();
+            JSON.stringify({ "object": jsonStringified, "expression": value});
+            """).stringResult;
             setState(() {
               _jsResult = jsResult;
             });
