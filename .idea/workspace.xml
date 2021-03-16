@@ -26,22 +26,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f91e2026-091f-45ea-8cd2-74b829682137" name="Default Changelist" comment="updated to use oasisjsbridge as quickjs wrapper, as it allows better interoperability between js and native code on Android (as JavascriptCore does within IOS). The version of oasisjsbridge is also updated to 2020-04-12 quickjs version">
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/c/quickjs/cutils.h" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/c/quickjs/cutils.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/c/quickjs/libregexp.c" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/c/quickjs/libregexp.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/c/quickjs/quickjs-atom.h" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/c/quickjs/quickjs-atom.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/c/quickjs/quickjs.c" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/c/quickjs/quickjs.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/c/quickjs/quickjs.h" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/c/quickjs/quickjs.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/example/android/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/c/libfastdev_quickjs_runtime.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/c/libfastdev_quickjs_runtime.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/io/abner/flutter_js/FlutterJsPlugin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/io/abner/flutter_js/FlutterJsPlugin.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/lib/ajv_example.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/ajv_example.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/form.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/form.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_js.iml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_js.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/flutter_js.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/flutter_js.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/javascript_runtime.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/javascript_runtime.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/quickjs/quickjs_runtime.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/quickjs/quickjs_runtime.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,14 +49,9 @@
   <component name="DefaultGradleProjectSettings">
     <option name="isMigrated" value="true" />
   </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="Nexus_5X_API_29_x86" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="33" />
-    <option name="y" value="25" />
-    <option name="width" value="1880" />
-    <option name="height" value="989" />
   </component>
   <component name="ProjectId" id="1grkl9yiiwUPLmgVFWdTEriK06b" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -79,7 +72,7 @@
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
-    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Dart" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
   <component name="SvnConfiguration">
@@ -108,12 +101,13 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="updated to use oasisjsbridge as quickjs wrapper, as it allows better interoperability between js and native code on Android (as JavascriptCore does within IOS). The version of oasisjsbridge is also updated to 2020-04-12 quickjs version" />
@@ -124,6 +118,10 @@
       <screen x="0" y="25" width="1600" height="875" />
     </state>
     <state x="663" y="301" width="263" height="328" key="#Notifications/0.25.1600.875@0.25.1600.875" timestamp="1598887074826" />
+    <state x="597" y="301" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog" timestamp="1599302812099">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="597" y="301" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog/0.0.1536.824@0.0.1536.824" timestamp="1599302812099" />
     <state width="1554" height="208" key="GridCell.Tab.0.bottom" timestamp="1598889678901">
       <screen x="0" y="25" width="1600" height="875" />
     </state>
@@ -156,10 +154,18 @@
       <screen x="0" y="25" width="1600" height="875" />
     </state>
     <state width="1554" height="237" key="GridCell.Tab.1.right/0.25.1600.875@0.25.1600.875" timestamp="1598889678897" />
+    <state x="300" y="55" key="SettingsEditor" timestamp="1599302992175">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="300" y="55" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1599302992175" />
     <state width="800" height="437" key="XDebugger.FullValuePopup" timestamp="1598887273059">
       <screen x="0" y="25" width="1600" height="875" />
     </state>
     <state width="800" height="437" key="XDebugger.FullValuePopup/0.25.1600.875@0.25.1600.875" timestamp="1598887273059" />
+    <state x="398" y="236" key="com.intellij.ide.util.TipDialog" timestamp="1599393835512">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="398" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1599393835512" />
     <state x="349" y="112" width="891" height="706" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1598887104114">
       <screen x="0" y="25" width="1600" height="875" />
     </state>
@@ -179,7 +185,7 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="Dart">
           <condition expression="jsonDecode(jsResult.stringResult) is int" language="Dart" />
           <url>file://$PROJECT_DIR$/example/lib/ajv_example.dart</url>
-          <line>106</line>
+          <line>102</line>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
       </breakpoints>

@@ -29,13 +29,20 @@ class _AjvExampleState extends State<AjvExample> {
 
 // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initJsEngine() async {
-    try {
-      String ajvJS = await rootBundle.loadString("assets/js/ajv.js");
+    // loads ajv only once into the jsRuntime
+    var ajvIsLoaded = widget.jsRuntime
+        .evaluate("""var ajvIsLoaded = (typeof ajv == 'undefined') ? 
+          0 : 1; ajvIsLoaded;
+        """).stringResult;
+    print("AJV is Loaded $ajvIsLoaded");
+    if (ajvIsLoaded == "0") {
+      try {
+        String ajvJS = await rootBundle.loadString("assets/js/ajv.js");
 
-      widget.jsRuntime.evaluate("var window = global = globalThis;");
+        widget.jsRuntime.evaluate("var window = global = globalThis;");
 
-      await widget.jsRuntime.evaluateAsync(ajvJS + "");
-      final evalAjv = widget.jsRuntime.evaluate("""
+        await widget.jsRuntime.evaluateAsync(ajvJS + "");
+        final evalAjv = widget.jsRuntime.evaluate("""
                     var ajv = new global.Ajv({ allErrors: true, coerceTypes: true });
                     ajv.addSchema(
                       {
@@ -66,8 +73,9 @@ class _AjvExampleState extends State<AjvExample> {
                         }
                     }, "obj1");
       """);
-    } on PlatformException catch (e) {
-      print('Failed to init js engine: ${e.details}');
+      } on PlatformException catch (e) {
+        print('Failed to init js engine: ${e.details}');
+      }
     }
 
     // If the widget was removed from the tree while the asynchronous platform
