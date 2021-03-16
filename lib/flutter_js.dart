@@ -25,9 +25,9 @@ JavascriptRuntime getJavascriptRuntime(
   } else {
     runtime = JavascriptCoreRuntime();
   }
-//  setFetchDebug(true);
-  // if (xhr) runtime.enableFetch();
-  // runtime.enableHandlePromises();
+  setFetchDebug(true);
+  if (xhr) runtime.enableFetch();
+  runtime.enableHandlePromises();
   return runtime;
 }
 
