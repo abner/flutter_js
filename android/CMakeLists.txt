@@ -19,7 +19,7 @@ add_library( fastdev_quickjs_runtime
             src/main/c/quickjs/quickjs.c
     )
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DCONFIG_VERSION=\\\"2020-09-06\\\"")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DCONFIG_VERSION=\\\"2020-11-08\\\"")
 
 find_library(log-lib log)
 target_link_libraries(fastdev_quickjs_runtime ${log-lib})

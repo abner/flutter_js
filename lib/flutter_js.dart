@@ -13,6 +13,8 @@ export './quickjs/quickjs_runtime.dart';
 
 export './extensions/handle_promises.dart';
 export 'quickjs-sync-server/quickjs_oasis_jsbridge.dart';
+import './extensions/fetch.dart';
+import './extensions/handle_promises.dart';
 
 JavascriptRuntime getJavascriptRuntime(
     {bool forceJavascriptCoreOnAndroid = false, bool xhr = true}) {
@@ -25,9 +27,9 @@ JavascriptRuntime getJavascriptRuntime(
   } else {
     runtime = JavascriptCoreRuntime();
   }
-//  setFetchDebug(true);
-  // if (xhr) runtime.enableFetch();
-  // runtime.enableHandlePromises();
+  setFetchDebug(true);
+  if (xhr) runtime.enableFetch();
+  runtime.enableHandlePromises();
   return runtime;
 }
 
