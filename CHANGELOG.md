@@ -1,3 +1,8 @@
+# 0.2.3+0
+
+- Updated QuickJS engine to version 2020-11-08
+- Fix fetch
+
 # 0.2.2+0
 
 - Updated QuickJS engine to version 2020-09-06
