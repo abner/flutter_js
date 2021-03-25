@@ -36,7 +36,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
 
     _sendMessageDartFunc = _sendMessage;
 
-    Pointer<Utf8> funcNameCString = Utf8.toUtf8('sendMessage');
+    Pointer<Utf8> funcNameCString = 'sendMessage'.toNativeUtf8();
     var functionObject = jSObjectMakeFunctionWithCallback(
         _globalContext,
         jSStringCreateWithUTF8CString(funcNameCString),
@@ -48,7 +48,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
         functionObject,
         jsObject.JSPropertyAttributes.kJSPropertyAttributeNone,
         nullptr);
-    free(funcNameCString);
+    calloc.free(funcNameCString);
 
     init();
   }
@@ -59,7 +59,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   }
 
   JsEvalResult evaluate(String js) {
-    Pointer<Utf8> scriptCString = Utf8.toUtf8(js);
+    Pointer<Utf8> scriptCString = js.toNativeUtf8();
 
     JSValuePointer exception = JSValuePointer();
     var jsValueRef = jSEvaluateScript(
@@ -69,7 +69,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
         nullptr,
         1,
         exception.pointer);
-    free(scriptCString);
+    calloc.free(scriptCString);
 
     String result;
 

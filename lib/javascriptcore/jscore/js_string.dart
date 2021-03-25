@@ -19,9 +19,9 @@ class JSString {
     if (string == null) {
       _pointer = nullptr;
     } else {
-      var cString = Utf8.toUtf8(string);
+      var cString = string.toNativeUtf8();
       _pointer = JSStringRef.jSStringCreateWithUTF8CString(cString);
-      free(cString);
+      calloc.free(cString);
     }
   }
 
@@ -79,14 +79,14 @@ class JSStringPointer {
 
   JSStringPointer([Pointer value])
       : this.count = 1,
-        this.pointer = allocate<Pointer>() {
+        this.pointer = calloc<Pointer>() {
     pointer.value = value ?? nullptr;
   }
 
   /// JSStringRef array
   JSStringPointer.array(List<String> array)
       : this.count = array.length,
-        this.pointer = allocate<Pointer>(count: array.length) {
+        this.pointer = calloc.allocate<Pointer>(array.length) {
     for (int i = 0; i < array.length; i++) {
       this.pointer[i] = JSString.fromString(array[i]).pointer;
     }

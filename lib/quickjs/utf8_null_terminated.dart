@@ -12,7 +12,7 @@ class Utf8NullTerminated extends Struct {
 
   static Pointer<Utf8NullTerminated> toUtf8(String s) {
     final bytes = Utf8Encoder().convert(s);
-    final ptr = allocate<Utf8NullTerminated>(count: bytes.length + 1);
+    final ptr = calloc<Utf8NullTerminated>(bytes.length + 1);
     for (var i = 0; i < bytes.length; i++) {
       ptr.elementAt(i).ref.char = bytes[i];
     }

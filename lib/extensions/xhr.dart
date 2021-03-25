@@ -307,33 +307,33 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
         switch (eMethod) {
           case HttpMethod.head:
             response = await httpClient.head(
-              pendingCall.url,
+              Uri.parse(pendingCall.url),
               headers: pendingCall.headers,
             );
             break;
           case HttpMethod.get:
             response = await httpClient.get(
-              pendingCall.url,
+              Uri.parse(pendingCall.url),
               headers: pendingCall.headers,
             );
             break;
           case HttpMethod.post:
             response = await httpClient.post(
-              pendingCall.url,
+              Uri.parse(pendingCall.url),
               body: jsonEncode(pendingCall.body),
               headers: pendingCall.headers,
             );
             break;
           case HttpMethod.put:
             response = await httpClient.put(
-              pendingCall.url,
+              Uri.parse(pendingCall.url),
               body: jsonEncode(pendingCall.body),
               headers: pendingCall.headers,
             );
             break;
           case HttpMethod.patch:
             response = await httpClient.patch(
-              pendingCall.url,
+              Uri.parse(pendingCall.url),
               body: jsonEncode(pendingCall.body),
               headers: pendingCall.headers,
             );
@@ -530,7 +530,7 @@ void executeHttp(String url, String method, Map<String, String> headers) {
   };
   http
       .get(
-        url,
+        Uri.parse(url),
         headers: headers,
       )
       .then(callbackResponse);

@@ -397,14 +397,14 @@ class JSValuePointer {
 
   JSValuePointer([Pointer value])
       : this.count = 1,
-        this.pointer = allocate<Pointer>() {
+        this.pointer = calloc<Pointer>() {
     pointer.value = value ?? nullptr;
   }
 
   /// JSValueRef array
   JSValuePointer.array(List<JSValue> array)
       : this.count = array.length,
-        this.pointer = allocate<Pointer>(count: array.length) {
+        this.pointer = calloc<Pointer>(array.length) {
     for (int i = 0; i < array.length; i++) {
       this.pointer[i] = array[i].pointer;
     }

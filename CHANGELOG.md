@@ -1,3 +1,7 @@
+# 0.2.4+0
+
+- Updated ffi, http dependencies
+- Upgraded code for compatibility with ffi 1.0.0
 # 0.2.3+0
 
 - Updated QuickJS engine to version 2020-11-08

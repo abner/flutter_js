@@ -289,7 +289,7 @@ class JSStaticValue extends Struct {
     @required Pointer<NativeFunction<JSObjectSetPropertyCallback>> setProperty,
     @required int attributes,
   }) =>
-      allocate<JSStaticValue>().ref
+      calloc<JSStaticValue>().ref
         ..name = name ?? nullptr
         ..getProperty = getProperty ?? nullptr
         ..setProperty = setProperty ?? nullptr
@@ -297,7 +297,7 @@ class JSStaticValue extends Struct {
             attributes ?? JSPropertyAttributes.kJSPropertyAttributeNone;
 
   factory JSStaticValue.fromStruct(JSStaticValueStruct struct) =>
-      allocate<JSStaticValue>().ref
+      calloc<JSStaticValue>().ref
         ..name = struct.name
         ..setProperty = struct.setProperty
         ..getProperty = struct.getProperty
@@ -308,7 +308,7 @@ class JSStaticValue extends Struct {
       return null;
     }
     var jSStaticValues =
-        allocate<JSStaticValue>(count: structList.length + 1).ref;
+        calloc<JSStaticValue>(structList.length + 1).ref;
     for (int index = 0; index < structList.length; index++) {
       jSStaticValues[index].setValue(structList[index]);
     }
@@ -368,14 +368,14 @@ class JSStaticFunction extends Struct {
         Pointer<NativeFunction<JSObjectCallAsFunctionCallback>> callAsFunction,
     @required int attributes,
   }) =>
-      allocate<JSStaticFunction>().ref
+      calloc<JSStaticFunction>().ref
         ..name = name ?? nullptr
         ..callAsFunction = callAsFunction ?? nullptr
         ..attributes =
             attributes ?? JSPropertyAttributes.kJSPropertyAttributeNone;
 
   factory JSStaticFunction.fromStruct(JSStaticFunctionStruct struct) =>
-      allocate<JSStaticFunction>().ref
+      calloc<JSStaticFunction>().ref
         ..name = struct.name
         ..callAsFunction = struct.callAsFunction
         ..attributes = struct.attributes;
@@ -386,7 +386,7 @@ class JSStaticFunction extends Struct {
       return null;
     }
     var jSStaticFunctions =
-        allocate<JSStaticFunction>(count: structList.length + 1).ref;
+        calloc<JSStaticFunction>(structList.length + 1).ref;
     for (int index = 0; index < structList.length; index++) {
       jSStaticFunctions[index].setValue(structList[index]);
     }
@@ -513,7 +513,7 @@ class JSClassDefinition extends Struct {
     @required
         Pointer<NativeFunction<JSObjectConvertToTypeCallback>> convertToType,
   }) =>
-      allocate<JSClassDefinition>().ref
+      calloc<JSClassDefinition>().ref
         ..version = version ?? 0
         ..attributes = attributes ?? JSClassAttributes.kJSClassAttributeNone
         ..className = className ?? nullptr

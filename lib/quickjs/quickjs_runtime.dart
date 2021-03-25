@@ -36,7 +36,7 @@ Pointer<JSValueConst> bridgeCallbackGlobalHandler(
       print('EXCEPTION ------ $e');
     }
     if (result == null) {
-      Pointer<JSValueConst> nullValue = allocate();
+      Pointer<JSValueConst> nullValue = calloc();
       QuickJsRuntime._jsGetNullValue(ctx, nullValue);
       return nullValue;
     } else {
@@ -127,8 +127,8 @@ class QuickJsRuntime extends JavascriptRuntime {
     Pointer function,
     Pointer argument,
   ) {
-    Pointer result = allocate<JSValueConst>();
-    Pointer<Pointer<Utf8NullTerminated>> stringResult = allocate<Pointer<Utf8NullTerminated>>();
+    Pointer result = calloc<JSValueConst>();
+    Pointer<Pointer<Utf8NullTerminated>> stringResult = calloc<Pointer<Utf8NullTerminated>>();
     int operationResult =
         _callJsFunction1Arg(_context, function, argument, result, stringResult);
     String resultStr = Utf8NullTerminated.fromUtf8(stringResult.value);
@@ -170,9 +170,9 @@ class QuickJsRuntime extends JavascriptRuntime {
     String js, {
     String  fileName = 'nofile.js',
   }) {
-    Pointer<JSValueConst> result = allocate<JSValueConst>();
-    Pointer<Pointer<Utf8NullTerminated>> stringResult = allocate<Pointer<Utf8NullTerminated>>();
-    Pointer<Int32> errors = allocate<Int32>();
+    Pointer<JSValueConst> result = calloc<JSValueConst>();
+    Pointer<Pointer<Utf8NullTerminated>> stringResult = calloc<Pointer<Utf8NullTerminated>>();
+    Pointer<Int32> errors = calloc<Int32>();
     _jsEvalWrapper(ctx, Utf8NullTerminated.toUtf8(js), js.length, Utf8NullTerminated.toUtf8(fileName), 0,
         errors, result, stringResult);
 
@@ -190,8 +190,8 @@ class QuickJsRuntime extends JavascriptRuntime {
     Type type = getTypeForJsValue(evalResult.rawResult);
 
     if (_jsIsArray(context, evalResult.rawResult) == 1) {
-      Pointer<JSValueConst> stringifiedValue = allocate();
-      Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = allocate();
+      Pointer<JSValueConst> stringifiedValue = calloc();
+      Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = calloc();
       int res = _jSJSONStringify(
         context,
         evalResult.rawResult,
@@ -211,8 +211,8 @@ class QuickJsRuntime extends JavascriptRuntime {
       case Null:
         return null;
       case Object:
-        Pointer<JSValueConst> stringifiedValue = allocate<JSValueConst>();
-        Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = allocate();
+        Pointer<JSValueConst> stringifiedValue = calloc<JSValueConst>();
+        Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = calloc();
 
         int res = _jSJSONStringify(
           context,
@@ -233,7 +233,7 @@ class QuickJsRuntime extends JavascriptRuntime {
 
   @override
   int executePendingJob() {
-    Pointer<JSContext> newContext = allocate<JSContext>();
+    Pointer<JSContext> newContext = calloc<JSContext>();
     return _jsExecutePendingJob(_runtime, newContext);
   }
 
@@ -253,8 +253,8 @@ class QuickJsRuntime extends JavascriptRuntime {
 
   @override
   String jsonStringify(JsEvalResult jsValue) {
-    Pointer<JSValueConst> stringifiedValue = allocate();
-    Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = allocate();
+    Pointer<JSValueConst> stringifiedValue = calloc();
+    Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = calloc();
     int res = _jSJSONStringify(
       _context,
       jsValue.rawResult,

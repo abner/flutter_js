@@ -297,7 +297,7 @@ class JSStaticValue {
 
   JSObjectRef.JSStaticValue create() {
     return JSObjectRef.JSStaticValue.allocate(
-      name: Utf8.toUtf8(name),
+      name: name.toNativeUtf8(),
       getProperty: getProperty ?? nullptr,
       setProperty: setProperty ?? nullptr,
       attributes: jSPropertyAttributesToCEnum(attributes),
@@ -306,7 +306,7 @@ class JSStaticValue {
 
   JSObjectRef.JSStaticValueStruct toStruct() {
     return JSObjectRef.JSStaticValueStruct(
-      name: Utf8.toUtf8(name),
+      name: name.toNativeUtf8(),
       getProperty: getProperty ?? nullptr,
       setProperty: setProperty ?? nullptr,
       attributes: jSPropertyAttributesToCEnum(attributes),
@@ -335,7 +335,7 @@ class JSStaticFunction {
 
   JSObjectRef.JSStaticFunction create() {
     return JSObjectRef.JSStaticFunction.allocate(
-      name: Utf8.toUtf8(name),
+      name: name.toNativeUtf8(),
       callAsFunction: callAsFunction ?? nullptr,
       attributes: jSPropertyAttributesToCEnum(attributes),
     );
@@ -343,7 +343,7 @@ class JSStaticFunction {
 
   JSObjectRef.JSStaticFunctionStruct toStruct() {
     return JSObjectRef.JSStaticFunctionStruct(
-      name: Utf8.toUtf8(name),
+      name: name.toNativeUtf8(),
       callAsFunction: callAsFunction ?? nullptr,
       attributes: jSPropertyAttributesToCEnum(attributes),
     );
@@ -455,7 +455,7 @@ class JSClassDefinition {
     return JSObjectRef.JSClassDefinition.allocate(
       version: version,
       attributes: jSClassAttributesToCEnum(attributes),
-      className: Utf8.toUtf8(className),
+      className: className.toNativeUtf8(),
       parentClass: parentClass == null ? nullptr : parentClass.pointer,
       staticValues: staticValues,
       staticFunctions: staticFunctions,
@@ -1024,14 +1024,14 @@ class JSObjectPointer {
 
   JSObjectPointer([Pointer value])
       : this.count = 1,
-        this.pointer = allocate<Pointer>() {
+        this.pointer = calloc<Pointer>() {
     pointer.value = value ?? nullptr;
   }
 
   /// JSObjectRef array
   JSObjectPointer.array(List<JSObject> array)
       : this.count = array.length,
-        this.pointer = allocate<Pointer>(count: array.length) {
+        this.pointer = calloc<Pointer>(array.length) {
     for (int i = 0; i < array.length; i++) {
       this.pointer[i] = array[i].pointer;
     }
