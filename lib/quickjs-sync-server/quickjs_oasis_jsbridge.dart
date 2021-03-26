@@ -22,10 +22,10 @@ void _setupCallDartPorts() {
 
 class QuickJsService extends JavascriptRuntime {
   ReceivePort _receivePort = new ReceivePort();
-  SendPort _callServerSendPort;
+  SendPort? _callServerSendPort;
 
   bool _ready = false;
-  String _dartAddress;
+  String? _dartAddress;
 
   final FlutterJs _flutterJs;
 
@@ -53,7 +53,7 @@ class QuickJsService extends JavascriptRuntime {
   }
 
   void dispose() {
-    this._callServerSendPort.send('STOP');
+    this._callServerSendPort!.send('STOP');
     _flutterJs.dispose();
   }
 
@@ -69,14 +69,14 @@ class QuickJsService extends JavascriptRuntime {
     request..write(code);
     var response = request.close();
 
-    var result = response.body;
+    var result = response.body!;
 
     try {
       result = json.decode(result);
     } catch (e) {}
 
     return JsEvalResult(
-      response.body != null && response.body.isNotEmpty ? result : "",
+      response.body != null && response.body!.isNotEmpty ? result : "",
       null,
       isPromise: response.body == 'isPromise',
       isError: response.statusCode != 200,
@@ -91,11 +91,11 @@ class QuickJsService extends JavascriptRuntime {
   }
 
   @override
-  T convertValue<T>(JsEvalResult jsValue) {
+  T? convertValue<T>(JsEvalResult jsValue) {
     if (T is int) {
       return int.parse(jsValue.stringResult) as T;
     } else if (T is Map || T is List) {
-      return jsonDecode(jsValue.stringResult) as T;
+      return jsonDecode(jsValue.stringResult) as T?;
     } else if (T is double) {
       return double.parse(jsValue.stringResult) as T;
     } else if (T is num) {
@@ -133,7 +133,7 @@ class QuickJsService extends JavascriptRuntime {
 
     // channelFunctionCallbacks[channelName] = fn;
     _flutterJs.addChannel(channelName, (args) {
-      final mapArgs = json.decode(args);
+      final mapArgs = json.decode(args!);
       final res = fn(mapArgs);
       this.evaluate("""
          FLUTTERJS_pendingMessages['${mapArgs['id']}'].resolve(${json.encode(res)});
@@ -168,18 +168,18 @@ void startQuickJsServer(SendPort sendPort) async {
 
 class QuickJsSyncServer {
   /// Server address
-  InternetAddress address;
+  InternetAddress? address;
 
   SendPort get dispatchSendPort => _dispatchPort.sendPort;
-  ReceivePort _dispatchPort;
+  late ReceivePort _dispatchPort;
 
   ReceivePort _receiveCallDartResponsePort = ReceivePort();
 
   /// Optional server port (note: might be already taken)
   /// Defaults to 0 (binds server to a random free port)
-  int port;
-  HttpServer _server;
-  SyncHttpClient client;
+  late int port;
+  late HttpServer _server;
+  SyncHttpClient? client;
 
   QuickJsSyncServer() {
     address = InternetAddress.loopbackIPv4;
@@ -219,11 +219,11 @@ class QuickJsSyncServer {
       try {
         // if not is eval it should be call to Dart
         String message = await utf8.decoder.bind(request).join();
-        String idEngine = request.uri.queryParameters['id'];
-        String channel = request.uri.queryParameters['channel'];
+        String? idEngine = request.uri.queryParameters['id'];
+        String? channel = request.uri.queryParameters['channel'];
 
         final callDartPort =
-            IsolateNameServer.lookupPortByName('QuickJsServiceCallDart');
+            IsolateNameServer.lookupPortByName('QuickJsServiceCallDart')!;
 
         callDartPort
             .send("$idEngine:$channel:${base64.encode(utf8.encode(message))}");

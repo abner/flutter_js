@@ -88,7 +88,7 @@ extension HandlePromises on JavascriptRuntime {
         evaluate("FLUTTER_NATIVEJS_IS_FULLFILLED_PROMISE($idx)").stringResult;
   }
 
-  Future<JsEvalResult> handlePromise(JsEvalResult value, {Duration timeout}) async {
+  Future<JsEvalResult> handlePromise(JsEvalResult value, {Duration? timeout}) async {
     final completer = Completer<JsEvalResult>();
 
     if (timeout != null) {
@@ -133,6 +133,6 @@ extension HandlePromises on JavascriptRuntime {
         }
       }
     });
-    return completer.future;
+    return completer.future as Future<JsEvalResult>;
   }
 }

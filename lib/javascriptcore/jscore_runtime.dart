@@ -14,18 +14,18 @@ import 'package:flutter_js/javascriptcore/jscore/js_value.dart';
 import 'package:flutter_js/javascriptcore/jscore_bindings.dart';
 
 class JavascriptCoreRuntime extends JavascriptRuntime {
-  Pointer _contextGroup;
-  Pointer _globalContext;
-  JSContext context;
-  Pointer _globalObject;
+  late Pointer _contextGroup;
+  late Pointer _globalContext;
+  late JSContext context;
+  late Pointer _globalObject;
 
   int executePendingJob() {
     evaluate('(function(){})();');
     return 0;
   }
 
-  String onMessageFunctionName;
-  String sendMessageFunctionName;
+  String? onMessageFunctionName;
+  String? sendMessageFunctionName;
 
   JavascriptCoreRuntime() {
     _contextGroup = jSContextGroupCreate();
@@ -106,7 +106,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   @override
   bool setupBridge(String channelName, Function(dynamic args) fn) {
     final channelFunctionCallbacks =
-        JavascriptRuntime.channelFunctionsRegistered[getEngineInstanceId()];
+        JavascriptRuntime.channelFunctionsRegistered[getEngineInstanceId()]!;
 
     if (channelFunctionCallbacks.keys.contains(channelName)) return false;
 
@@ -123,7 +123,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
       Pointer<Pointer> arguments,
       Pointer<Pointer> exception) {
     if (_sendMessageDartFunc != null) {
-      _sendMessageDartFunc(
+      _sendMessageDartFunc!(
           ctx, function, thisObject, argumentCount, arguments, exception);
     }
     return nullptr;
@@ -150,7 +150,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     return result;
   }
 
-  static jsObject.JSObjectCallAsFunctionCallbackDart _sendMessageDartFunc;
+  static jsObject.JSObjectCallAsFunctionCallbackDart? _sendMessageDartFunc;
 
   Pointer _sendMessage(
       Pointer ctx,
@@ -172,13 +172,13 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     }
 
     final channelFunctions =
-        JavascriptRuntime.channelFunctionsRegistered[getEngineInstanceId()];
+        JavascriptRuntime.channelFunctionsRegistered[getEngineInstanceId()]!;
 
     String channelName = _getJsValue(arguments[0]);
     String message = _getJsValue(arguments[1]);
 
     if (channelFunctions.containsKey(channelName)) {
-      channelFunctions[channelName].call(jsonDecode(message));
+      channelFunctions[channelName]!.call(jsonDecode(message));
     } else {
       print('No channel $channelName registered');
     }
@@ -187,7 +187,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   }
 
   @override
-  JsEvalResult callFunction(Pointer<NativeType> fn, Pointer<NativeType> obj) {
+  JsEvalResult callFunction(Pointer<NativeType>? fn, Pointer<NativeType>? obj) {
     JSValue fnValue = JSValuePointer(fn).getValue(context);
     JSObject functionObj = fnValue.toObject();
     JSValuePointer exception = JSValuePointer();
@@ -218,7 +218,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   }
 
   @override
-  T convertValue<T>(JsEvalResult jsValue) {
+  T? convertValue<T>(JsEvalResult jsValue) {
     if (jSValueIsNull(_globalContext, jsValue.rawResult) == 1) {
       return null;
     } else if (jSValueIsString(_globalContext, jsValue.rawResult) == 1) {
@@ -246,7 +246,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     } else if (jSValueIsObject(_globalContext, jsValue.rawResult) == 1 ||
         jSValueIsArray(_globalContext, jsValue.rawResult) == 1) {
       JSValue objValue = JSValuePointer(jsValue.rawResult).getValue(context);
-      String serialized = objValue.createJSONString(null).string;
+      String serialized = objValue.createJSONString(null).string!;
       return jsonDecode(serialized);
     } else {
       return null;
@@ -254,7 +254,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   }
 
   @override
-  String jsonStringify(JsEvalResult jsValue) {
+  String? jsonStringify(JsEvalResult jsValue) {
     JSValue objValue = JSValuePointer(jsValue.rawResult).getValue(context);
     return objValue.createJSONString(null).string;
   }

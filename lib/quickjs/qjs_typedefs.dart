@@ -45,10 +45,10 @@ typedef ChannelCallback = Pointer<JSValueConst> Function(
 );
 
 typedef JS_NewContextFn = Pointer<JSContext> Function(
-  Pointer<JSRuntime> jrt,
-  Pointer<NativeFunction<ChannelCallback>> fnConsoleLog,
-  Pointer<NativeFunction<ChannelCallback>> fnSetTimeout,
-  Pointer<NativeFunction<ChannelCallback>> fnSendNative,
+  Pointer<JSRuntime>? jrt,
+  Pointer<NativeFunction<ChannelCallback>>? fnConsoleLog,
+  Pointer<NativeFunction<ChannelCallback>>? fnSetTimeout,
+  Pointer<NativeFunction<ChannelCallback>>? fnSendNative,
 );
 
 typedef JSEvalWrapper = Pointer Function(
