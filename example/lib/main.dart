@@ -33,14 +33,14 @@ class FlutterJsHomeScreen extends StatefulWidget {
 
 class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   String _jsResult = '';
-  JavascriptRuntime javascriptRuntime;
+  late JavascriptRuntime javascriptRuntime;
   @override
   void initState() {
     super.initState();
     javascriptRuntime = getJavascriptRuntime();
     javascriptRuntime.onMessage('ConsoleLog2', (args) {
       print('ConsoleLog2 (Dart Side): $args');
-      return json.encode(args);
+      // return json.encode(args);
     });
   }
 

@@ -9,14 +9,14 @@ class ValidationResult {
       this.keyword = "",
       this.dataPath = "",
       this.schemaPath = "",
-      this.params})
+      this.params = const {}})
       : super();
-  final String message;
-  final String property;
-  final String keyword;
-  final String dataPath;
-  final String schemaPath;
-  final Map<String, dynamic> params;
+  late final String? message;
+  late final String? property;
+  late final String? keyword;
+  late final String? dataPath;
+  late final String? schemaPath;
+  late final Map<String, dynamic> params;
 
   static ValidationResult fromJson(Map<String, dynamic> map) {
     return ValidationResult(
@@ -29,7 +29,7 @@ class ValidationResult {
   }
 
   static List<ValidationResult> listFromJson(List<dynamic> jsonList) {
-    return jsonList == null ? [] : jsonList.map((el) => fromJson(el)).toList();
+    return jsonList.map((el) => fromJson(el)).toList();
   }
 }
 
@@ -37,11 +37,11 @@ enum FormWidgetOperation { New, Edit }
 
 class FormWidget extends StatefulWidget {
   FormWidget({
-    @required this.operation,
-    @required this.formWidgetKey,
-    @required this.formKey,
-    @required this.validateFunction,
-    @required this.fields,
+    required this.operation,
+    required this.formWidgetKey,
+    required this.formKey,
+    required this.validateFunction,
+    required this.fields,
   }) : super(key: formWidgetKey);
 
   final FormWidgetOperation operation;
@@ -63,7 +63,7 @@ class FormWidgetState extends State<FormWidget> {
   Map<String, GlobalKey<FormFieldState>> _fieldsStates = {};
   Map<String, List<ValidationResult>> _errorsMap = {};
   Map<String, bool> _stateFromAsync = {};
-  //Map<String, Debouncer> _fieldsDebounces = {};
+  Map<String, Debouncer> _fieldsDebounces = {};
   Map<String, FocusNode> _fieldsFocusNodes = {};
 
   // setErrorAsync(String field, List<ValidationResult> errors) {
@@ -73,12 +73,11 @@ class FormWidgetState extends State<FormWidget> {
   // }
 
   _validatorFor(String field) {
-    return (String value) {
-      _fieldValues[field] = value;
-      _errorsMap[field] = widget.validateFunction(field, value, _fieldValues) ??
-          _errorsMap[field] ??
-          [];
-      return _errorsMap[field].length > 0 ? 'Campo inválido' : null;
+    return (String? value) {
+      String actualValue = _savedValues[field] ?? '';
+      _fieldValues[field] = actualValue;
+      _errorsMap[field] = widget.validateFunction(field, actualValue, _fieldValues);
+      return (_errorsMap[field] ?? []).length > 0 ? 'Campo inválido' : null;
     };
   }
 
@@ -94,7 +93,7 @@ class FormWidgetState extends State<FormWidget> {
     super.initState();
     widget.fields.forEach((fieldName) {
       _fieldsStates[fieldName] = GlobalKey();
-      //_fieldsDebounces[fieldName] = Debouncer(milliseconds: 200);
+      _fieldsDebounces[fieldName] = Debouncer(milliseconds: 200);
       _fieldsFocusNodes[fieldName] = FocusNode();
     });
   }
@@ -113,7 +112,7 @@ class FormWidgetState extends State<FormWidget> {
           node: widget._focusScopeNode,
           child: Form(
               key: widget.formKey,
-              autovalidate: true,
+              autovalidateMode: AutovalidateMode.always,
               child: Column(
                 children: widget.fields
                     .map(
@@ -143,8 +142,8 @@ class FormWidgetState extends State<FormWidget> {
       onChanged: (value) {
         setState(() {
           _fieldValues[field] = value.toString();
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            widget.formKey.currentState.validate();
+          WidgetsBinding.instance!.addPostFrameCallback((_) {
+            widget.formKey.currentState!.validate();
           });
         });
       },
@@ -174,8 +173,8 @@ class FormWidgetState extends State<FormWidget> {
                     color: Colors.orange,
                   ),
                   onPressed: () {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      WidgetsBinding.instance.focusManager.primaryFocus
+                    WidgetsBinding.instance!.addPostFrameCallback((_) {
+                      WidgetsBinding.instance!.focusManager.primaryFocus
                           ?.unfocus();
                       FocusScope.of(context).requestFocus(FocusNode());
 
@@ -216,27 +215,28 @@ class FormWidgetState extends State<FormWidget> {
         //   _fieldsStates[field].currentState.validate();
         // },
         onEditingComplete: () {
-          _fieldsStates[field].currentState.validate();
+          _fieldsStates[field]?.currentState!.validate();
           if (widget.fields.last == field) {
             widget._focusScopeNode.unfocus();
           } else {
             widget._focusScopeNode.nextFocus();
           }
         },
+        onChanged: _onSavedFor(field),
         onSaved: _onSavedFor(field));
   }
 }
 
 class Debouncer {
-  final int milliseconds;
-  VoidCallback action;
-  Timer _timer;
+  late  final int milliseconds;
+  VoidCallback? action;
+  Timer? _timer;
 
-  Debouncer({this.milliseconds});
+  Debouncer({this.milliseconds = 0});
 
   run(VoidCallback action) {
     if (_timer != null) {
-      _timer.cancel();
+      _timer!.cancel();
     }
 
     _timer = Timer(Duration(milliseconds: milliseconds), action);

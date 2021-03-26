@@ -14,7 +14,7 @@ final Pointer Function(
     int arrayType,
     int length,
     Pointer<Pointer>
-        exception) jSObjectMakeTypedArray = jscLib
+        exception) jSObjectMakeTypedArray = jscLib!
     .lookup<NativeFunction<Pointer Function(Pointer, Int8, Uint32, Pointer)>>(
         'JSObjectMakeTypedArray')
     .asFunction();
@@ -37,7 +37,7 @@ final Pointer Function(
         Pointer<NativeFunction<JSTypedArrayBytesDeallocator>> bytesDeallocator,
         Pointer deallocatorContext,
         Pointer<Pointer> exception) jSObjectMakeTypedArrayWithBytesNoCopy =
-    jscLib
+    jscLib!
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Int8, Pointer, Uint32, Pointer,
@@ -55,7 +55,7 @@ final Pointer Function(
     int arrayType,
     Pointer buffer,
     Pointer<Pointer>
-        exception) jSObjectMakeTypedArrayWithArrayBuffer = jscLib
+        exception) jSObjectMakeTypedArrayWithArrayBuffer = jscLib!
     .lookup<NativeFunction<Pointer Function(Pointer, Int8, Pointer, Pointer)>>(
         'JSObjectMakeTypedArrayWithArrayBuffer')
     .asFunction();
@@ -70,7 +70,7 @@ final Pointer Function(
 /// [@result] (JSObjectRef) A JSObjectRef that is a Typed Array or NULL if there was an error. The backing store of the Typed Array will be buffer.
 final Pointer Function(Pointer ctx, int arrayType, Pointer buffer,
         int byteOffset, int length, Pointer<Pointer> exception)
-    jSObjectMakeTypedArrayWithArrayBufferAndOffset = jscLib
+    jSObjectMakeTypedArrayWithArrayBufferAndOffset = jscLib!
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Int8, Pointer, Uint32, Uint32,
@@ -85,7 +85,7 @@ final Pointer Function(Pointer ctx, int arrayType, Pointer buffer,
 /// [@result] (void*) A pointer to the raw data buffer that serves as object's backing store or NULL if object is not a Typed Array object.
 final Pointer<Pointer> Function(
         Pointer ctx, Pointer object, Pointer<Pointer> exception)
-    jSObjectGetTypedArrayBytesPtr = jscLib
+    jSObjectGetTypedArrayBytesPtr = jscLib!
         .lookup<
             NativeFunction<
                 Pointer<Pointer> Function(Pointer, Pointer,
@@ -98,7 +98,7 @@ final Pointer<Pointer> Function(
 /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
 /// [@result] (size_t) The length of the Typed Array object or 0 if the object is not a Typed Array object.
 final int Function(Pointer ctx, Pointer object, Pointer<Pointer> exception)
-    jSObjectGetTypedArrayLength = jscLib
+    jSObjectGetTypedArrayLength = jscLib!
         .lookup<NativeFunction<Uint32 Function(Pointer, Pointer, Pointer)>>(
             'JSObjectGetTypedArrayLength')
         .asFunction();
@@ -109,7 +109,7 @@ final int Function(Pointer ctx, Pointer object, Pointer<Pointer> exception)
 /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
 /// [@result] (size_t) The byte length of the Typed Array object or 0 if the object is not a Typed Array object.
 final int Function(Pointer ctx, Pointer object, Pointer<Pointer> exception)
-    jSObjectGetTypedArrayByteLength = jscLib
+    jSObjectGetTypedArrayByteLength = jscLib!
         .lookup<NativeFunction<Uint32 Function(Pointer, Pointer, Pointer)>>(
             'JSObjectGetTypedArrayByteLength')
         .asFunction();
@@ -120,7 +120,7 @@ final int Function(Pointer ctx, Pointer object, Pointer<Pointer> exception)
 /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
 /// [@result] (size_t) The byte offset of the Typed Array object or 0 if the object is not a Typed Array object.
 final int Function(Pointer ctx, Pointer object, Pointer<Pointer> exception)
-    jSObjectGetTypedArrayByteOffset = jscLib
+    jSObjectGetTypedArrayByteOffset = jscLib!
         .lookup<NativeFunction<Uint32 Function(Pointer, Pointer, Pointer)>>(
             'JSObjectGetTypedArrayByteOffset')
         .asFunction();
@@ -131,7 +131,7 @@ final int Function(Pointer ctx, Pointer object, Pointer<Pointer> exception)
 /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
 /// [@result] (JSObjectRef) A JSObjectRef with a JSTypedArrayType of kJSTypedArrayTypeArrayBuffer or NULL if object is not a Typed Array.
 final Pointer Function(Pointer ctx, Pointer object, Pointer<Pointer> exception)
-    jSObjectGetTypedArrayBuffer = jscLib
+    jSObjectGetTypedArrayBuffer = jscLib!
         .lookup<NativeFunction<Pointer Function(Pointer, Pointer, Pointer)>>(
             'JSObjectGetTypedArrayBuffer')
         .asFunction();
@@ -152,7 +152,7 @@ final Pointer Function(
         Pointer<NativeFunction<JSTypedArrayBytesDeallocator>> bytesDeallocator,
         Pointer deallocatorContext,
         Pointer<Pointer> exception) jSObjectMakeArrayBufferWithBytesNoCopy =
-    jscLib
+    jscLib!
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Pointer, Uint32, Pointer, Pointer,
@@ -166,7 +166,7 @@ final Pointer Function(
 /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
 /// [@result] (void*) A pointer to the raw data buffer that serves as object's backing store or NULL if object is not an Array Buffer object.
 final Pointer Function(Pointer ctx, Pointer object, Pointer<Pointer> exception)
-    jSObjectGetArrayBufferBytesPtr = jscLib
+    jSObjectGetArrayBufferBytesPtr = jscLib!
         .lookup<NativeFunction<Pointer Function(Pointer, Pointer, Pointer)>>(
             'JSObjectGetArrayBufferBytesPtr')
         .asFunction();
@@ -177,7 +177,7 @@ final Pointer Function(Pointer ctx, Pointer object, Pointer<Pointer> exception)
 /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
 /// [@result] (size_t) The number of bytes stored in the data object.
 final int Function(Pointer ctx, Pointer object, Pointer<Pointer> exception)
-    jSObjectGetArrayBufferByteLength = jscLib
+    jSObjectGetArrayBufferByteLength = jscLib!
         .lookup<NativeFunction<Uint32 Function(Pointer, Pointer, Pointer)>>(
             'JSObjectGetArrayBufferByteLength')
         .asFunction();

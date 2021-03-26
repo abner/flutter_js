@@ -7,7 +7,7 @@ import 'form.dart';
 
 class AjvExample extends StatefulWidget {
   final JavascriptRuntime jsRuntime;
-  AjvExample(this.jsRuntime, {Key key}) : super(key: key);
+  AjvExample(this.jsRuntime, {Key? key}) : super(key: key);
 
   _AjvExampleState createState() => _AjvExampleState();
 }
@@ -19,7 +19,7 @@ class _AjvExampleState extends State<AjvExample> {
   GlobalKey<FormState> _formKey = GlobalKey();
   GlobalKey<FormWidgetState> _formWidgetKey = GlobalKey();
 
-  Future<dynamic> _loadingFuture;
+  Future<dynamic>? _loadingFuture;
 
   @override
   void initState() {
@@ -100,19 +100,20 @@ class _AjvExampleState extends State<AjvExample> {
                          """;
       JsEvalResult jsResult = widget.jsRuntime.evaluate(expression);
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
         setState(() {
           _jsResult = jsResult.stringResult;
         });
       });
 
       final valueResult = json.decode(jsResult.stringResult);
+      
       final List<ValidationResult> result =
           ValidationResult.listFromJson(valueResult is int ? [] : valueResult);
 
       final errorsForField = result
           .where((element) =>
-              element.message.contains("$field") ||
+              element.message!.contains("$field") ||
               element.params['missingProperty'] == field ||
               element.dataPath == ".$field")
           .toList();
@@ -156,7 +157,7 @@ class _AjvExampleState extends State<AjvExample> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.info_outline),
         onPressed: () async {
-          Navigator.of(_scaffoldKey.currentContext).push(
+          Navigator.of(_scaffoldKey.currentContext!).push(
             MaterialPageRoute(
               builder: (context) => AjvResultScreen(
                 "{\"errors\": ${_jsResult == "" ? null : _jsResult}}",
