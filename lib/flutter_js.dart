@@ -8,6 +8,7 @@ import 'package:flutter_js/javascriptcore/jscore_runtime.dart';
 import 'package:flutter_js/quickjs/quickjs_runtime.dart';
 
 export './javascript_runtime.dart';
+export './quickjs/quickjs_runtime.dart';
 
 export './quickjs/quickjs_runtime.dart';
 
@@ -19,7 +20,7 @@ import './extensions/handle_promises.dart';
 JavascriptRuntime getJavascriptRuntime(
     {bool forceJavascriptCoreOnAndroid = false, bool xhr = true}) {
   JavascriptRuntime runtime;
-  if ((Platform.isAndroid || Platform.isWindows) &&
+  if ((Platform.isAndroid || Platform.isLinux || Platform.isWindows) &&
       !forceJavascriptCoreOnAndroid) {
     runtime = QuickJsRuntime('fileQuickjs.js');
     // FlutterJs engine = FlutterJs();
@@ -27,9 +28,9 @@ JavascriptRuntime getJavascriptRuntime(
   } else {
     runtime = JavascriptCoreRuntime();
   }
-  setFetchDebug(true);
-  if (xhr) runtime.enableFetch();
-  runtime.enableHandlePromises();
+  // setFetchDebug(true);
+  // if (xhr) runtime.enableFetch();
+  // runtime.enableHandlePromises();
   return runtime;
 }
 

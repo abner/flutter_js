@@ -28,6 +28,9 @@ flutter:
         pluginClass: FlutterJsPlugin
       ios:
         pluginClass: FlutterJsPlugin
+      linux:
+        pluginClass: FlutterJsPlugin
+
   assets:
     - assets/js/
 

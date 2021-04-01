@@ -1,0 +1,31 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "flutter_js",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "example",
+            "cwd": "example",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "packages",
+            "cwd": "packages",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "flutter_js_linux",
+            "cwd": "packages/flutter_js_linux",
+            "request": "launch",
+            "type": "dart"
+        }
+    ]
+}

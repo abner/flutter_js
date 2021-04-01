@@ -9,7 +9,20 @@ import 'qjs_typedefs.dart';
 
 final DynamicLibrary qjsDynamicLibrary = Platform.isAndroid
     ? DynamicLibrary.open("libfastdev_quickjs_runtime.so")
-    : DynamicLibrary.process();
+    : (Platform.isWindows
+        ? DynamicLibrary.open('libfastdev_quickjs_runtime.dll')
+        : DynamicLibrary.process());
+// final DynamicLibrary _qjsLib = Platform.environment['FLUTTER_TEST'] == 'true'
+//     ? (Platform.isWindows
+//         ? DynamicLibrary.open('test/build/Debug/ffiquickjs.dll')
+//         : Platform.isMacOS
+//             ? DynamicLibrary.open('test/build/libffiquickjs.dylib')
+//             : DynamicLibrary.open('test/build/libffiquickjs.so'))
+//     : (Platform.isWindows
+//         ? DynamicLibrary.open('flutter_qjs_plugin.dll')
+//         : Platform.isAndroid
+//             ? DynamicLibrary.open('libqjs.so')
+//             : DynamicLibrary.process());    
 
 typedef FnBridgeCallback = Function(
     dynamic args); //String Function(String channel, String message);
@@ -53,6 +66,17 @@ Pointer<NativeFunction<ChannelCallback>> consoleLogBridgeFunction;
 Pointer<NativeFunction<ChannelCallback>> setTimeoutBridgeFunction;
 Pointer<NativeFunction<ChannelCallback>> sendNativeBridgeFunction;
 
+typedef DoReturnOne = int Function();
+typedef DoReturnOneNative = Int32 Function();
+
+DoReturnOne doReturnOneNative = qjsDynamicLibrary.lookupFunction<DoReturnOneNative, DoReturnOne>("doReturnOne");
+
+int doReturnOne() {
+  int res = doReturnOneNative();
+  return res;
+}
+
+
 class QuickJsRuntime extends JavascriptRuntime {
   Pointer<JSContext> _context;
   Pointer<JSRuntime> _runtime;
@@ -85,6 +109,7 @@ class QuickJsRuntime extends JavascriptRuntime {
 
     init();
   }
+
 
   // NATIVE BRIDGE DECLARATIONS
   static JSEvalWrapper _jsEvalWrapper = qjsDynamicLibrary
@@ -173,16 +198,35 @@ class QuickJsRuntime extends JavascriptRuntime {
     Pointer<JSValueConst> result = calloc<JSValueConst>();
     Pointer<Pointer<Utf8NullTerminated>> stringResult = calloc<Pointer<Utf8NullTerminated>>();
     Pointer<Int32> errors = calloc<Int32>();
-    _jsEvalWrapper(ctx, Utf8NullTerminated.toUtf8(js), js.length, Utf8NullTerminated.toUtf8(fileName), 0,
+    errors.value = 0;
+    var jsPointer = Utf8NullTerminated.toUtf8(js);
+    var filenamePointer = Utf8NullTerminated.toUtf8(fileName);
+    _jsEvalWrapper(ctx, jsPointer, js.length, filenamePointer, 0,
         errors, result, stringResult);
 
-    final strResult = Utf8NullTerminated.fromUtf8(stringResult.value);
-    return JsEvalResult(
-      strResult,
-      result,
-      isError: errors.value == 1,
-      isPromise: strResult == '[object Promise]',
-    );
+    print('ERRORS: ${errors.value}');
+    calloc.free(filenamePointer);
+    calloc.free(jsPointer);
+
+    if (errors.value == 0) {
+      final strResult = Utf8NullTerminated.fromUtf8(stringResult.value);
+      calloc.free(stringResult);
+      calloc.free(errors);
+      return JsEvalResult(
+        strResult,
+        result,
+        isError: false,
+        isPromise: strResult == '[object Promise]',
+      );
+    } else {
+      calloc.free(errors);
+      return JsEvalResult(
+        'ERROR RESULT',
+        result,
+        isError: true,
+        isPromise: false,
+      );
+    }
   }
 
   static T convertToValue<T>(

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_js_example/ajv_example.dart';
+import 'package:flutter_qjs/flutter_qjs.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,49 +31,43 @@ class FlutterJsHomeScreen extends StatefulWidget {
   @override
   _FlutterJsHomeScreenState createState() => _FlutterJsHomeScreenState();
 
-  final JavascriptRuntime javascriptRuntime = getJavascriptRuntime();
+  JavascriptRuntime javascriptRuntime;
 
-  String evalJS() {
-    String jsResult = javascriptRuntime.evaluate("""
-            if (typeof MyClass == 'undefined') {
-              var MyClass = class  {
-                constructor(id) {
-                  this.id = id;
-                }
-                
-                getId() { 
-                  return this.id;
-                }
-              }
-            }
-            var obj = new MyClass(1);
-            var jsonStringified = JSON.stringify(obj);
-            var value = Math.trunc(Math.random() * 100).toString();
-            JSON.stringify({ "object": jsonStringified, "expression": value});
-            """).stringResult;
-      print(#abner);  
-    return jsResult;
+  FlutterJsHomeScreen() {
+    javascriptRuntime = getJavascriptRuntime();
+    executeJS();
+    javascriptRuntime.onMessage('ConsoleLog2', (args) {
+      print('ConsoleLog2 (Dart Side): $args');
+      return json.encode(args);
+    });
+    executeJS();
+    Future.delayed(Duration(seconds: 2), executeJS);
+  }
+
+  String executeJS() {
+    final rs = javascriptRuntime
+        .evaluate("""Math.trunc(Math.random() * 100).toString();""");
+    return rs.stringResult;
   }
 }
 
 class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   String _jsResult = '';
 
+  FlutterQjs engine;
+
   @override
   void initState() {
+    engine = FlutterQjs(
+      stackSize: 1024 * 1024, // change stack size here.
+    );
+    engine.dispatch();
     super.initState();
-
-    widget.javascriptRuntime.onMessage('ConsoleLog2', (args) {
-      print('ConsoleLog2 (Dart Side): $args');
-      return json.encode(args);
-    });
   }
 
   @override
   dispose() {
-    print('DISPOSE CALLED!!!'); 
     super.dispose();
-    widget.javascriptRuntime.dispose();
   }
 
   @override
@@ -85,10 +80,7 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'JS Evaluate Result:\n\n$_jsResult\n', 
-              textAlign: TextAlign.center,
-            ),
+            Text('JS Evaluate Result: $_jsResult\n'),
             SizedBox(
               height: 20,
             ),
@@ -124,9 +116,13 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
         backgroundColor: Colors.transparent,
         child: Image.asset('assets/js.ico'),
         onPressed: () {
+          var val = widget.executeJS();
+          Future.delayed(Duration(seconds: 1), () {
+            var val2 = widget.executeJS();
+            print('VAL 2: $val2');
+          });
           setState(() {
-            _jsResult = widget.evalJS();
-            Future.delayed(Duration(milliseconds: 599), widget.evalJS);
+            _jsResult = val;
           });
         },
       ),
