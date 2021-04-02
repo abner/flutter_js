@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter_js/javascript_runtime.dart';
 import 'package:flutter_js/quickjs/utf8_null_terminated.dart';
+import 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
+import 'package:flutter_js_platform_interface/js_eval_result.dart';
 
 import 'qjs_typedefs.dart';
 
@@ -22,7 +24,7 @@ final DynamicLibrary qjsDynamicLibrary = Platform.isAndroid
 //         ? DynamicLibrary.open('flutter_qjs_plugin.dll')
 //         : Platform.isAndroid
 //             ? DynamicLibrary.open('libqjs.so')
-//             : DynamicLibrary.process());    
+//             : DynamicLibrary.process());
 
 typedef FnBridgeCallback = Function(
     dynamic args); //String Function(String channel, String message);
@@ -69,15 +71,15 @@ Pointer<NativeFunction<ChannelCallback>> sendNativeBridgeFunction;
 typedef DoReturnOne = int Function();
 typedef DoReturnOneNative = Int32 Function();
 
-DoReturnOne doReturnOneNative = qjsDynamicLibrary.lookupFunction<DoReturnOneNative, DoReturnOne>("doReturnOne");
+DoReturnOne doReturnOneNative = qjsDynamicLibrary
+    .lookupFunction<DoReturnOneNative, DoReturnOne>("doReturnOne");
 
 int doReturnOne() {
   int res = doReturnOneNative();
   return res;
 }
 
-
-class QuickJsRuntime extends JavascriptRuntime {
+class QuickJsRuntime extends FlutterJsPlatform {
   Pointer<JSContext> _context;
   Pointer<JSRuntime> _runtime;
 
@@ -109,7 +111,6 @@ class QuickJsRuntime extends JavascriptRuntime {
 
     init();
   }
-
 
   // NATIVE BRIDGE DECLARATIONS
   static JSEvalWrapper _jsEvalWrapper = qjsDynamicLibrary
@@ -153,7 +154,8 @@ class QuickJsRuntime extends JavascriptRuntime {
     Pointer argument,
   ) {
     Pointer result = calloc<JSValueConst>();
-    Pointer<Pointer<Utf8NullTerminated>> stringResult = calloc<Pointer<Utf8NullTerminated>>();
+    Pointer<Pointer<Utf8NullTerminated>> stringResult =
+        calloc<Pointer<Utf8NullTerminated>>();
     int operationResult =
         _callJsFunction1Arg(_context, function, argument, result, stringResult);
     String resultStr = Utf8NullTerminated.fromUtf8(stringResult.value);
@@ -193,16 +195,17 @@ class QuickJsRuntime extends JavascriptRuntime {
   static JsEvalResult jsEval(
     Pointer<JSContext> ctx,
     String js, {
-    String  fileName = 'nofile.js',
+    String fileName = 'nofile.js',
   }) {
     Pointer<JSValueConst> result = calloc<JSValueConst>();
-    Pointer<Pointer<Utf8NullTerminated>> stringResult = calloc<Pointer<Utf8NullTerminated>>();
+    Pointer<Pointer<Utf8NullTerminated>> stringResult =
+        calloc<Pointer<Utf8NullTerminated>>();
     Pointer<Int32> errors = calloc<Int32>();
     errors.value = 0;
     var jsPointer = Utf8NullTerminated.toUtf8(js);
     var filenamePointer = Utf8NullTerminated.toUtf8(fileName);
-    _jsEvalWrapper(ctx, jsPointer, js.length, filenamePointer, 0,
-        errors, result, stringResult);
+    _jsEvalWrapper(ctx, jsPointer, js.length, filenamePointer, 0, errors,
+        result, stringResult);
 
     print('ERRORS: ${errors.value}');
     calloc.free(filenamePointer);
@@ -242,7 +245,8 @@ class QuickJsRuntime extends JavascriptRuntime {
         stringifiedValue,
         stringResultPointer,
       );
-      final stringResult = Utf8NullTerminated.fromUtf8(stringResultPointer.value);
+      final stringResult =
+          Utf8NullTerminated.fromUtf8(stringResultPointer.value);
       return jsonDecode(stringResult);
     }
     switch (type) {
@@ -264,7 +268,8 @@ class QuickJsRuntime extends JavascriptRuntime {
           stringifiedValue,
           stringResultPointer,
         );
-        final stringResult = Utf8NullTerminated.fromUtf8(stringResultPointer.value);
+        final stringResult =
+            Utf8NullTerminated.fromUtf8(stringResultPointer.value);
         return jsonDecode(stringResult);
     }
     return null;

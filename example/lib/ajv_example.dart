@@ -6,7 +6,7 @@ import 'ajv_result_screen.dart';
 import 'form.dart';
 
 class AjvExample extends StatefulWidget {
-  final JavascriptRuntime jsRuntime;
+  final FlutterJsPlatform jsRuntime;
   AjvExample(this.jsRuntime, {Key key}) : super(key: key);
 
   _AjvExampleState createState() => _AjvExampleState();

@@ -1,0 +1,21 @@
+name: flutter_js_linux_windows
+description: Linux and Windows implementation of the flutter_js_plugin plugin.
+version: 2.0.0
+homepage: https://github.com/abner/flutter_js/tree/master/packages/flutter_js_linux_win
+
+flutter:
+  plugin:
+    implements: flutter_js
+    platforms:
+      linux:
+        pluginClass: FlutterJsPlugin
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.20.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_qjs: ^0.3.6
+  flutter_js_platform_interface: ^0.3.0

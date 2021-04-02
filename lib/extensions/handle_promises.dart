@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter_js/javascript_runtime.dart';
+import 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
+import 'package:flutter_js_platform_interface/js_eval_result.dart';
 
 const REGISTER_PROMISE_FUNCTION = 'FLUTTER_NATIVEJS_REGISTER_PROMISE';
 
-extension HandlePromises on JavascriptRuntime {
+extension HandlePromises on FlutterJsPlatform {
   enableHandlePromises() {
     final fnRegisterPromise = evaluate(""" 
      var FLUTTER_NATIVEJS_PENDING_PROMISES = {};
@@ -88,7 +90,8 @@ extension HandlePromises on JavascriptRuntime {
         evaluate("FLUTTER_NATIVEJS_IS_FULLFILLED_PROMISE($idx)").stringResult;
   }
 
-  Future<JsEvalResult> handlePromise(JsEvalResult value, {Duration timeout}) async {
+  Future<JsEvalResult> handlePromise(JsEvalResult value,
+      {Duration timeout}) async {
     final completer = Completer<JsEvalResult>();
 
     if (timeout != null) {
@@ -98,7 +101,8 @@ extension HandlePromises on JavascriptRuntime {
     }
   }
 
-  Future<JsEvalResult> _doHandlePromise(JsEvalResult value, Completer completer) {
+  Future<JsEvalResult> _doHandlePromise(
+      JsEvalResult value, Completer completer) {
     if (value.stringResult != '[object Promise]') return Future.value(value);
 
     final evalRegisterPromise = evaluate(REGISTER_PROMISE_FUNCTION).rawResult;

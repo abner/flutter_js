@@ -6,6 +6,8 @@ import 'package:flutter_js/javascript_runtime.dart';
 import 'package:flutter_js/javascriptcore/jscore_runtime.dart';
 //import 'package:flutter_js/quickjs-sync-server/quickjs_oasis_jsbridge.dart';
 import 'package:flutter_js/quickjs/quickjs_runtime.dart';
+import 'package:flutter_js_linux_windows/flutter_js_linux_windows.dart';
+import 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
 
 export './javascript_runtime.dart';
 export './quickjs/quickjs_runtime.dart';
@@ -17,19 +19,32 @@ export 'quickjs-sync-server/quickjs_oasis_jsbridge.dart';
 import './extensions/fetch.dart';
 import './extensions/handle_promises.dart';
 
-JavascriptRuntime getJavascriptRuntime(
+export 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
+export 'package:flutter_js_platform_interface/js_eval_result.dart';
+
+// import condicional to not import ffi libraries when using web as target
+// import "something.dart" if (dart.library.io) "other.dart";
+// REF:
+// - https://medium.com/flutter-community/conditional-imports-across-flutter-and-web-4b88885a886e
+// - https://github.com/creativecreatorormaybenot/wakelock/blob/master/wakelock/lib/wakelock.dart
+FlutterJsPlatform getJavascriptRuntime(
     {bool forceJavascriptCoreOnAndroid = false, bool xhr = true}) {
-  JavascriptRuntime runtime;
-  if ((Platform.isAndroid && !forceJavascriptCoreOnAndroid) || Platform.isLinux || Platform.isWindows) {
+  FlutterJsPlatform runtime;
+  if ((Platform.isAndroid && !forceJavascriptCoreOnAndroid) ||
+      Platform.isLinux) {
     runtime = QuickJsRuntime('fileQuickjs.js');
     // FlutterJs engine = FlutterJs();
     // runtime = QuickJsService(engine);
+  } else if (Platform.isWindows || Platform.isLinux) {
+    runtime = FlutterJsLinuxWin()..init();
   } else {
     runtime = JavascriptCoreRuntime();
   }
-  // setFetchDebug(true);
-  // if (xhr) runtime.enableFetch();
-  // runtime.enableHandlePromises();
+  if (!Platform.isWindows) {
+    // setFetchDebug(true);
+    if (xhr) runtime.enableFetch();
+    runtime.enableHandlePromises();
+  }
   return runtime;
 }
 

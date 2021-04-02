@@ -12,8 +12,10 @@ import 'package:flutter_js/javascriptcore/binding/js_value_ref.dart';
 import 'package:flutter_js/javascriptcore/flutter_jscore.dart';
 import 'package:flutter_js/javascriptcore/jscore/js_value.dart';
 import 'package:flutter_js/javascriptcore/jscore_bindings.dart';
+import 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
+import 'package:flutter_js_platform_interface/js_eval_result.dart';
 
-class JavascriptCoreRuntime extends JavascriptRuntime {
+class JavascriptCoreRuntime extends FlutterJsPlatform {
   Pointer _contextGroup;
   Pointer _globalContext;
   JSContext context;
@@ -58,6 +60,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     JavascriptRuntime.channelFunctionsRegistered[getEngineInstanceId()] = {};
   }
 
+  @override
   JsEvalResult evaluate(String js) {
     Pointer<Utf8> scriptCString = js.toNativeUtf8();
 

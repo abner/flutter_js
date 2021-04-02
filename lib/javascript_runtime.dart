@@ -3,18 +3,7 @@ import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:flutter/foundation.dart';
-
-class JsEvalResult {
-  final String stringResult;
-  final dynamic rawResult;
-  final bool isPromise;
-  final bool isError;
-
-  JsEvalResult(this.stringResult, this.rawResult,
-      {this.isError = false, this.isPromise = false});
-
-  toString() => stringResult;
-}
+import 'package:flutter_js_platform_interface/js_eval_result.dart';
 
 abstract class JavascriptRuntime {
   @protected

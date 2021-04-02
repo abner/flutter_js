@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_js/flutter_js.dart';
+import 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
 import 'package:http/http.dart' as http;
 
 /*
@@ -275,7 +276,7 @@ xhrSetHttpClient(http.Client client) {
   httpClient = client;
 }
 
-extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
+extension JavascriptRuntimeXhrExtension on FlutterJsPlatform {
   List<dynamic> getPendingXhrCalls() {
     return dartContext[XHR_PENDING_CALLS_KEY];
   }
@@ -285,7 +286,7 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
     dartContext[XHR_PENDING_CALLS_KEY] = [];
   }
 
-  JavascriptRuntime enableXhr() {
+  FlutterJsPlatform enableXhr() {
     httpClient = httpClient ?? http.Client();
     dartContext[XHR_PENDING_CALLS_KEY] = [];
 

@@ -30,7 +30,7 @@ class FlutterJsHomeScreen extends StatefulWidget {
   @override
   _FlutterJsHomeScreenState createState() => _FlutterJsHomeScreenState();
 
-  final JavascriptRuntime javascriptRuntime = getJavascriptRuntime();
+  final FlutterJsPlatform javascriptRuntime = getJavascriptRuntime();
 
   String evalJS() {
     String jsResult = javascriptRuntime.evaluate("""
@@ -50,7 +50,7 @@ class FlutterJsHomeScreen extends StatefulWidget {
             var value = Math.trunc(Math.random() * 100).toString();
             JSON.stringify({ "object": jsonStringified, "expression": value});
             """).stringResult;
-      print(#abner);  
+    print(#abner);
     return jsResult;
   }
 }
@@ -62,15 +62,15 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   void initState() {
     super.initState();
 
-    widget.javascriptRuntime.onMessage('ConsoleLog2', (args) {
-      print('ConsoleLog2 (Dart Side): $args');
-      return json.encode(args);
-    });
+    // widget.javascriptRuntime.onMessage('ConsoleLog2', (args) {
+    //   print('ConsoleLog2 (Dart Side): $args');
+    //   return json.encode(args);
+    // });
   }
 
   @override
   dispose() {
-    print('DISPOSE CALLED!!!'); 
+    print('DISPOSE CALLED!!!');
     super.dispose();
     widget.javascriptRuntime.dispose();
   }
@@ -86,7 +86,7 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'JS Evaluate Result:\n\n$_jsResult\n', 
+              'JS Evaluate Result:\n\n$_jsResult\n',
               textAlign: TextAlign.center,
             ),
             SizedBox(

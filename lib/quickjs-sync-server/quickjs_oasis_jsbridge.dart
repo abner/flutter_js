@@ -4,6 +4,8 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:flutter_js/flutter_js.dart';
+import 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
+import 'package:flutter_js_platform_interface/js_eval_result.dart';
 import 'package:sync_http/sync_http.dart';
 
 ReceivePort _callDartReceivePort = new ReceivePort();
@@ -20,7 +22,7 @@ void _setupCallDartPorts() {
   });
 }
 
-class QuickJsService extends JavascriptRuntime {
+class QuickJsService extends FlutterJsPlatform {
   ReceivePort _receivePort = new ReceivePort();
   SendPort _callServerSendPort;
 

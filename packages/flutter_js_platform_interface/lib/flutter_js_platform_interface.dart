@@ -19,8 +19,7 @@ class FlutterJsPlatformEmpty extends FlutterJsPlatform {
   }
 
   @override
-  void dispose() {
-  }
+  void dispose() {}
 
   @override
   JsEvalResult evaluate(String code) {
@@ -56,13 +55,13 @@ class FlutterJsPlatformEmpty extends FlutterJsPlatform {
   bool setupBridge(String channelName, void Function(dynamic args) fn) {
     throw UnimplementedError();
   }
-  
 }
+
 abstract class FlutterJsPlatform extends PlatformInterface {
   static final Object _token = Object();
   static FlutterJsPlatform get instance => _instance;
   static FlutterJsPlatform _instance = FlutterJsPlatformEmpty();
-  
+
   FlutterJsPlatform() : super(token: _token);
 
   /// Platform-specific plugins should set this with their own platform-specific

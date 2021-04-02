@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_js_example/ajv_example.dart';
 import 'package:flutter_qjs/flutter_qjs.dart';
@@ -31,7 +30,7 @@ class FlutterJsHomeScreen extends StatefulWidget {
   @override
   _FlutterJsHomeScreenState createState() => _FlutterJsHomeScreenState();
 
-  JavascriptRuntime javascriptRuntime;
+  FlutterJsPlatform javascriptRuntime;
 
   FlutterJsHomeScreen() {
     javascriptRuntime = getJavascriptRuntime();
