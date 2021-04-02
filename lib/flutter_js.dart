@@ -20,8 +20,7 @@ import './extensions/handle_promises.dart';
 JavascriptRuntime getJavascriptRuntime(
     {bool forceJavascriptCoreOnAndroid = false, bool xhr = true}) {
   JavascriptRuntime runtime;
-  if ((Platform.isAndroid || Platform.isLinux || Platform.isWindows) &&
-      !forceJavascriptCoreOnAndroid) {
+  if ((Platform.isAndroid && !forceJavascriptCoreOnAndroid) || Platform.isLinux || Platform.isWindows) {
     runtime = QuickJsRuntime('fileQuickjs.js');
     // FlutterJs engine = FlutterJs();
     // runtime = QuickJsService(engine);

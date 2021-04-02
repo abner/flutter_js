@@ -7,13 +7,15 @@
         {
             "name": "flutter_js",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": ["--verbose"]
         },
         {
             "name": "example",
             "cwd": "example",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": ["--verbose"]
         },
         {
             "name": "packages",

@@ -30,6 +30,8 @@ flutter:
         pluginClass: FlutterJsPlugin
       linux:
         pluginClass: FlutterJsPlugin
+      macos:
+        pluginClass: FlutterJsPlugin
 
   assets:
     - assets/js/

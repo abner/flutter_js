@@ -1,0 +1,28 @@
+PODS:
+  - flutter_js (0.0.1):
+    - FlutterMacOS
+  - flutter_qjs (0.0.1):
+    - FlutterMacOS
+  - FlutterMacOS (1.0.0)
+
+DEPENDENCIES:
+  - flutter_js (from `Flutter/ephemeral/.symlinks/plugins/flutter_js/macos`)
+  - flutter_qjs (from `Flutter/ephemeral/.symlinks/plugins/flutter_qjs/macos`)
+  - FlutterMacOS (from `Flutter/ephemeral`)
+
+EXTERNAL SOURCES:
+  flutter_js:
+    :path: Flutter/ephemeral/.symlinks/plugins/flutter_js/macos
+  flutter_qjs:
+    :path: Flutter/ephemeral/.symlinks/plugins/flutter_qjs/macos
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+
+SPEC CHECKSUMS:
+  flutter_js: c664361655af1d8fc24e278c7d086e9cbe0d68bc
+  flutter_qjs: 1a3a4a23a9bb18d0583b5ee44d09ed9383a36e9f
+  FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
+
+PODFILE CHECKSUM: 6eac6b3292e5142cfc23bdeb71848a40ec51c14c
+
+COCOAPODS: 1.10.1
