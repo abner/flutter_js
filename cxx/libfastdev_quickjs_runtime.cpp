@@ -165,9 +165,9 @@ extern "C"
             contextsLength = 3;
         }
 
-        JS_FreeValue(ctx, globalObject);
+        // JS_FreeValue(ctx, globalObject);
 
-        JS_FreeValue(ctx, stringifyFn);
+        // JS_FreeValue(ctx, stringifyFn);
 
         // returns the generated context
         return ctx;
@@ -199,7 +199,7 @@ extern "C"
             // __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Inside is exception: %p", result);
             JS_FreeValue(ctx, *result);
             *errors = 1;
-            result = new JSValue(JS_GetException(ctx));
+            * result = JS_GetException(ctx);
             *stringResult = (char *)JS_ToCString(ctx, *result);
             // __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "After get  exception: %p", result);
             return nullptr;
@@ -221,13 +221,20 @@ extern "C"
         return nullptr;
     }
 
+
+    DLLEXPORT int32_t jsIsFunction(JSContext *ctx, JSValueConst *val)
+    {
+        return JS_IsFunction(ctx, *val);
+    }
+
     // used in method callFunction in quickjs_method_bindings
     DLLEXPORT int callJsFunction1Arg(JSContext *ctx, JSValueConst *function, JSValueConst *object, JSValueConst *result, char **stringResult)
     {
         JSRuntime *rt = JS_GetRuntime(ctx);
         JS_UpdateStackTop(rt);
         JSValue globalObject = JS_GetGlobalObject(ctx);
-        //JSValue function = JS_GetPropertyStr(ctx, globalObject, functionName);
+        // JSValue function = JS_GetPropertyStr(ctx, globalObject, functionName);
+
         result = copyToHeap(JS_Call(ctx, *function, globalObject, 1, object));
 
         int successOperation = 1;
@@ -575,11 +582,6 @@ extern "C"
     DLLEXPORT uint8_t *jsGetArrayBuffer(JSContext *ctx, size_t *psize, JSValueConst *obj)
     {
         return JS_GetArrayBuffer(ctx, psize, *obj);
-    }
-
-    DLLEXPORT int32_t jsIsFunction(JSContext *ctx, JSValueConst *val)
-    {
-        return JS_IsFunction(ctx, *val);
     }
 
     DLLEXPORT int32_t jsIsPromise(JSContext *ctx, JSValueConst *val)

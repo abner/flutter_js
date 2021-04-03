@@ -136,7 +136,7 @@ XMLHttpRequest.prototype._send_native_callback = function(responseInfo, response
     this.responseText = error;
   } else {
     this.responseText = responseText;
-    console.log('RESPONSE TEXT: ' + responseText);
+    //console.log('RESPONSE TEXT: ' + responseText);
     switch (this.responseType) {
       case "":
       case "text":
@@ -225,7 +225,7 @@ class XhrPendingCall {
   int? idRequest;
   String? method;
   String? url;
-  Map<String?, String?> headers;
+  Map<String, String> headers;
   String? body;
 
   XhrPendingCall({
@@ -317,7 +317,7 @@ extension JavascriptRuntimeXhrExtension on FlutterJsPlatform {
         }
         // assuming request was successfully executed
         final xhrResult = XmlHttpRequestResponse(
-          responseText: jsonEncode(json.decode(response.body)),
+          responseText: jsonEncode(json.decode( utf8.decode(response.bodyBytes))),
           responseInfo:
               XhtmlHttpResponseInfo(statusCode: 200, statusText: "OK"),
         );
@@ -369,12 +369,14 @@ extension JavascriptRuntimeXhrExtension on FlutterJsPlatform {
         String? body = arguments[3];
         int? idRequest = arguments[4];
 
-        Map<String?, String?> headers = {};
+        Map<String, String> headers = {};
         headersList.forEach((value) {
           final headerMatch = regexpHeader.allMatches(value).first;
           String? headerName = headerMatch.group(0);
           String? headerValue = headerMatch.group(1);
-          headers[headerName] = headerValue;
+          if (headerName != null) {
+            headers[headerName] = headerValue ?? '';
+          }
         });
 
         (dartContext[XHR_PENDING_CALLS_KEY] as List<dynamic>).add(
@@ -486,7 +488,7 @@ void executeHttp(String url, String method, Map<String, String> headers) {
   String idRequest = "1";
   var callbackResponse = (http.Response response) {
     final xhrResult = XmlHttpRequestResponse(
-      responseText: response.body.toString(),
+      responseText: utf8.decode(response.bodyBytes),
       responseInfo: XhtmlHttpResponseInfo(statusCode: 200, statusText: "{}"),
     );
 

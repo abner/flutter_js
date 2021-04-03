@@ -27,7 +27,7 @@ Pointer<JSValueConst>? bridgeCallbackGlobalHandler(
   String messageStr = Utf8NullTerminated.fromUtf8(message);
 
   if (mapJsBridge.containsKey(channelNameStr)) {
-    String result = 'NO RESULT YET';
+    String? result = 'NO RESULT YET';
     try {
       result = mapJsBridge[channelNameStr]!.call(jsonDecode(messageStr));
     } on Error catch (e) {

@@ -12,9 +12,13 @@ extension HandlePromises on FlutterJsPlatform {
       var FLUTTER_NATIVEJS_PENDING_PROMISES_COUNT = -1;
 
       function $REGISTER_PROMISE_FUNCTION(promise) {
+        console.log('_______1');
         FLUTTER_NATIVEJS_PENDING_PROMISES_COUNT += 1;
         idx = FLUTTER_NATIVEJS_PENDING_PROMISES_COUNT;
         FLUTTER_NATIVEJS_PENDING_PROMISES[idx] = FLUTTER_NATIVEJS_MakeQuerablePromise(promise);
+        console.log('_______'  + FLUTTER_NATIVEJS_PENDING_PROMISES[idx]);
+
+        console.log('_______2');
         return idx;
       }
     """);
@@ -101,10 +105,38 @@ extension HandlePromises on FlutterJsPlatform {
   }
 
   Future<JsEvalResult> _doHandlePromise(
-      JsEvalResult value, Completer completer) {
+      JsEvalResult value, Completer completer) async {
+    if (value.stringResult.contains('Instance of \'Future')) {
+       var completed = false;
+      Function? fnEvaluatePromise;
+      fnEvaluatePromise = () async {
+        await this.executePendingJob();
+        if (!completed) {
+           await Future.delayed(Duration(milliseconds: 20), () => fnEvaluatePromise!.call());
+        } else {
+          if (FlutterJsPlatform.debugEnabled) {
+            print('Promise completed');
+          }
+        }
+      };
+      Future.delayed(Duration(milliseconds: 20), () => fnEvaluatePromise!.call());
+      
+      // Future.delayed(Duration(seconds: 1), () {
+      //   this.executePendingJob();
+      // });
+      return await (value.rawResult as Future<dynamic>)
+          .then((dynamic res) {
+            final resEval = JsEvalResult(res, value.rawResult);
+            completer.complete(resEval);
+            completed = true;
+            return resEval;
+          });
+    }
     if (value.stringResult != '[object Promise]') return Future.value(value);
 
-    final evalRegisterPromise = evaluate(REGISTER_PROMISE_FUNCTION).rawResult;
+    final fnRegisterPromiseFunction = evaluate(REGISTER_PROMISE_FUNCTION);
+    final evalRegisterPromise = fnRegisterPromiseFunction.rawResult;
+    print(fnRegisterPromiseFunction);
     // todo: investigate - application is crashing around this point
     final promiseQuerableIdx =
         callFunction(evalRegisterPromise, value.rawResult).stringResult;

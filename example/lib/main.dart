@@ -107,7 +107,8 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
                     fontWeight: FontWeight.bold),
               ),
             ),
-            RaisedButton(
+
+            ElevatedButton(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (ctx) => AjvExample(
@@ -117,6 +118,15 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
               ),
               child: const Text('See Ajv Example'),
             ),
+            SizedBox.fromSize(size: Size(double.maxFinite, 20)),
+            ElevatedButton(child: const Text('Fetch Remote Data'), onPressed: () async {
+              var asyncResult = await javascriptRuntime.evaluateAsync("""
+                fetch('http://faker.hook.io/?property=name.findName&locale=pt_BR').then(response => response.text());
+              """);
+              await javascriptRuntime.executePendingJob();
+              final promiseResolved = await javascriptRuntime.handlePromise(asyncResult);
+              print(promiseResolved.stringResult);
+            },),
           ],
         ),
       ),

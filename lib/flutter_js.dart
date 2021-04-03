@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/services.dart';
 
-import 'package:flutter_js/javascript_runtime.dart';
 import 'package:flutter_js/javascriptcore/jscore_runtime.dart';
 //import 'package:flutter_js/quickjs-sync-server/quickjs_oasis_jsbridge.dart';
 import 'package:flutter_js/quickjs/quickjs_runtime.dart';
@@ -31,14 +30,14 @@ export 'package:flutter_js_platform_interface/js_eval_result.dart';
 FlutterJsPlatform getJavascriptRuntime(
     {bool forceJavascriptCoreOnAndroid = false, bool xhr = true}) {
   FlutterJsPlatform runtime;
-  if ((Platform.isAndroid && !forceJavascriptCoreOnAndroid) ||
-      Platform.isLinux) {
+  if ((Platform.isAndroid && !forceJavascriptCoreOnAndroid)) {
     runtime = QuickJsRuntime('fileQuickjs.js');
     // FlutterJs engine = FlutterJs();
     // runtime = QuickJsService(engine);
   } else if (Platform.isWindows || Platform.isLinux) {
     // runtime = FlutterJsLinuxWin()..init();
-    runtime = QuickJsRuntime('f1.js');
+    runtime = QuickJsRuntime2();//('f1.js');
+    // runtime = QuickJsRuntime('f1.js');
   } else {
     runtime = JavascriptCoreRuntime();
   }

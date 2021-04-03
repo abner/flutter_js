@@ -62,6 +62,8 @@ abstract class FlutterJsPlatform extends PlatformInterface {
   static FlutterJsPlatform get instance => _instance;
   static FlutterJsPlatform _instance = FlutterJsPlatformEmpty();
 
+  static bool debugEnabled = false;
+
   FlutterJsPlatform() : super(token: _token);
 
   /// Platform-specific plugins should set this with their own platform-specific
@@ -81,7 +83,7 @@ abstract class FlutterJsPlatform extends PlatformInterface {
     return this;
   }
 
-  Map<String, Pointer> localContext = {};
+  Map<String, dynamic> localContext = {};
 
   Map<String, dynamic> dartContext = {};
 

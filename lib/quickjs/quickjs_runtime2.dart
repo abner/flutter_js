@@ -1,5 +1,6 @@
 /* START PARTS IMPORT QJS ENGINE */
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
@@ -168,14 +169,25 @@ class QuickJsRuntime2 extends FlutterJsPlatform {
       name ?? '<eval>',
       evalFlags ?? JSEvalFlag.GLOBAL,
     );
+
     if (jsIsException(jsval) != 0) {
       jsFreeValue(ctx, jsval);
       JSError exception = _parseJSException(ctx);
       return JsEvalResult(exception.toString(), exception, isError: true);
     }
     final result = _jsToDart(ctx, jsval);
+    // if (result is Future) {
+    //   result.then((e) {
+    //     print('E: $e');
+    //     return e;
+    //   });
+    //   print(
+    //       'RESULT: ${result.whenComplete(() => print('COMPLETED _-----------------'))}');
+    //   print(
+    //       'RESULT: ${result.onError((error, stackTrace) => print('ERROR: $error _-----------------'))}');
+    // }
     //jsFreeValue(ctx, jsval);
-    return JsEvalResult(result?.toString() ?? "null", jsval);
+    return JsEvalResult(result?.toString() ?? "null", result);
   }
 
   @override
@@ -196,25 +208,48 @@ class QuickJsRuntime2 extends FlutterJsPlatform {
 
   @override
   Future<JsEvalResult> evaluateAsync(String code) {
-    // TODO: implement evaluateAsync
-    throw UnimplementedError();
+    return Future.value(evaluate(code));
   }
 
   @override
   int executePendingJob() {
-    // TODO: implement executePendingJob
-    throw UnimplementedError();
+    _executePendingJob();
+    return 0;
   }
 
   @override
   String getEngineInstanceId() {
-    // TODO: implement getEngineInstanceId
-    throw UnimplementedError();
+    return this.hashCode.toString();
   }
 
   @override
   void initChannelFunctions() {
-    // TODO: implement initChannelFunctions
+    JavascriptRuntime.channelFunctionsRegistered[getEngineInstanceId()] = {};
+    final setToGlobalObject =
+        evaluate("(key, val) => { this[key] = val; }").rawResult;
+    (setToGlobalObject as JSInvokable).invoke([
+      'sendMessage',
+      (String channelName, String message) {
+        final channelFunctions = JavascriptRuntime
+            .channelFunctionsRegistered[getEngineInstanceId()]!;
+
+        if (channelFunctions.containsKey(channelName)) {
+          channelFunctions[channelName]!.call(jsonDecode(message));
+        } else {
+          print('No channel $channelName registered');
+        }
+        if (FlutterJsPlatform.debugEnabled) {
+          print('CHANNEL: $channelName - Message: $message');
+        }
+      }
+    ]);
+    //  final sendMessageCreateFnResult = evaluate("""
+    //     function sendMessage(channelName, message) {
+    //       return FLUTTER_JS_NATIVE_BRIDGE_sendMessage.apply(globalThis, [channelName, message]);
+    //     }
+    //     sendMessage
+    //   """);
+    //print('RESULT creating sendMessage function: $sendMessageCreateFnResult');
   }
 
   @override
@@ -225,7 +260,13 @@ class QuickJsRuntime2 extends FlutterJsPlatform {
 
   @override
   bool setupBridge(String channelName, void Function(dynamic args) fn) {
-    mapJsBridge[channelName] = fn;
+    final channelFunctionCallbacks =
+        JavascriptRuntime.channelFunctionsRegistered[getEngineInstanceId()]!;
+
+    if (channelFunctionCallbacks.keys.contains(channelName)) return false;
+
+    channelFunctionCallbacks[channelName] = fn;
+
     return true;
   }
 }
