@@ -12,13 +12,13 @@ extension HandlePromises on FlutterJsPlatform {
       var FLUTTER_NATIVEJS_PENDING_PROMISES_COUNT = -1;
 
       function $REGISTER_PROMISE_FUNCTION(promise) {
-        console.log('_______1');
+        //console.log('_______1');
         FLUTTER_NATIVEJS_PENDING_PROMISES_COUNT += 1;
         idx = FLUTTER_NATIVEJS_PENDING_PROMISES_COUNT;
         FLUTTER_NATIVEJS_PENDING_PROMISES[idx] = FLUTTER_NATIVEJS_MakeQuerablePromise(promise);
-        console.log('_______'  + FLUTTER_NATIVEJS_PENDING_PROMISES[idx]);
+        //console.log('_______'  + FLUTTER_NATIVEJS_PENDING_PROMISES[idx]);
 
-        console.log('_______2');
+        //console.log('_______2');
         return idx;
       }
     """);
@@ -136,7 +136,7 @@ extension HandlePromises on FlutterJsPlatform {
 
     final fnRegisterPromiseFunction = evaluate(REGISTER_PROMISE_FUNCTION);
     final evalRegisterPromise = fnRegisterPromiseFunction.rawResult;
-    print(fnRegisterPromiseFunction);
+    // print(fnRegisterPromiseFunction);
     // todo: investigate - application is crashing around this point
     final promiseQuerableIdx =
         callFunction(evalRegisterPromise, value.rawResult).stringResult;

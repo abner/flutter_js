@@ -80,7 +80,7 @@ abstract class JavascriptRuntime {
       };
       1
     """);
-    print('SET TIMEOUT EVAL RESULT: $setTImeoutResult');
+    //print('SET TIMEOUT EVAL RESULT: $setTImeoutResult');
     onMessage('SetTimeout', (dynamic args) {
       try {
         int duration = args['timeout'];
