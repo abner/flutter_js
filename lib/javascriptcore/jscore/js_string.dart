@@ -8,7 +8,7 @@ import '../binding/js_string_ref.dart' as JSStringRef;
 /// A UTF16 character buffer. The fundamental string representation in JavaScript.
 class JSString {
   /// C pointer
-  Pointer _pointer;
+  late Pointer _pointer;
   get pointer => _pointer;
 
   JSString(this._pointer);
@@ -44,7 +44,7 @@ class JSString {
   }
 
   /// Returns dart String
-  String get string {
+  String? get string {
     if (_pointer == nullptr) return null;
     var cString = JSStringRef.jSStringGetCharactersPtr(_pointer);
     if (cString == nullptr) {
@@ -72,12 +72,12 @@ class JSString {
 /// JSStringRef pointer
 class JSStringPointer {
   /// C pointer
-  final Pointer<Pointer> pointer;
+  late final Pointer<Pointer> pointer;
 
   /// Pointer array count
   final int count;
 
-  JSStringPointer([Pointer value])
+  JSStringPointer([Pointer? value])
       : this.count = 1,
         this.pointer = calloc<Pointer>() {
     pointer.value = value ?? nullptr;

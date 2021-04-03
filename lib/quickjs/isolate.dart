@@ -105,7 +105,7 @@ void _runJsIsolate(Map spawnMessage) async {
   SendPort sendPort = spawnMessage[#port];
   ReceivePort port = ReceivePort();
   sendPort.send(port.sendPort);
-  final qjs = FlutterQjs(
+  final qjs = QuickJsRuntime2(
     stackSize: spawnMessage[#stackSize],
     hostPromiseRejectionHandler: (reason) {
       sendPort.send({

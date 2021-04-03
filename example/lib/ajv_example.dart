@@ -7,7 +7,7 @@ import 'form.dart';
 
 class AjvExample extends StatefulWidget {
   final FlutterJsPlatform jsRuntime;
-  AjvExample(this.jsRuntime, {Key key}) : super(key: key);
+  AjvExample(this.jsRuntime, {Key? key}) : super(key: key);
 
   _AjvExampleState createState() => _AjvExampleState();
 }
@@ -19,7 +19,7 @@ class _AjvExampleState extends State<AjvExample> {
   GlobalKey<FormState> _formKey = GlobalKey();
   GlobalKey<FormWidgetState> _formWidgetKey = GlobalKey();
 
-  Future<dynamic> _loadingFuture;
+  Future<dynamic>? _loadingFuture;
 
   @override
   void initState() {
@@ -32,18 +32,20 @@ class _AjvExampleState extends State<AjvExample> {
     // loads ajv only once into the jsRuntime
     var ajvIsLoaded = widget.jsRuntime
         .evaluate("""var ajvIsLoaded = (typeof ajv == 'undefined') ? 
-          0 : 1; ajvIsLoaded;
+          "0" : "1"; ajvIsLoaded;
         """).stringResult;
     print("AJV is Loaded $ajvIsLoaded");
     if (ajvIsLoaded == "0") {
       try {
         String ajvJS = await rootBundle.loadString("assets/js/ajv.js");
 
-        widget.jsRuntime.evaluate("var window = global = globalThis;");
+        widget.jsRuntime.evaluate("""var window = global = globalThis;""");
 
         widget.jsRuntime.evaluate(ajvJS + "");
         final evalAjv = widget.jsRuntime.evaluate("""
+                    console.log('AQUI 1 ---------------------');
                     var ajv = new global.Ajv({ allErrors: true, coerceTypes: true });
+                    console.log('AQUI 2 ---------------------');
                     ajv.addSchema(
                       {
                         required: ["name", "age","id", "email", "student", "worker"], 
@@ -102,19 +104,20 @@ class _AjvExampleState extends State<AjvExample> {
                          """;
       JsEvalResult jsResult = widget.jsRuntime.evaluate(expression);
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
         setState(() {
           _jsResult = jsResult.stringResult;
         });
       });
 
       final valueResult = json.decode(jsResult.stringResult);
-      final List<ValidationResult> result =
-          ValidationResult.listFromJson(valueResult is int ? [] : valueResult);
+
+      final List<ValidationResult> result = ValidationResult.listFromJson(
+          valueResult is int ? [] : valueResult ?? []);
 
       final errorsForField = result
           .where((element) =>
-              element.message.contains("$field") ||
+              element.message!.contains("$field") ||
               element.params['missingProperty'] == field ||
               element.dataPath == ".$field")
           .toList();
@@ -158,7 +161,7 @@ class _AjvExampleState extends State<AjvExample> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.info_outline),
         onPressed: () async {
-          Navigator.of(_scaffoldKey.currentContext).push(
+          Navigator.of(_scaffoldKey.currentContext!).push(
             MaterialPageRoute(
               builder: (context) => AjvResultScreen(
                 "{\"errors\": ${_jsResult == "" ? null : _jsResult}}",

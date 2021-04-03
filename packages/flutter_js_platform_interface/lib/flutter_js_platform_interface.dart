@@ -14,7 +14,7 @@ class FlutterJsPlatformEmpty extends FlutterJsPlatform {
   }
 
   @override
-  T convertValue<T>(JsEvalResult jsValue) {
+  T? convertValue<T>(JsEvalResult jsValue) {
     throw UnimplementedError();
   }
 
@@ -99,7 +99,7 @@ abstract class FlutterJsPlatform extends PlatformInterface {
 
   JsEvalResult callFunction(Pointer fn, Pointer obj);
 
-  T convertValue<T>(JsEvalResult jsValue);
+  T? convertValue<T>(JsEvalResult jsValue);
 
   String jsonStringify(JsEvalResult jsValue);
 

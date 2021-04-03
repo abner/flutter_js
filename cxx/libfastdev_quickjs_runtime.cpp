@@ -197,8 +197,6 @@ extern "C"
         // __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "After Eval: %p", result);
         *errors = 0;
 
-        printf("IS EXCEPTION %d", JS_IsException(*result));
-
         if (JS_IsException(*result) == 1)
         {
             // __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Inside is exception: %p", result);
@@ -206,7 +204,6 @@ extern "C"
             *errors = 1;
             result = new JSValue(JS_GetException(ctx));
             *stringResult = (char *)JS_ToCString(ctx, *result);
-            printf("ERROR ON C-SIDE >>>>>>> %s", *stringResult);
             // __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "After get  exception: %p", result);
             return nullptr;
         }
@@ -432,7 +429,6 @@ extern "C"
         JS_SetOpaque(*jsobj, opaque);
         return jsobj;
     }
-
     DLLEXPORT void jsSetMaxStackSize(JSRuntime *rt, size_t stack_size)
     {
         JS_SetMaxStackSize(rt, stack_size);

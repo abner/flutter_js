@@ -65,10 +65,10 @@ packages:
   flutter_js_platform_interface:
     dependency: "direct main"
     description:
-      name: flutter_js_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.0+0"
+      path: "packages/flutter_js_platform_interface"
+      relative: true
+    source: path
+    version: "0.3.1+0"
   flutter_test:
     dependency: "direct dev"
     description: flutter

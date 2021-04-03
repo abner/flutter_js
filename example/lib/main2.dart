@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_js_example/ajv_example.dart';
 //import 'package:flutter_qjs/flutter_qjs.dart';
@@ -30,14 +27,14 @@ class FlutterJsHomeScreen extends StatefulWidget {
   @override
   _FlutterJsHomeScreenState createState() => _FlutterJsHomeScreenState();
 
-  FlutterJsPlatform javascriptRuntime;
+  late FlutterJsPlatform javascriptRuntime;
 
   FlutterJsHomeScreen() {
     javascriptRuntime = getJavascriptRuntime();
     executeJS();
     javascriptRuntime.onMessage('ConsoleLog2', (args) {
       print('ConsoleLog2 (Dart Side): $args');
-      return json.encode(args);
+      // return json.encode(args);
     });
     executeJS();
     Future.delayed(Duration(seconds: 2), executeJS);

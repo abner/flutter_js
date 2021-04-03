@@ -11,11 +11,11 @@ import 'js_value.dart';
 /// A JavaScript execution context. Holds the global object and other execution state.
 class JSContext {
   /// C pointer
-  Pointer _pointer;
+  late Pointer _pointer;
   Pointer get pointer => _pointer;
 
   /// Exception (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
-  JSValuePointer exception = JSValuePointer();
+  JSValuePointer? exception = JSValuePointer();
 
   JSContext(this._pointer);
 
@@ -29,7 +29,7 @@ class JSContext {
   /// [globalObjectClass] (JSClass) The class to use when creating the global object. Pass NULL to use the default object class.
   /// [@result] (JSGlobalContext) A JSGlobalContext with a global object of class globalObjectClass.
   JSContext.create({
-    JSClass globalObjectClass,
+    JSClass? globalObjectClass,
   }) : this._pointer = JSContextRef.jSGlobalContextCreate(
             globalObjectClass == null ? nullptr : globalObjectClass.pointer);
 
@@ -40,8 +40,8 @@ class JSContext {
   /// [globalObjectClass] (JSClass) The class to use when creating the global object. Pass NULL to use the default object class.
   /// [@result] (JSGlobalContext) A JSGlobalContext with a global object of class globalObjectClass and a context group equal to group.
   JSContext.createInGroup({
-    JSContextGroup group,
-    JSClass globalObjectClass,
+    JSContextGroup? group,
+    JSClass? globalObjectClass,
   }) : this._pointer = JSContextRef.jSGlobalContextCreateInGroup(
             group == null ? JSContextRef.jSContextGroupCreate() : group.pointer,
             globalObjectClass == null ? nullptr : globalObjectClass.pointer);
@@ -98,8 +98,8 @@ class JSContext {
   /// [@result] (JSValueRef) The JSValue that results from evaluating script, or NULL if an exception is thrown.
   JSValue evaluate(
     String script, {
-    JSObject thisObject,
-    String sourceURL,
+    JSObject? thisObject,
+    String? sourceURL,
     int startingLineNumber = 1,
   }) {
     return JSValue(
@@ -109,8 +109,8 @@ class JSContext {
           JSString.fromString(script).pointer,
           thisObject == null ? nullptr : thisObject.pointer,
           sourceURL == null ? nullptr : JSString.fromString(sourceURL).pointer,
-          startingLineNumber ?? 1,
-          exception.pointer,
+          startingLineNumber,
+          exception?.pointer,
         ));
   }
 }

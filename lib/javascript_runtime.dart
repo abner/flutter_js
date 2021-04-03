@@ -14,7 +14,7 @@ abstract class JavascriptRuntime {
     return this;
   }
 
-  Map<String, Pointer> localContext = {};
+  Map<String, Pointer?> localContext = {};
 
   Map<String, dynamic> dartContext = {};
 
@@ -32,9 +32,9 @@ abstract class JavascriptRuntime {
 
   JsEvalResult callFunction(Pointer fn, Pointer obj);
 
-  T convertValue<T>(JsEvalResult jsValue);
+  T? convertValue<T>(JsEvalResult jsValue);
 
-  String jsonStringify(JsEvalResult jsValue);
+  String? jsonStringify(JsEvalResult jsValue);
 
   @protected
   void initChannelFunctions();
@@ -84,7 +84,7 @@ abstract class JavascriptRuntime {
     onMessage('SetTimeout', (dynamic args) {
       try {
         int duration = args['timeout'];
-        String idx = args['timeoutIndex'];
+        String? idx = args['timeoutIndex'];
 
         Timer(Duration(milliseconds: duration), () {
           evaluate("""
@@ -101,9 +101,9 @@ abstract class JavascriptRuntime {
   }
 
   sendMessage({
-    @required String channelName,
-    @required List<String> args,
-    String uuid,
+    required String channelName,
+    required List<String> args,
+    String? uuid,
   }) {
     if (uuid != null) {
       evaluate(

@@ -54,7 +54,6 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
             var value = Math.trunc(Math.random() * 100).toString();
             JSON.stringify({ "object": jsonStringified, "expression": value});
             """).stringResult;
-    print(#abner);
     return jsResult;
   }
 

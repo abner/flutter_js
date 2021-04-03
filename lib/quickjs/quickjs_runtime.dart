@@ -3,21 +3,22 @@ import 'dart:ffi';
 import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter_js/flutter_js.dart';
-import 'package:flutter_js/javascript_runtime.dart';
 import 'package:flutter_js/quickjs/utf8_null_terminated.dart';
 
 import 'qjs_typedefs.dart';
 
 final DynamicLibrary qjsDynamicLibrary = Platform.isAndroid
     ? DynamicLibrary.open("libfastdev_quickjs_runtime.so")
-    : DynamicLibrary.process();
+    : (Platform.isWindows
+        ? DynamicLibrary.open('flutter_js_plugin.dll')
+        : DynamicLibrary.process());
 
 typedef FnBridgeCallback = Function(
     dynamic args); //String Function(String channel, String message);
 
 final Map<String, FnBridgeCallback> mapJsBridge = {};
 
-Pointer<JSValueConst> bridgeCallbackGlobalHandler(
+Pointer<JSValueConst>? bridgeCallbackGlobalHandler(
   Pointer<JSContext> ctx,
   Pointer<Utf8NullTerminated> channelName,
   Pointer<Utf8NullTerminated> message,
@@ -28,7 +29,7 @@ Pointer<JSValueConst> bridgeCallbackGlobalHandler(
   if (mapJsBridge.containsKey(channelNameStr)) {
     String result = 'NO RESULT YET';
     try {
-      result = mapJsBridge[channelNameStr].call(jsonDecode(messageStr));
+      result = mapJsBridge[channelNameStr]!.call(jsonDecode(messageStr));
     } on Error catch (e) {
       result = e.toString();
       print('ERROR ------ $e');
@@ -50,18 +51,19 @@ Pointer<JSValueConst> bridgeCallbackGlobalHandler(
       .rawResult;
 }
 
-Pointer<NativeFunction<ChannelCallback>> consoleLogBridgeFunction;
-Pointer<NativeFunction<ChannelCallback>> setTimeoutBridgeFunction;
-Pointer<NativeFunction<ChannelCallback>> sendNativeBridgeFunction;
+Pointer<NativeFunction<ChannelCallback>>? consoleLogBridgeFunction;
+Pointer<NativeFunction<ChannelCallback>>? setTimeoutBridgeFunction;
+Pointer<NativeFunction<ChannelCallback>>? sendNativeBridgeFunction;
 
 class QuickJsRuntime extends FlutterJsPlatform {
-  Pointer<JSContext> _context;
-  Pointer<JSRuntime> _runtime;
+  late Pointer<JSContext> _context;
+  late Pointer<JSRuntime> _runtime;
 
   final String fileName;
 
   QuickJsRuntime(this.fileName) {
     _runtime = _jsNewRuntimeDartBridge();
+    jsSetMaxStackSize(_runtime, 1024 * 1024);
     consoleLogBridgeFunction = Pointer.fromFunction<
         Pointer<JSValueConst> Function(
             Pointer<JSContext> ctx,
@@ -86,6 +88,19 @@ class QuickJsRuntime extends FlutterJsPlatform {
 
     init();
   }
+
+  /// DLLEXPORT void jsSetMaxStackSize(JSRuntime *rt, size_t stack_size)
+  final void Function(
+    Pointer<JSRuntime>,
+    int,
+  ) jsSetMaxStackSize = qjsDynamicLibrary
+      .lookup<
+          NativeFunction<
+              Void Function(
+        Pointer<JSRuntime>,
+        IntPtr,
+      )>>('jsSetMaxStackSize')
+      .asFunction();
 
   // NATIVE BRIDGE DECLARATIONS
   static JSEvalWrapper _jsEvalWrapper = qjsDynamicLibrary
@@ -131,8 +146,12 @@ class QuickJsRuntime extends FlutterJsPlatform {
     Pointer result = calloc<JSValueConst>();
     Pointer<Pointer<Utf8NullTerminated>> stringResult =
         calloc<Pointer<Utf8NullTerminated>>();
-    int operationResult =
-        _callJsFunction1Arg(_context, function, argument, result, stringResult);
+    int operationResult = _callJsFunction1Arg(
+        _context,
+        function as Pointer<JSValueConst>,
+        argument as Pointer<JSValueConst>,
+        result as Pointer<JSValueConst>,
+        stringResult);
     String resultStr = Utf8NullTerminated.fromUtf8(stringResult.value);
     return JsEvalResult(
       resultStr,
@@ -172,7 +191,7 @@ class QuickJsRuntime extends FlutterJsPlatform {
     String js, {
     String fileName = 'nofile.js',
   }) {
-    Pointer<JSValueConst> result = calloc<JSValueConst>();
+    Pointer<JSValueConst>? result = calloc<JSValueConst>();
     Pointer<Pointer<Utf8NullTerminated>> stringResult =
         calloc<Pointer<Utf8NullTerminated>>();
     Pointer<Int32> errors = calloc<Int32>();
@@ -188,12 +207,12 @@ class QuickJsRuntime extends FlutterJsPlatform {
     );
   }
 
-  static T convertToValue<T>(
+  static T? convertToValue<T>(
       Pointer<JSContext> context, JsEvalResult evalResult) {
     Type type = getTypeForJsValue(evalResult.rawResult);
 
     if (_jsIsArray(context, evalResult.rawResult) == 1) {
-      Pointer<JSValueConst> stringifiedValue = calloc();
+      Pointer<JSValueConst>? stringifiedValue = calloc();
       Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = calloc();
       int res = _jSJSONStringify(
         context,
@@ -215,7 +234,7 @@ class QuickJsRuntime extends FlutterJsPlatform {
       case Null:
         return null;
       case Object:
-        Pointer<JSValueConst> stringifiedValue = calloc<JSValueConst>();
+        Pointer<JSValueConst>? stringifiedValue = calloc<JSValueConst>();
         Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = calloc();
 
         int res = _jSJSONStringify(
@@ -238,7 +257,7 @@ class QuickJsRuntime extends FlutterJsPlatform {
 
   @override
   int executePendingJob() {
-    Pointer<JSContext> newContext = calloc<JSContext>();
+    Pointer<JSContext>? newContext = calloc<JSContext>();
     return _jsExecutePendingJob(_runtime, newContext);
   }
 
@@ -258,7 +277,7 @@ class QuickJsRuntime extends FlutterJsPlatform {
 
   @override
   String jsonStringify(JsEvalResult jsValue) {
-    Pointer<JSValueConst> stringifiedValue = calloc();
+    Pointer<JSValueConst>? stringifiedValue = calloc();
     Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = calloc();
     int res = _jSJSONStringify(
       _context,
@@ -277,8 +296,8 @@ class QuickJsRuntime extends FlutterJsPlatform {
   }
 
   @override
-  T convertValue<T>(JsEvalResult evalResult) {
-    return convertToValue<T>(_context, evalResult);
+  T? convertValue<T>(JsEvalResult evalResult) {
+    return convertToValue<T>(_context, evalResult)!;
   }
 
   @override

@@ -225,7 +225,7 @@ enum JSClassAttributes {
 }
 
 /// enum JSPropertyAttributes to C enum
-int jSPropertyAttributesToCEnum(JSPropertyAttributes type) {
+int jSPropertyAttributesToCEnum(JSPropertyAttributes? type) {
   switch (type) {
     case JSPropertyAttributes.kJSPropertyAttributeReadOnly:
       return JSObjectRef.JSPropertyAttributes.kJSPropertyAttributeReadOnly;
@@ -280,10 +280,10 @@ class JSStaticValue {
   String name;
 
   /// A JSObjectGetPropertyCallback to invoke when getting the property's value.
-  Pointer<NativeFunction<JSObjectRef.JSObjectGetPropertyCallback>> getProperty;
+  Pointer<NativeFunction<JSObjectRef.JSObjectGetPropertyCallback>>? getProperty;
 
   /// A JSObjectSetPropertyCallback to invoke when setting the property's value. May be NULL if the ReadOnly attribute is set.
-  Pointer<NativeFunction<JSObjectRef.JSObjectSetPropertyCallback>> setProperty;
+  Pointer<NativeFunction<JSObjectRef.JSObjectSetPropertyCallback>>? setProperty;
 
   /// (unsigned) A logically ORed set of [JSPropertyAttributes] to give to the property.
   JSPropertyAttributes attributes;
@@ -318,14 +318,14 @@ class JSStaticValue {
 /// This structure describes a statically declared function property.
 class JSStaticFunction {
   /// Property's name.
-  String name;
+  String? name;
 
   /// A JSObjectCallAsFunctionCallback to invoke when the property is called as a function.
-  Pointer<NativeFunction<JSObjectRef.JSObjectCallAsFunctionCallback>>
+  Pointer<NativeFunction<JSObjectRef.JSObjectCallAsFunctionCallback>>?
       callAsFunction;
 
   /// A logically ORed set of [JSPropertyAttributes] to give to the property.
-  JSPropertyAttributes attributes;
+  JSPropertyAttributes? attributes;
 
   JSStaticFunction({
     this.name,
@@ -335,7 +335,7 @@ class JSStaticFunction {
 
   JSObjectRef.JSStaticFunction create() {
     return JSObjectRef.JSStaticFunction.allocate(
-      name: name.toNativeUtf8(),
+      name: name!.toNativeUtf8(),
       callAsFunction: callAsFunction ?? nullptr,
       attributes: jSPropertyAttributesToCEnum(attributes),
     );
@@ -343,7 +343,7 @@ class JSStaticFunction {
 
   JSObjectRef.JSStaticFunctionStruct toStruct() {
     return JSObjectRef.JSStaticFunctionStruct(
-      name: name.toNativeUtf8(),
+      name: name!.toNativeUtf8(),
       callAsFunction: callAsFunction ?? nullptr,
       attributes: jSPropertyAttributesToCEnum(attributes),
     );
@@ -374,50 +374,50 @@ class JSClassDefinition {
   String className;
 
   /// A JSClass to set as the class's parent class. Pass NULL use the default object class.
-  JSClass parentClass;
+  JSClass? parentClass;
 
   /// A JSStaticValue array containing the class's statically declared value properties. Pass NULL to specify no statically declared value properties. The array must be terminated by a JSStaticValue whose name field is NULL.
-  List<JSStaticValue> staticValues;
+  List<JSStaticValue>? staticValues;
 
   /// A JSStaticFunction array containing the class's statically declared function properties. Pass NULL to specify no statically declared function properties. The array must be terminated by a JSStaticFunction whose name field is NULL.
-  List<JSStaticFunction> staticFunctions;
+  List<JSStaticFunction>? staticFunctions;
 
   /// The callback invoked when an object is first created. Use this callback to initialize the object.
-  Pointer<NativeFunction<JSObjectRef.JSObjectInitializeCallback>> initialize;
+  Pointer<NativeFunction<JSObjectRef.JSObjectInitializeCallback>>? initialize;
 
   /// The callback invoked when an object is finalized (prepared for garbage collection). Use this callback to release resources allocated for the object, and perform other cleanup.
-  Pointer<NativeFunction<JSObjectRef.JSObjectFinalizeCallback>> finalize;
+  Pointer<NativeFunction<JSObjectRef.JSObjectFinalizeCallback>>? finalize;
 
   /// The callback invoked when determining whether an object has a property. If this field is NULL, getProperty is called instead. The hasProperty callback enables optimization in cases where only a property's existence needs to be known, not its value, and computing its value is expensive.
-  Pointer<NativeFunction<JSObjectRef.JSObjectHasPropertyCallback>> hasProperty;
+  Pointer<NativeFunction<JSObjectRef.JSObjectHasPropertyCallback>>? hasProperty;
 
   /// The callback invoked when getting a property's value.
-  Pointer<NativeFunction<JSObjectRef.JSObjectGetPropertyCallback>> getProperty;
+  Pointer<NativeFunction<JSObjectRef.JSObjectGetPropertyCallback>>? getProperty;
 
   /// The callback invoked when setting a property's value.
-  Pointer<NativeFunction<JSObjectRef.JSObjectSetPropertyCallback>> setProperty;
+  Pointer<NativeFunction<JSObjectRef.JSObjectSetPropertyCallback>>? setProperty;
 
   /// The callback invoked when deleting a property.
-  Pointer<NativeFunction<JSObjectRef.JSObjectDeletePropertyCallback>>
+  Pointer<NativeFunction<JSObjectRef.JSObjectDeletePropertyCallback>>?
       deleteProperty;
 
   /// The callback invoked when collecting the names of an object's properties.
-  Pointer<NativeFunction<JSObjectRef.JSObjectGetPropertyNamesCallback>>
+  Pointer<NativeFunction<JSObjectRef.JSObjectGetPropertyNamesCallback>>?
       getPropertyNames;
 
   /// The callback invoked when an object is called as a function.
-  Pointer<NativeFunction<JSObjectRef.JSObjectCallAsFunctionCallback>>
+  Pointer<NativeFunction<JSObjectRef.JSObjectCallAsFunctionCallback>>?
       callAsFunction;
 
   /// The callback invoked when an object is used as the target of an 'instanceof' expression.
-  Pointer<NativeFunction<JSObjectRef.JSObjectCallAsConstructorCallback>>
+  Pointer<NativeFunction<JSObjectRef.JSObjectCallAsConstructorCallback>>?
       callAsConstructor;
 
   /// The callback invoked when an object is used as a constructor in a 'new' expression.
-  Pointer<NativeFunction<JSObjectRef.JSObjectHasInstanceCallback>> hasInstance;
+  Pointer<NativeFunction<JSObjectRef.JSObjectHasInstanceCallback>>? hasInstance;
 
   /// The callback invoked when converting an object to a particular JavaScript type.
-  Pointer<NativeFunction<JSObjectRef.JSObjectConvertToTypeCallback>>
+  Pointer<NativeFunction<JSObjectRef.JSObjectConvertToTypeCallback>>?
       convertToType;
 
   JSClassDefinition({
@@ -442,21 +442,21 @@ class JSClassDefinition {
 
   JSObjectRef.JSClassDefinition create() {
     Pointer<JSObjectRef.JSStaticValue> staticValues =
-        this.staticValues == null || this.staticValues.isEmpty
+        this.staticValues == null || this.staticValues!.isEmpty
             ? nullptr
             : JSObjectRef.JSStaticValue.allocateArray(
-                this.staticValues.map((e) => e.toStruct()));
+                this.staticValues!.map((e) => e.toStruct()) as List<JSObjectRef.JSStaticValueStruct>) as Pointer<JSObjectRef.JSStaticValue>;
     Pointer<JSObjectRef.JSStaticFunction> staticFunctions =
-        this.staticFunctions == null || this.staticFunctions.isEmpty
+        this.staticFunctions == null || this.staticFunctions!.isEmpty
             ? nullptr
             : JSObjectRef.JSStaticFunction.allocateArray(
-                    this.staticFunctions.map((e) => e.toStruct()).toList())
+                    this.staticFunctions!.map((e) => e.toStruct()).toList())
                 .addressOf;
     return JSObjectRef.JSClassDefinition.allocate(
       version: version,
       attributes: jSClassAttributesToCEnum(attributes),
       className: className.toNativeUtf8(),
-      parentClass: parentClass == null ? nullptr : parentClass.pointer,
+      parentClass: parentClass == null ? nullptr : parentClass!.pointer,
       staticValues: staticValues,
       staticFunctions: staticFunctions,
       initialize: initialize ?? nullptr,
@@ -477,7 +477,7 @@ class JSClassDefinition {
 /// A JavaScript object. A JSObject is a JSValue.
 class JSObject {
   /// JavaScript context
-  final JSContext context;
+  late final JSContext context;
 
   /// C pointer
   final Pointer pointer;
@@ -493,7 +493,7 @@ class JSObject {
   JSObject.make(
     this.context,
     JSClass jsClass, {
-    Pointer data,
+    Pointer? data,
   }) : this.pointer = JSObjectRef.jSObjectMake(
             context.pointer, jsClass.pointer, data ?? nullptr);
 
@@ -501,9 +501,9 @@ class JSObject {
   /// [name] A JSString containing the function's name. This will be used when converting the function to string. Pass NULL to create an anonymous function.
   /// [callAsFunction] The JSObjectCallAsFunctionCallback to invoke when the function is called.
   JSObject.makeFunctionWithCallback(
-      this.context,
+      JSContext this.context,
       String name,
-      Pointer<NativeFunction<JSObjectRef.JSObjectCallAsFunctionCallback>>
+      Pointer<NativeFunction<JSObjectRef.JSObjectCallAsFunctionCallback>>?
           callAsFunction)
       : assert(
           name != null && name.isNotEmpty,
@@ -519,9 +519,9 @@ class JSObject {
   /// [jsClass] A JSClass that is the class your constructor will assign to the objects its constructs. jsClass will be used to set the constructor's .prototype property, and to evaluate 'instanceof' expressions. Pass NULL to use the default object class.
   /// [callAsConstructor] A JSObjectCallAsConstructorCallback to invoke when your constructor is used in a 'new' expression. Pass NULL to use the default object constructor.
   JSObject.makeConstructor(
-      this.context,
+      JSContext this.context,
       JSClass jsClass,
-      Pointer<NativeFunction<JSObjectRef.JSObjectCallAsConstructorCallback>>
+      Pointer<NativeFunction<JSObjectRef.JSObjectCallAsConstructorCallback>>?
           callAsConstructor)
       : this.pointer = JSObjectRef.jSObjectMakeConstructor(
             context.pointer, jsClass.pointer, callAsConstructor ?? nullptr);
@@ -532,9 +532,9 @@ class JSObject {
   /// [arguments] A JSValue array of data to populate the Array with. Pass NULL if argumentCount is 0.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   JSObject.makeArray(
-    this.context,
+    JSContext this.context,
     JSValuePointer arguments, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) : this.pointer = JSObjectRef.jSObjectMakeArray(
             context.pointer,
             arguments.count,
@@ -545,9 +545,9 @@ class JSObject {
   /// [arguments] A JSValue array of arguments to pass to the Date Constructor. Pass NULL if argumentCount is 0.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   JSObject.makeDate(
-    this.context,
+    JSContext this.context,
     JSValuePointer arguments, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) : this.pointer = JSObjectRef.jSObjectMakeDate(
             context.pointer,
             arguments.count,
@@ -558,9 +558,9 @@ class JSObject {
   /// [arguments] (JSValueRef[]) A JSValue array of arguments to pass to the Error Constructor. Pass NULL if argumentCount is 0.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   JSObject.makeError(
-    this.context,
+    JSContext this.context,
     JSValuePointer arguments, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) : this.pointer = JSObjectRef.jSObjectMakeError(
             context.pointer,
             arguments.count,
@@ -571,9 +571,9 @@ class JSObject {
   /// [arguments] (JSValueRef[]) A JSValue array of arguments to pass to the RegExp Constructor. Pass NULL if argumentCount is 0.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   JSObject.makeRegExp(
-    this.context,
+    JSContext this.context,
     JSValuePointer arguments, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) : this.pointer = JSObjectRef.jSObjectMakeRegExp(
             context.pointer,
             arguments.count,
@@ -585,10 +585,10 @@ class JSObject {
   /// [reject] (JSObjectRef*) A pointer to a JSObjectRef in which to store the reject function for the new promise. Pass NULL if you do not care to store the reject callback.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   JSObject.makeDeferredPromise(
-    this.context,
+    JSContext this.context,
     JSObjectPointer resolve,
     JSObjectPointer reject, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) : this.pointer = JSObjectRef.jSObjectMakeDeferredPromise(
             context.pointer,
             resolve.pointer,
@@ -604,12 +604,12 @@ class JSObject {
   /// [startingLineNumber] (int) An integer value specifying the script's starting line number in the file located at sourceURL. This is only used when reporting exceptions. The value is one-based, so the first line is line 1 and invalid values are clamped to 1.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store a syntax error exception, if any. Pass NULL if you do not care to store a syntax error exception.
   JSObject.makeFunction(
-    this.context,
+    JSContext this.context,
     String name,
     JSStringPointer parameterNames,
     String body,
     String sourceURL, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
     int startingLineNumber = 0,
   }) : this.pointer = JSObjectRef.jSObjectMakeFunction(
             context.pointer,
@@ -626,10 +626,10 @@ class JSObject {
   /// [length] (size_t) The number of elements to be in the new Typed Array.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   JSObject.makeTypedArray(
-    this.context,
+    JSContext this.context,
     JSTypedArrayType arrayType,
     int length, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) : this.pointer = JSTypedArray.jSObjectMakeTypedArray(
             context.pointer,
             JSValue.jSTypedArrayTypeToCEnum(arrayType),
@@ -645,13 +645,13 @@ class JSObject {
   /// [deallocatorContext] (void*) A pointer to pass back to the deallocator.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   JSObject.makeTypedArrayWithBytesNoCopy(
-    this.context,
+    JSContext this.context,
     JSTypedArrayType arrayType,
     Bytes bytes,
-    Pointer<NativeFunction<JSBase.JSTypedArrayBytesDeallocator>>
+    Pointer<NativeFunction<JSBase.JSTypedArrayBytesDeallocator>>?
         bytesDeallocator,
     Pointer deallocatorContext, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) : this.pointer = JSTypedArray.jSObjectMakeTypedArrayWithBytesNoCopy(
             context.pointer,
             JSValue.jSTypedArrayTypeToCEnum(arrayType),
@@ -669,7 +669,7 @@ class JSObject {
     this.context,
     JSTypedArrayType arrayType,
     JSObject buffer, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) : this.pointer = JSTypedArray.jSObjectMakeTypedArrayWithArrayBuffer(
             context.pointer,
             JSValue.jSTypedArrayTypeToCEnum(arrayType),
@@ -683,12 +683,12 @@ class JSObject {
   /// [length] (size_t) The number of elements to include in the Typed Array.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   JSObject.makeTypedArrayWithArrayBufferAndOffset(
-    this.context,
+    JSContext this.context,
     JSTypedArrayType arrayType,
     JSObject buffer,
     int byteOffset,
     int length, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) : this.pointer =
             JSTypedArray.jSObjectMakeTypedArrayWithArrayBufferAndOffset(
                 context.pointer,
@@ -705,17 +705,17 @@ class JSObject {
   /// [deallocatorContext] (void*) A pointer to pass back to the deallocator.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   JSObject.makeArrayBufferWithBytesNoCopy(
-    this.context,
+    JSContext this.context,
     Bytes bytes,
     Pointer<NativeFunction<JSBase.JSTypedArrayBytesDeallocator>>
         bytesDeallocator,
     Pointer deallocatorContext, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) : this.pointer = JSTypedArray.jSObjectMakeArrayBufferWithBytesNoCopy(
             context.pointer,
             bytes.pointer,
             bytes.length,
-            bytesDeallocator ?? nullptr,
+            bytesDeallocator,
             deallocatorContext,
             (exception ?? JSValuePointer(nullptr)).pointer);
 
@@ -744,7 +744,7 @@ class JSObject {
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   JSValue getProperty(
     String propertyName, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     return JSValue(
         context,
@@ -764,7 +764,7 @@ class JSObject {
     String propertyName,
     JSValue value,
     JSPropertyAttributes attributes, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     JSObjectRef.jSObjectSetProperty(
         context.pointer,
@@ -781,7 +781,7 @@ class JSObject {
   /// [@result] (bool) true if the delete operation succeeds, otherwise false (for example, if the property has the kJSPropertyAttributeDontDelete attribute set).
   bool deleteProperty(
     String propertyName, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     return JSObjectRef.jSObjectDeleteProperty(
             context.pointer,
@@ -797,7 +797,7 @@ class JSObject {
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   bool hasPropertyForKey(
     String propertyKey, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     return JSObjectRef.jSObjectHasPropertyForKey(
             context.pointer,
@@ -813,7 +813,7 @@ class JSObject {
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   JSValue getPropertyForKey(
     String propertyKey, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     return JSValue(
         context,
@@ -834,7 +834,7 @@ class JSObject {
     String propertyKey,
     JSValue value,
     JSPropertyAttributes attributes, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     JSObjectRef.jSObjectSetPropertyForKey(
         context.pointer,
@@ -851,7 +851,7 @@ class JSObject {
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   JSValue getPropertyAtIndex(
     int propertyIndex, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     return JSValue(
         context,
@@ -867,7 +867,7 @@ class JSObject {
   void setPropertyAtIndex(
     int propertyIndex,
     JSValue value, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     JSObjectRef.jSObjectSetPropertyAtIndex(
         context.pointer,
@@ -902,7 +902,7 @@ class JSObject {
   JSValue callAsFunction(
     JSObject thisObject,
     JSValuePointer arguments, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     return JSValue(
         context,
@@ -926,7 +926,7 @@ class JSObject {
   /// [@result] (JSObjectRef) The JSObject that results from calling object as a constructor, or NULL if an exception is thrown or object is not a constructor.
   JSObject callAsConstructor(
     JSValuePointer arguments, {
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     return JSObject(
         context,
@@ -957,7 +957,7 @@ class JSObject {
   /// The pointer returned by this function is temporary and is not guaranteed to remain valid across JavaScriptCore API calls.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   Bytes typedArrayBytes({
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     return Bytes(
         JSTypedArray.jSObjectGetTypedArrayBytesPtr(context.pointer, pointer,
@@ -969,7 +969,7 @@ class JSObject {
   /// Returns the byte length of a JavaScript Typed Array object.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   int typedArrayByteLength({
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     return JSTypedArray.jSObjectGetTypedArrayByteLength(context.pointer,
         pointer, (exception ?? JSValuePointer(nullptr)).pointer);
@@ -978,7 +978,7 @@ class JSObject {
   /// Returns the byte offset of a JavaScript Typed Array object.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   int typedArrayByteOffset({
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     return JSTypedArray.jSObjectGetTypedArrayByteOffset(context.pointer,
         pointer, (exception ?? JSValuePointer(nullptr)).pointer);
@@ -987,7 +987,7 @@ class JSObject {
   /// Returns the JavaScript Array Buffer object that is used as the backing of a JavaScript Typed Array object.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   JSObject typedArrayBuffer({
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     return JSObject(
         context,
@@ -999,11 +999,11 @@ class JSObject {
   /// The pointer returned by this function is temporary and is not guaranteed to remain valid across JavaScriptCore API calls.
   /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
   Bytes arrayBufferBytes({
-    JSValuePointer exception,
+    JSValuePointer? exception,
   }) {
     return Bytes(
         JSTypedArray.jSObjectGetArrayBufferBytesPtr(context.pointer, pointer,
-            (exception ?? JSValuePointer(nullptr)).pointer),
+            (exception ?? JSValuePointer(nullptr)).pointer) as Pointer<Pointer<NativeType>>,
         JSTypedArray.jSObjectGetArrayBufferByteLength(context.pointer, pointer,
             (exception ?? JSValuePointer(nullptr)).pointer));
   }
@@ -1017,15 +1017,15 @@ class JSObject {
 /// JSObjectRef pointer
 class JSObjectPointer {
   /// C pointer
-  final Pointer<Pointer> pointer;
+  final Pointer<Pointer>? pointer;
 
   /// Pointer array count
   final int count;
 
-  JSObjectPointer([Pointer value])
+  JSObjectPointer([Pointer? value])
       : this.count = 1,
         this.pointer = calloc<Pointer>() {
-    pointer.value = value ?? nullptr;
+    pointer!.value = value ?? nullptr;
   }
 
   /// JSObjectRef array
@@ -1033,14 +1033,14 @@ class JSObjectPointer {
       : this.count = array.length,
         this.pointer = calloc<Pointer>(array.length) {
     for (int i = 0; i < array.length; i++) {
-      this.pointer[i] = array[i].pointer;
+      this.pointer![i] = array[i].pointer;
     }
   }
 
   /// Get JSValue
   /// [index] Array index
   JSObject getValue(JSContext context, [int index = 0]) {
-    return JSObject(context, pointer[index]);
+    return JSObject(context, pointer![index]);
   }
 }
 

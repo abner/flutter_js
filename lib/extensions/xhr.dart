@@ -222,35 +222,35 @@ this.XMLHttpRequest = XMLHttpRequest;""";
 RegExp regexpHeader = RegExp("^([\\w-])+:(?!\\s*\$).+\$");
 
 class XhrPendingCall {
-  int idRequest;
-  String method;
-  String url;
-  Map<String, String> headers;
-  String body;
+  int? idRequest;
+  String? method;
+  String? url;
+  Map<String?, String?> headers;
+  String? body;
 
   XhrPendingCall({
-    @required this.idRequest,
-    @required this.method,
-    @required this.url,
-    @required this.headers,
-    @required this.body,
+    required this.idRequest,
+    required this.method,
+    required this.url,
+    required this.headers,
+    required this.body,
   });
 }
 
 const XHR_PENDING_CALLS_KEY = "xhrPendingCalls";
 
-http.Client httpClient;
+http.Client? httpClient;
 
 xhrSetHttpClient(http.Client client) {
   httpClient = client;
 }
 
 extension JavascriptRuntimeXhrExtension on FlutterJsPlatform {
-  List<dynamic> getPendingXhrCalls() {
+  List<dynamic>? getPendingXhrCalls() {
     return dartContext[XHR_PENDING_CALLS_KEY];
   }
 
-  bool hasPendingXhrCalls() => getPendingXhrCalls().length > 0;
+  bool hasPendingXhrCalls() => getPendingXhrCalls()!.length > 0;
   void clearXhrPendingCalls() {
     dartContext[XHR_PENDING_CALLS_KEY] = [];
   }
@@ -264,7 +264,7 @@ extension JavascriptRuntimeXhrExtension on FlutterJsPlatform {
       if (!hasPendingXhrCalls()) return;
 
       // collect the pending calls into a local variable making copies
-      List<dynamic> pendingCalls = List<dynamic>.from(getPendingXhrCalls());
+      List<dynamic> pendingCalls = List<dynamic>.from(getPendingXhrCalls()!);
       // clear the global pending calls list
       clearXhrPendingCalls();
 
@@ -273,45 +273,45 @@ extension JavascriptRuntimeXhrExtension on FlutterJsPlatform {
         XhrPendingCall pendingCall = element as XhrPendingCall;
         HttpMethod eMethod = HttpMethod.values.firstWhere(
             (e) => e.toString() == ("HttpMethod.${pendingCall.method}"));
-        http.Response response;
+        late http.Response response;
         switch (eMethod) {
           case HttpMethod.head:
-            response = await httpClient.head(
-              Uri.parse(pendingCall.url),
-              headers: pendingCall.headers,
+            response = await httpClient!.head(
+              Uri.parse(pendingCall.url!),
+              headers: pendingCall.headers as Map<String, String>?,
             );
             break;
           case HttpMethod.get:
-            response = await httpClient.get(
-              Uri.parse(pendingCall.url),
-              headers: pendingCall.headers,
+            response = await httpClient!.get(
+              Uri.parse(pendingCall.url!),
+              headers: pendingCall.headers as Map<String, String>?,
             );
             break;
           case HttpMethod.post:
-            response = await httpClient.post(
-              Uri.parse(pendingCall.url),
+            response = await httpClient!.post(
+              Uri.parse(pendingCall.url!),
               body: jsonEncode(pendingCall.body),
-              headers: pendingCall.headers,
+              headers: pendingCall.headers as Map<String, String>?,
             );
             break;
           case HttpMethod.put:
-            response = await httpClient.put(
-              Uri.parse(pendingCall.url),
+            response = await httpClient!.put(
+              Uri.parse(pendingCall.url!),
               body: jsonEncode(pendingCall.body),
-              headers: pendingCall.headers,
+              headers: pendingCall.headers as Map<String, String>?,
             );
             break;
           case HttpMethod.patch:
-            response = await httpClient.patch(
-              Uri.parse(pendingCall.url),
+            response = await httpClient!.patch(
+              Uri.parse(pendingCall.url!),
               body: jsonEncode(pendingCall.body),
-              headers: pendingCall.headers,
+              headers: pendingCall.headers as Map<String, String>?,
             );
             break;
           case HttpMethod.delete:
-            response = await httpClient.delete(
-              element.pendingCall,
-              headers: pendingCall.headers,
+            response = await httpClient!.delete(
+              Uri.parse(pendingCall.url!),
+              headers: pendingCall.headers as Map<String, String>?,
             );
             break;
         }
@@ -362,18 +362,18 @@ extension JavascriptRuntimeXhrExtension on FlutterJsPlatform {
 
     this.onMessage('SendNative', (arguments) {
       try {
-        String method = arguments[0];
-        String url = arguments[1];
+        String? method = arguments[0];
+        String? url = arguments[1];
         List<String> headersList =
             (arguments[2] as List<dynamic>).cast<String>();
-        String body = arguments[3];
-        int idRequest = arguments[4];
+        String? body = arguments[3];
+        int? idRequest = arguments[4];
 
-        Map<String, String> headers = {};
+        Map<String?, String?> headers = {};
         headersList.forEach((value) {
           final headerMatch = regexpHeader.allMatches(value).first;
-          String headerName = headerMatch.group(0);
-          String headerValue = headerMatch.group(1);
+          String? headerName = headerMatch.group(0);
+          String? headerValue = headerMatch.group(1);
           headers[headerName] = headerValue;
         });
 
@@ -442,8 +442,8 @@ extension JavascriptRuntimeXhrExtension on FlutterJsPlatform {
 }
 
 class XhtmlHttpResponseInfo {
-  final int statusCode;
-  final String statusText;
+  final int? statusCode;
+  final String? statusText;
   final List<List<String>> responseHeaders = [];
 
   XhtmlHttpResponseInfo({
@@ -455,7 +455,7 @@ class XhtmlHttpResponseInfo {
     responseHeaders.add([name, value]);
   }
 
-  Map<String, Object> toJson() {
+  Map<String, Object?> toJson() {
     return {
       "statusCode": statusCode,
       "statusText": statusText,
@@ -465,16 +465,16 @@ class XhtmlHttpResponseInfo {
 }
 
 class XmlHttpRequestResponse {
-  final String responseText;
-  final String error; // should be timeout in case of timeout
-  final XhtmlHttpResponseInfo responseInfo;
+  final String? responseText;
+  final String? error; // should be timeout in case of timeout
+  final XhtmlHttpResponseInfo? responseInfo;
 
   XmlHttpRequestResponse({this.responseText, this.responseInfo, this.error});
 
-  Map<String, Object> toJson() {
+  Map<String, Object?> toJson() {
     return {
       'responseText': responseText,
-      'responseInfo': responseInfo.toJson(),
+      'responseInfo': responseInfo!.toJson(),
       'error': error
     };
   }

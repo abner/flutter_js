@@ -268,26 +268,26 @@ typedef JSObjectConvertToTypeCallbackDart = Pointer Function(
 /// This structure describes a statically declared value property.
 class JSStaticValue extends Struct {
   /// (const char* ) A null-terminated UTF8 string containing the property's name.
-  Pointer<Utf8> name;
+  Pointer<Utf8>? name;
 
   /// (JSObjectGetPropertyCallback) A JSObjectGetPropertyCallback to invoke when getting the property's value.
-  Pointer<NativeFunction<JSObjectGetPropertyCallback>> getProperty;
+  Pointer<NativeFunction<JSObjectGetPropertyCallback>>? getProperty;
 
   /// (JSObjectSetPropertyCallback) A JSObjectSetPropertyCallback to invoke when setting the property's value. May be NULL if the ReadOnly attribute is set.
-  Pointer<NativeFunction<JSObjectSetPropertyCallback>> setProperty;
+  Pointer<NativeFunction<JSObjectSetPropertyCallback>>? setProperty;
 
   /// (unsigned) A logically ORed set of [JSPropertyAttributes] to give to the property.
   @Uint32()
-  int attributes;
+  int? attributes;
 
   factory JSStaticValue.fromAddress(int ptr) =>
       Pointer<JSStaticValue>.fromAddress(ptr).ref;
 
   factory JSStaticValue.allocate({
-    @required Pointer<Utf8> name,
-    @required Pointer<NativeFunction<JSObjectGetPropertyCallback>> getProperty,
-    @required Pointer<NativeFunction<JSObjectSetPropertyCallback>> setProperty,
-    @required int attributes,
+    required Pointer<Utf8>? name,
+    required Pointer<NativeFunction<JSObjectGetPropertyCallback>>? getProperty,
+    required Pointer<NativeFunction<JSObjectSetPropertyCallback>>? setProperty,
+    required int? attributes,
   }) =>
       calloc<JSStaticValue>().ref
         ..name = name ?? nullptr
@@ -304,9 +304,6 @@ class JSStaticValue extends Struct {
         ..attributes = struct.attributes;
 
   factory JSStaticValue.allocateArray(List<JSStaticValueStruct> structList) {
-    if (structList == null || structList.isEmpty) {
-      return null;
-    }
     var jSStaticValues =
         calloc<JSStaticValue>(structList.length + 1).ref;
     for (int index = 0; index < structList.length; index++) {
@@ -336,10 +333,10 @@ class JSStaticValueStruct {
   int attributes;
 
   JSStaticValueStruct({
-    Pointer<Utf8> name,
-    Pointer<NativeFunction<JSObjectGetPropertyCallback>> getProperty,
-    Pointer<NativeFunction<JSObjectSetPropertyCallback>> setProperty,
-    int attributes,
+    Pointer<Utf8>? name,
+    Pointer<NativeFunction<JSObjectGetPropertyCallback>>? getProperty,
+    Pointer<NativeFunction<JSObjectSetPropertyCallback>>? setProperty,
+    int? attributes,
   })  : this.name = name ?? nullptr,
         this.getProperty = getProperty ?? nullptr,
         this.setProperty = setProperty ?? nullptr,
@@ -350,23 +347,23 @@ class JSStaticValueStruct {
 /// This structure describes a statically declared function property.
 class JSStaticFunction extends Struct {
   /// (const char* ) A null-terminated UTF8 string containing the property's name.
-  Pointer<Utf8> name;
+  Pointer<Utf8>? name;
 
   /// (JSObjectCallAsFunctionCallback) A JSObjectCallAsFunctionCallback to invoke when the property is called as a function.
-  Pointer<NativeFunction<JSObjectCallAsFunctionCallback>> callAsFunction;
+  Pointer<NativeFunction<JSObjectCallAsFunctionCallback>>? callAsFunction;
 
   /// (unsigned) A logically ORed set of [JSPropertyAttributes] to give to the property.
   @Uint32()
-  int attributes;
+  int? attributes;
 
   factory JSStaticFunction.fromAddress(int ptr) =>
       Pointer<JSStaticFunction>.fromAddress(ptr).ref;
 
   factory JSStaticFunction.allocate({
-    @required Pointer<Utf8> name,
-    @required
-        Pointer<NativeFunction<JSObjectCallAsFunctionCallback>> callAsFunction,
-    @required int attributes,
+    required Pointer<Utf8>? name,
+    required
+        Pointer<NativeFunction<JSObjectCallAsFunctionCallback>>? callAsFunction,
+    required int? attributes,
   }) =>
       calloc<JSStaticFunction>().ref
         ..name = name ?? nullptr
@@ -382,9 +379,7 @@ class JSStaticFunction extends Struct {
 
   factory JSStaticFunction.allocateArray(
       List<JSStaticFunctionStruct> structList) {
-    if (structList == null || structList.isEmpty) {
-      return null;
-    }
+
     var jSStaticFunctions =
         calloc<JSStaticFunction>(structList.length + 1).ref;
     for (int index = 0; index < structList.length; index++) {
@@ -412,9 +407,9 @@ class JSStaticFunctionStruct {
   int attributes;
 
   JSStaticFunctionStruct({
-    Pointer<Utf8> name,
-    Pointer<NativeFunction<JSObjectCallAsFunctionCallback>> callAsFunction,
-    int attributes,
+    Pointer<Utf8>? name,
+    Pointer<NativeFunction<JSObjectCallAsFunctionCallback>>? callAsFunction,
+    int? attributes,
   })  : this.name = name ?? nullptr,
         this.callAsFunction = callAsFunction ?? nullptr,
         this.attributes = 0;
@@ -436,82 +431,82 @@ class JSStaticFunctionStruct {
 class JSClassDefinition extends Struct {
   /// (int) The version number of this structure. The current version is 0.
   @Int32()
-  int version;
+  int? version;
 
   /// (JSClassAttributes) A logically ORed set of [JSClassAttributes] to give to the class.
   @Int16()
-  int attributes;
+  int? attributes;
 
   /// (const char* ) A null-terminated UTF8 string containing the class's name.
-  Pointer<Utf8> className;
+  Pointer<Utf8>? className;
 
   /// (JSClassRef) A JSClass to set as the class's parent class. Pass NULL use the default object class.
-  Pointer parentClass;
+  Pointer? parentClass;
 
   /// (const JSStaticValue*) A JSStaticValue array containing the class's statically declared value properties. Pass NULL to specify no statically declared value properties. The array must be terminated by a JSStaticValue whose name field is NULL.
-  Pointer<JSStaticValue> staticValues;
+  Pointer<JSStaticValue>? staticValues;
 
   /// (const JSStaticFunction*) A JSStaticFunction array containing the class's statically declared function properties. Pass NULL to specify no statically declared function properties. The array must be terminated by a JSStaticFunction whose name field is NULL.
-  Pointer<JSStaticFunction> staticFunctions;
+  Pointer<JSStaticFunction>? staticFunctions;
 
   /// (JSObjectInitializeCallback) The callback invoked when an object is first created. Use this callback to initialize the object.
-  Pointer<NativeFunction<JSObjectInitializeCallback>> initialize;
+  Pointer<NativeFunction<JSObjectInitializeCallback>>? initialize;
 
   /// (JSObjectFinalizeCallback) The callback invoked when an object is finalized (prepared for garbage collection). Use this callback to release resources allocated for the object, and perform other cleanup.
-  Pointer<NativeFunction<JSObjectFinalizeCallback>> finalize;
+  Pointer<NativeFunction<JSObjectFinalizeCallback>>? finalize;
 
   /// (JSObjectHasPropertyCallback) The callback invoked when determining whether an object has a property. If this field is NULL, getProperty is called instead. The hasProperty callback enables optimization in cases where only a property's existence needs to be known, not its value, and computing its value is expensive.
-  Pointer<NativeFunction<JSObjectHasPropertyCallback>> hasProperty;
+  Pointer<NativeFunction<JSObjectHasPropertyCallback>>? hasProperty;
 
   /// (JSObjectGetPropertyCallback) The callback invoked when getting a property's value.
-  Pointer<NativeFunction<JSObjectGetPropertyCallback>> getProperty;
+  Pointer<NativeFunction<JSObjectGetPropertyCallback>>? getProperty;
 
   /// (JSObjectSetPropertyCallback) The callback invoked when setting a property's value.
-  Pointer<NativeFunction<JSObjectSetPropertyCallback>> setProperty;
+  Pointer<NativeFunction<JSObjectSetPropertyCallback>>? setProperty;
 
   /// (JSObjectDeletePropertyCallback) The callback invoked when deleting a property.
-  Pointer<NativeFunction<JSObjectDeletePropertyCallback>> deleteProperty;
+  Pointer<NativeFunction<JSObjectDeletePropertyCallback>>? deleteProperty;
 
   /// (JSObjectGetPropertyNamesCallback) The callback invoked when collecting the names of an object's properties.
-  Pointer<NativeFunction<JSObjectGetPropertyNamesCallback>> getPropertyNames;
+  Pointer<NativeFunction<JSObjectGetPropertyNamesCallback>>? getPropertyNames;
 
   /// (JSObjectCallAsFunctionCallback) The callback invoked when an object is called as a function.
-  Pointer<NativeFunction<JSObjectCallAsFunctionCallback>> callAsFunction;
+  Pointer<NativeFunction<JSObjectCallAsFunctionCallback>>? callAsFunction;
 
   /// (JSObjectCallAsConstructorCallback) The callback invoked when an object is used as the target of an 'instanceof' expression.
-  Pointer<NativeFunction<JSObjectCallAsConstructorCallback>> callAsConstructor;
+  Pointer<NativeFunction<JSObjectCallAsConstructorCallback>>? callAsConstructor;
 
   /// (JSObjectHasInstanceCallback) The callback invoked when an object is used as a constructor in a 'new' expression.
-  Pointer<NativeFunction<JSObjectHasInstanceCallback>> hasInstance;
+  Pointer<NativeFunction<JSObjectHasInstanceCallback>>? hasInstance;
 
   /// (JSObjectConvertToTypeCallback) The callback invoked when converting an object to a particular JavaScript type.
-  Pointer<NativeFunction<JSObjectConvertToTypeCallback>> convertToType;
+  Pointer<NativeFunction<JSObjectConvertToTypeCallback>>?  convertToType;
 
   factory JSClassDefinition.allocate({
-    @required int version,
-    @required int attributes,
-    @required Pointer<Utf8> className,
-    @required Pointer parentClass,
-    @required Pointer<JSStaticValue> staticValues,
-    @required Pointer<JSStaticFunction> staticFunctions,
-    @required Pointer<NativeFunction<JSObjectInitializeCallback>> initialize,
-    @required Pointer<NativeFunction<JSObjectFinalizeCallback>> finalize,
-    @required Pointer<NativeFunction<JSObjectHasPropertyCallback>> hasProperty,
-    @required Pointer<NativeFunction<JSObjectGetPropertyCallback>> getProperty,
-    @required Pointer<NativeFunction<JSObjectSetPropertyCallback>> setProperty,
-    @required
-        Pointer<NativeFunction<JSObjectDeletePropertyCallback>> deleteProperty,
-    @required
-        Pointer<NativeFunction<JSObjectGetPropertyNamesCallback>>
+    required int? version,
+    required int? attributes,
+    required Pointer<Utf8>? className,
+    required Pointer? parentClass,
+    required Pointer<JSStaticValue>? staticValues,
+    required Pointer<JSStaticFunction>? staticFunctions,
+    required Pointer<NativeFunction<JSObjectInitializeCallback>>? initialize,
+    required Pointer<NativeFunction<JSObjectFinalizeCallback>>? finalize,
+    required Pointer<NativeFunction<JSObjectHasPropertyCallback>>? hasProperty,
+    required Pointer<NativeFunction<JSObjectGetPropertyCallback>>? getProperty,
+    required Pointer<NativeFunction<JSObjectSetPropertyCallback>>? setProperty,
+    required
+        Pointer<NativeFunction<JSObjectDeletePropertyCallback>>? deleteProperty,
+    required
+        Pointer<NativeFunction<JSObjectGetPropertyNamesCallback>>?
             getPropertyNames,
-    @required
-        Pointer<NativeFunction<JSObjectCallAsFunctionCallback>> callAsFunction,
-    @required
-        Pointer<NativeFunction<JSObjectCallAsConstructorCallback>>
+    required
+        Pointer<NativeFunction<JSObjectCallAsFunctionCallback>>? callAsFunction,
+    required
+        Pointer<NativeFunction<JSObjectCallAsConstructorCallback>>?
             callAsConstructor,
-    @required Pointer<NativeFunction<JSObjectHasInstanceCallback>> hasInstance,
-    @required
-        Pointer<NativeFunction<JSObjectConvertToTypeCallback>> convertToType,
+    required Pointer<NativeFunction<JSObjectHasInstanceCallback>>? hasInstance,
+    required
+        Pointer<NativeFunction<JSObjectConvertToTypeCallback>>? convertToType,
   }) =>
       calloc<JSClassDefinition>().ref
         ..version = version ?? 0
@@ -540,20 +535,20 @@ class JSClassDefinition extends Struct {
 /// [definition] (JSClassDefinition*) A JSClassDefinition that defines the class.
 /// [@result] (JSClassRef) A JSClass with the given definition. Ownership follows the Create Rule.
 final Pointer Function(Pointer<JSClassDefinition> definition) jSClassCreate =
-    jscLib
+    jscLib!
         .lookup<NativeFunction<Pointer Function(Pointer)>>('JSClassCreate')
         .asFunction();
 
 /// Retains a JavaScript class.
 /// [jsClass] (JSClassRef) The JSClass to retain.
 /// [@result] (JSClassRef) A JSClass that is the same as jsClass.
-final Pointer Function(Pointer jsClass) jSClassRetain = jscLib
+final Pointer Function(Pointer jsClass) jSClassRetain = jscLib!
     .lookup<NativeFunction<Pointer Function(Pointer)>>('JSClassRetain')
     .asFunction();
 
 /// Releases a JavaScript class.
 /// [jsClass] (JSClassRef) The JSClass to release.
-final void Function(Pointer jsClass) jSClassRelease = jscLib
+final void Function(Pointer jsClass) jSClassRelease = jscLib!
     .lookup<NativeFunction<Void Function(Pointer)>>('JSClassRelease')
     .asFunction();
 
@@ -566,7 +561,7 @@ final void Function(Pointer jsClass) jSClassRelease = jscLib
 /// [data] (void*) A void* to set as the object's private data. Pass NULL to specify no private data.
 /// [@result] (JSObjectRef) A JSObject with the given class and private data.
 final Pointer Function(Pointer ctx, Pointer jsClass, Pointer data)
-    jSObjectMake = jscLib
+    jSObjectMake = jscLib!
         .lookup<NativeFunction<Pointer Function(Pointer, Pointer, Pointer)>>(
             'JSObjectMake')
         .asFunction();
@@ -578,7 +573,7 @@ final Pointer Function(Pointer ctx, Pointer jsClass, Pointer data)
 /// [@result] (JSObjectRef) A JSObject that is a function. The object's prototype will be the default function prototype.
 final Pointer Function(Pointer ctx, Pointer name,
         Pointer<NativeFunction<JSObjectCallAsFunctionCallback>> callAsFunction)
-    jSObjectMakeFunctionWithCallback = jscLib
+    jSObjectMakeFunctionWithCallback = jscLib!
         .lookup<NativeFunction<Pointer Function(Pointer, Pointer, Pointer)>>(
             'JSObjectMakeFunctionWithCallback')
         .asFunction();
@@ -593,7 +588,7 @@ final Pointer Function(
     Pointer ctx,
     Pointer jsClass,
     Pointer<NativeFunction<JSObjectCallAsConstructorCallback>>
-        callAsConstructor) jSObjectMakeConstructor = jscLib
+        callAsConstructor) jSObjectMakeConstructor = jscLib!
     .lookup<NativeFunction<Pointer Function(Pointer, Pointer, Pointer)>>(
         'JSObjectMakeConstructor')
     .asFunction();
@@ -608,7 +603,7 @@ final Pointer Function(
 /// [@result] (JSObjectRef) A JSObject that is an Array.
 final Pointer Function(Pointer ctx, int argumentCount,
         Pointer<Pointer> arguments, Pointer<Pointer> exception)
-    jSObjectMakeArray = jscLib
+    jSObjectMakeArray = jscLib!
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Uint32, Pointer,
@@ -623,7 +618,7 @@ final Pointer Function(Pointer ctx, int argumentCount,
 /// [@result] (JSObjectRef) A JSObject that is a Date.
 final Pointer Function(Pointer ctx, int argumentCount,
         Pointer<Pointer> arguments, Pointer<Pointer> exception)
-    jSObjectMakeDate = jscLib
+    jSObjectMakeDate = jscLib!
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Uint32, Pointer,
@@ -638,7 +633,7 @@ final Pointer Function(Pointer ctx, int argumentCount,
 /// [@result] (JSObjectRef) A JSObject that is a Error.
 final Pointer Function(Pointer ctx, int argumentCount,
         Pointer<Pointer> arguments, Pointer<Pointer> exception)
-    jSObjectMakeError = jscLib
+    jSObjectMakeError = jscLib!
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Uint32, Pointer,
@@ -653,7 +648,7 @@ final Pointer Function(Pointer ctx, int argumentCount,
 /// [@result] (JSObjectRef) A JSObject that is a RegExp.
 final Pointer Function(Pointer ctx, int argumentCount,
         Pointer<Pointer> arguments, Pointer<Pointer> exception)
-    jSObjectMakeRegExp = jscLib
+    jSObjectMakeRegExp = jscLib!
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Uint32, Pointer,
@@ -666,12 +661,12 @@ final Pointer Function(Pointer ctx, int argumentCount,
 /// [reject] (JSObjectRef*) A pointer to a JSObjectRef in which to store the reject function for the new promise. Pass NULL if you do not care to store the reject callback.
 /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
 /// [@result] (JSObjectRef) A JSObject that is a promise or NULL if an exception occurred.
-final Pointer Function(Pointer ctx, Pointer resolve, Pointer reject,
+final Pointer Function(Pointer ctx, Pointer? resolve, Pointer? reject,
         Pointer<Pointer> exception) jSObjectMakeDeferredPromise =
-    jscLib
+    jscLib!
         .lookup<
             NativeFunction<
-                Pointer Function(Pointer, Pointer, Pointer,
+                Pointer Function(Pointer, Pointer?, Pointer?,
                     Pointer<Pointer>)>>('JSObjectMakeDeferredPromise')
         .asFunction();
 
@@ -695,7 +690,7 @@ final Pointer Function(
         Pointer sourceURL,
         int startingLineNumber,
         Pointer<Pointer> exception) jSObjectMakeFunction =
-    jscLib
+    jscLib!
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Pointer, Int32, Pointer, Pointer,
@@ -707,7 +702,7 @@ final Pointer Function(
 /// [object] (JSObjectRef) A JSObject whose prototype you want to get.
 /// [@result] (JSValueRef) A JSValue that is the object's prototype.
 final Pointer Function(Pointer ctx, Pointer object) jSObjectGetPrototype =
-    jscLib
+    jscLib!
         .lookup<NativeFunction<Pointer Function(Pointer, Pointer)>>(
             'JSObjectGetPrototype')
         .asFunction();
@@ -717,7 +712,7 @@ final Pointer Function(Pointer ctx, Pointer object) jSObjectGetPrototype =
 /// [object] (JSObjectRef) The JSObject whose prototype you want to set.
 /// [value] (JSValueRef) A JSValue to set as the object's prototype.
 final void Function(Pointer ctx, Pointer object, Pointer value)
-    jSObjectSetPrototype = jscLib
+    jSObjectSetPrototype = jscLib!
         .lookup<NativeFunction<Void Function(Pointer, Pointer, Pointer)>>(
             'JSObjectSetPrototype')
         .asFunction();
@@ -728,7 +723,7 @@ final void Function(Pointer ctx, Pointer object, Pointer value)
 /// [propertyName] (JSStringRef) A JSString containing the property's name.
 /// [@result] (bool) true if the object has a property whose name matches propertyName, otherwise false.
 final int Function(Pointer ctx, Pointer object, Pointer propertyName)
-    jSObjectHasProperty = jscLib
+    jSObjectHasProperty = jscLib!
         .lookup<NativeFunction<Int8 Function(Pointer, Pointer, Pointer)>>(
             'JSObjectHasProperty')
         .asFunction();
@@ -741,7 +736,7 @@ final int Function(Pointer ctx, Pointer object, Pointer propertyName)
 /// [@result] (JSValueRef) The property's value if object has the property, otherwise the undefined value.
 final Pointer Function(Pointer ctx, Pointer object, Pointer propertyName,
         Pointer<Pointer> exception) jSObjectGetProperty =
-    jscLib
+    jscLib!
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Pointer, Pointer,
@@ -757,7 +752,7 @@ final Pointer Function(Pointer ctx, Pointer object, Pointer propertyName,
 /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
 final void Function(Pointer ctx, Pointer object, Pointer propertyName,
         Pointer value, int attributes, Pointer<Pointer> exception)
-    jSObjectSetProperty = jscLib
+    jSObjectSetProperty = jscLib!
         .lookup<
             NativeFunction<
                 Void Function(Pointer, Pointer, Pointer, Pointer, Int32,
@@ -772,7 +767,7 @@ final void Function(Pointer ctx, Pointer object, Pointer propertyName,
 /// [@result] (bool) true if the delete operation succeeds, otherwise false (for example, if the property has the kJSPropertyAttributeDontDelete attribute set).
 final int Function(Pointer ctx, Pointer object, Pointer propertyName,
         Pointer<Pointer> exception) jSObjectDeleteProperty =
-    jscLib
+    jscLib!
         .lookup<
             NativeFunction<
                 Int8 Function(Pointer, Pointer, Pointer,
@@ -788,7 +783,7 @@ final int Function(Pointer ctx, Pointer object, Pointer propertyName,
 /// [@result] (bool) true if the object has a property whose name matches propertyKey, otherwise false.
 final int Function(Pointer ctx, Pointer object, Pointer propertyKey,
         Pointer<Pointer> exception) jSObjectHasPropertyForKey =
-    jscLib
+    jscLib!
         .lookup<
             NativeFunction<
                 Int8 Function(Pointer, Pointer, Pointer,
@@ -804,7 +799,7 @@ final int Function(Pointer ctx, Pointer object, Pointer propertyKey,
 /// [@result] (JSValueRef) The property's value if object has the property key, otherwise the undefined value.
 final Pointer Function(Pointer ctx, Pointer object, Pointer propertyKey,
         Pointer<Pointer> exception) jSObjectGetPropertyForKey =
-    jscLib
+    jscLib!
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Pointer, Pointer,
@@ -821,7 +816,7 @@ final Pointer Function(Pointer ctx, Pointer object, Pointer propertyKey,
 /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
 final void Function(Pointer ctx, Pointer object, Pointer propertyKey,
         Pointer value, int attributes, Pointer<Pointer> exception)
-    jSObjectSetPropertyForKey = jscLib
+    jSObjectSetPropertyForKey = jscLib!
         .lookup<
             NativeFunction<
                 Void Function(Pointer, Pointer, Pointer, Pointer, Int32,
@@ -837,7 +832,7 @@ final void Function(Pointer ctx, Pointer object, Pointer propertyKey,
 /// [@result] (bool) true if the delete operation succeeds, otherwise false (for example, if the property has the kJSPropertyAttributeDontDelete attribute set).
 final int Function(Pointer ctx, Pointer object, Pointer propertyKey,
         Pointer<Pointer> exception) jSObjectDeletePropertyForKey =
-    jscLib
+    jscLib!
         .lookup<
             NativeFunction<
                 Int8 Function(Pointer, Pointer, Pointer,
@@ -853,7 +848,7 @@ final int Function(Pointer ctx, Pointer object, Pointer propertyKey,
 /// [@result] (JSValueRef) The property's value if object has the property, otherwise the undefined value.
 final Pointer Function(Pointer ctx, Pointer object, int propertyIndex,
         Pointer<Pointer> exception) jSObjectGetPropertyAtIndex =
-    jscLib
+    jscLib!
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Pointer, Int32,
@@ -869,7 +864,7 @@ final Pointer Function(Pointer ctx, Pointer object, int propertyIndex,
 /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
 final void Function(Pointer ctx, Pointer object, int propertyIndex,
         Pointer value, Pointer<Pointer> exception) jSObjectSetPropertyAtIndex =
-    jscLib
+    jscLib!
         .lookup<
             NativeFunction<
                 Void Function(Pointer, Pointer, Int32, Pointer,
@@ -879,7 +874,7 @@ final void Function(Pointer ctx, Pointer object, int propertyIndex,
 /// Gets an object's private data.
 /// [object] (JSObjectRef) A JSObject whose private data you want to get.
 /// [@result] (void*) A void* that is the object's private data, if the object has private data, otherwise NULL.
-final Pointer Function(Pointer object) jSObjectGetPrivate = jscLib
+final Pointer Function(Pointer object) jSObjectGetPrivate = jscLib!
     .lookup<NativeFunction<Pointer Function(Pointer)>>('JSObjectGetPrivate')
     .asFunction();
 
@@ -888,7 +883,7 @@ final Pointer Function(Pointer object) jSObjectGetPrivate = jscLib
 /// [object] (JSObjectRef) The JSObject whose private data you want to set.
 /// [data] (void*) A void* to set as the object's private data.
 /// [@result] (bool) true if object can store private data, otherwise false.
-final int Function(Pointer object, Pointer data) jSObjectSetPrivate = jscLib
+final int Function(Pointer object, Pointer data) jSObjectSetPrivate = jscLib!
     .lookup<NativeFunction<Int8 Function(Pointer, Pointer)>>(
         'JSObjectSetPrivate')
     .asFunction();
@@ -897,7 +892,7 @@ final int Function(Pointer object, Pointer data) jSObjectSetPrivate = jscLib
 /// [ctx] (JSContextRef) The execution context to use.
 /// [object] (JSObjectRef) The JSObject to test.
 /// [@result] (bool) true if the object can be called as a function, otherwise false.
-final int Function(Pointer ctx, Pointer object) jSObjectIsFunction = jscLib
+final int Function(Pointer ctx, Pointer object) jSObjectIsFunction = jscLib!
     .lookup<NativeFunction<Int8 Function(Pointer, Pointer)>>(
         'JSObjectIsFunction')
     .asFunction();
@@ -912,7 +907,7 @@ final int Function(Pointer ctx, Pointer object) jSObjectIsFunction = jscLib
 /// [@result] (JSValueRef) The JSValue that results from calling object as a function, or NULL if an exception is thrown or object is not a function.
 final Pointer Function(Pointer ctx, Pointer object, Pointer thisObject,
         int argumentCount, Pointer arguments, Pointer<Pointer> exception)
-    jSObjectCallAsFunction = jscLib
+    jSObjectCallAsFunction = jscLib!
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Pointer, Pointer, Uint32, Pointer,
@@ -923,7 +918,7 @@ final Pointer Function(Pointer ctx, Pointer object, Pointer thisObject,
 /// [ctx] (JSContextRef) The execution context to use.
 /// [object] (JSObjectRef) The JSObject to test.
 /// [@result] (bool) true if the object can be called as a constructor, otherwise false.
-final int Function(Pointer ctx, Pointer object) jSObjectIsConstructor = jscLib
+final int Function(Pointer ctx, Pointer object) jSObjectIsConstructor = jscLib!
     .lookup<NativeFunction<Int8 Function(Pointer, Pointer)>>(
         'JSObjectIsConstructor')
     .asFunction();
@@ -937,7 +932,7 @@ final int Function(Pointer ctx, Pointer object) jSObjectIsConstructor = jscLib
 /// [@result] (JSObjectRef) The JSObject that results from calling object as a constructor, or NULL if an exception is thrown or object is not a constructor.
 final Pointer Function(Pointer ctx, Pointer object, int argumentCount,
         Pointer arguments, Pointer<Pointer> exception)
-    jSObjectCallAsConstructor = jscLib
+    jSObjectCallAsConstructor = jscLib!
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Pointer, Uint32, Pointer,
@@ -949,7 +944,7 @@ final Pointer Function(Pointer ctx, Pointer object, int argumentCount,
 /// [object] (JSObjectRef) The object whose property names you want to get.
 /// [@result] (JSPropertyNameArrayRef) A JSPropertyNameArray containing the names object's enumerable properties. Ownership follows the Create Rule.
 final Pointer Function(Pointer ctx, Pointer object) jSObjectCopyPropertyNames =
-    jscLib
+    jscLib!
         .lookup<NativeFunction<Pointer Function(Pointer, Pointer)>>(
             'JSObjectCopyPropertyNames')
         .asFunction();
@@ -957,14 +952,14 @@ final Pointer Function(Pointer ctx, Pointer object) jSObjectCopyPropertyNames =
 /// Retains a JavaScript property name array.
 /// [array] (JSPropertyNameArrayRef) The JSPropertyNameArray to retain.
 /// [@result] (JSPropertyNameArrayRef) A JSPropertyNameArray that is the same as array.
-final Pointer Function(Pointer array) jSPropertyNameArrayRetain = jscLib
+final Pointer Function(Pointer array) jSPropertyNameArrayRetain = jscLib!
     .lookup<NativeFunction<Pointer Function(Pointer)>>(
         'JSPropertyNameArrayRetain')
     .asFunction();
 
 /// Releases a JavaScript property name array.
 /// [array] (JSPropertyNameArrayRef) The JSPropetyNameArray to release.
-final void Function(Pointer array) jSPropertyNameArrayRelease = jscLib
+final void Function(Pointer array) jSPropertyNameArrayRelease = jscLib!
     .lookup<NativeFunction<Void Function(Pointer)>>(
         'JSPropertyNameArrayRelease')
     .asFunction();
@@ -972,7 +967,7 @@ final void Function(Pointer array) jSPropertyNameArrayRelease = jscLib
 /// Gets a count of the number of items in a JavaScript property name array.
 /// [array] (JSPropertyNameArrayRef) The array from which to retrieve the count.
 /// [@result] (size_t) An integer count of the number of names in array.
-final int Function(Pointer array) jSPropertyNameArrayGetCount = jscLib
+final int Function(Pointer array) jSPropertyNameArrayGetCount = jscLib!
     .lookup<NativeFunction<Uint32 Function(Pointer)>>(
         'JSPropertyNameArrayGetCount')
     .asFunction();
@@ -982,7 +977,7 @@ final int Function(Pointer array) jSPropertyNameArrayGetCount = jscLib
 /// [index] (size_t) The index of the property name to retrieve.
 /// [@result] (JSStringRef) A JSStringRef containing the property name.
 final Pointer Function(Pointer array, int index)
-    jSPropertyNameArrayGetNameAtIndex = jscLib
+    jSPropertyNameArrayGetNameAtIndex = jscLib!
         .lookup<NativeFunction<Pointer Function(Pointer, Uint32)>>(
             'JSPropertyNameArrayGetNameAtIndex')
         .asFunction();
@@ -991,7 +986,7 @@ final Pointer Function(Pointer array, int index)
 /// [accumulator] (JSPropertyNameAccumulatorRef) The accumulator object to which to add the property name.
 /// [propertyName] (JSStringRef) The property name to add.
 final void Function(Pointer accumulator, Pointer propertyName)
-    jSPropertyNameAccumulatorAddName = jscLib
+    jSPropertyNameAccumulatorAddName = jscLib!
         .lookup<NativeFunction<Void Function(Pointer, Pointer)>>(
             'JSPropertyNameAccumulatorAddName')
         .asFunction();

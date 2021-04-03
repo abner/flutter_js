@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 typedef OnBuildNode = Widget Function(
-    JsonNode parent,
+    JsonNode? parent,
     String nodeName,
     dynamic nodeValue,
     );
@@ -9,7 +9,7 @@ typedef OnBuildNode = Widget Function(
 class JsonViewerRoot extends StatefulWidget {
   JsonViewerRoot({
     /// json object
-    @required this.jsonObj,
+    required this.jsonObj,
 
     /// Auto-expand level
     this.expandDeep = 2,
@@ -24,15 +24,15 @@ class JsonViewerRoot extends StatefulWidget {
 
   final dynamic jsonObj;
   final int expandDeep;
-  OnBuildNode onBuildNode;
+  OnBuildNode? onBuildNode;
 
   Widget onBuildNodeDefault(
-      JsonNode parent,
+      JsonNode? parent,
       String nodeName,
       dynamic nodeValue,
       ) {
     JsonNode node;
-    double leftOffset;
+    double leftOffset = 0;
     if (nodeValue == null) {
       node = JsonViewerNode();
     } else if (nodeValue is Map) {
@@ -50,7 +50,7 @@ class JsonViewerRoot extends StatefulWidget {
     node.nodeName = nodeName;
     node.nodeValue = nodeValue;
     node.leftOffset = leftOffset;
-    node.expandDeep = parent != null ? parent.expandDeep - 1 : this.expandDeep;
+    node.expandDeep = parent != null ? parent.expandDeep! - 1 : this.expandDeep;
     return node;
   }
 
@@ -68,28 +68,28 @@ class JsonViewerRootState extends State<JsonViewerRoot> {
 
   @override
   Widget build(BuildContext context) {
-    return this.widget.onBuildNode(null, "[root]", this.widget.jsonObj);
+    return this.widget.onBuildNode!(null, "[root]", this.widget.jsonObj);
   }
 }
 
 abstract class JsonNode<T> implements Widget {
   /// 最顶级的
-  JsonViewerRoot root;
+  JsonViewerRoot? root;
 
   /// 上一个节点
-  JsonNode parent;
+  JsonNode? parent;
 
   /// 当前节点名
-  String nodeName;
+  String? nodeName;
 
   /// 当前节点值
-  T nodeValue;
+  T? nodeValue;
 
   /// 左边偏移值
-  double leftOffset;
+  double? leftOffset;
 
   /// 自动展开层次, 每次构建节点减1
-  int expandDeep;
+  int? expandDeep;
 }
 
 abstract class JsonOpenNode implements Widget {
@@ -104,31 +104,31 @@ class JsonViewerMapNode extends StatefulWidget
   State<StatefulWidget> createState() => JsonViewerMapNodeState();
 
   @override
-  JsonViewerRoot root;
+  JsonViewerRoot? root;
   @override
-  JsonNode parent;
+  JsonNode? parent;
   @override
-  String nodeName;
+  String? nodeName;
   @override
-  Map<String, dynamic> nodeValue;
+  Map<String, dynamic>? nodeValue;
 
   @override
   bool isOpen = false;
 
   @override
-  double leftOffset;
+  double? leftOffset;
 
   @override
   List<Widget> buildChild() {
     List<Widget> result = <Widget>[];
-    nodeValue.forEach((k, v) {
-      result.add(root.onBuildNode(this, k, v));
+    nodeValue!.forEach((k, v) {
+      result.add(root!.onBuildNode!(this, k, v));
     });
     return result;
   }
 
   @override
-  int expandDeep;
+  int? expandDeep;
 }
 
 /// map类型的节点
@@ -138,7 +138,7 @@ class JsonViewerMapNodeState extends State<JsonViewerMapNode> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    widget.isOpen = widget.expandDeep > 0;
+    widget.isOpen = widget.expandDeep! > 0;
   }
 
   @override
@@ -153,7 +153,7 @@ class JsonViewerMapNodeState extends State<JsonViewerMapNode> {
           children: <Widget>[
             Icon(widget.isOpen ? Icons.arrow_drop_down : Icons.arrow_right),
             Text(
-              widget.nodeName,
+              widget.nodeName ?? '',
               style: TextStyle(color: Colors.indigo),
             )
           ],
@@ -163,7 +163,7 @@ class JsonViewerMapNodeState extends State<JsonViewerMapNode> {
         children: <Widget>[
           result,
           Padding(
-            padding: EdgeInsets.only(left: widget.leftOffset),
+            padding: EdgeInsets.only(left: widget.leftOffset ?? 0),
             child: Column(
               children: widget.buildChild(),
             ),
@@ -184,40 +184,40 @@ class JsonViewerListNode extends StatefulWidget
   State<StatefulWidget> createState() => JsonViewerListNodeState();
 
   @override
-  JsonViewerRoot root;
+  JsonViewerRoot? root;
   @override
-  JsonNode parent;
+  JsonNode? parent;
   @override
-  String nodeName;
+  String? nodeName;
   @override
-  List<dynamic> nodeValue;
+  List<dynamic>? nodeValue;
 
   @override
   bool isOpen = false;
 
   @override
-  double leftOffset;
+  double? leftOffset;
 
   @override
   List<Widget> buildChild() {
     List<Widget> result = <Widget>[];
     var i = 0;
-    nodeValue.forEach((v) {
-      result.add(root.onBuildNode(this, "[$i]", v));
+    nodeValue!.forEach((v) {
+      result.add(root!.onBuildNode!(this, "[$i]", v));
       i++;
     });
     return result;
   }
 
   @override
-  int expandDeep;
+  int? expandDeep;
 }
 
 class JsonViewerListNodeState extends State<JsonViewerListNode> {
   @override
   void initState() {
     super.initState();
-    widget.isOpen = widget.expandDeep > 0;
+    widget.isOpen = widget.expandDeep! > 0;
   }
 
   @override
@@ -232,11 +232,11 @@ class JsonViewerListNodeState extends State<JsonViewerListNode> {
           children: <Widget>[
             Icon(widget.isOpen ? Icons.arrow_drop_down : Icons.arrow_right),
             Text(
-              widget.nodeName,
+              widget.nodeName!,
               style: TextStyle(color: Colors.deepPurple),
             ),
             Text(
-              " [${widget.nodeValue.length}]",
+              " [${widget.nodeValue!.length}]",
               style: TextStyle(color: Colors.indigoAccent),
             ),
           ],
@@ -246,7 +246,7 @@ class JsonViewerListNodeState extends State<JsonViewerListNode> {
         children: <Widget>[
           result,
           Padding(
-            padding: EdgeInsets.only(left: widget.leftOffset),
+            padding: EdgeInsets.only(left: widget.leftOffset!),
             child: Column(
               children: widget.buildChild(),
             ),
@@ -285,7 +285,7 @@ class JsonViewerNode extends StatelessWidget implements JsonNode {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              this.nodeName,
+              this.nodeName ?? '',
               style: TextStyle(color: Colors.black54),
             ),
             Text(" : "),
@@ -303,18 +303,18 @@ class JsonViewerNode extends StatelessWidget implements JsonNode {
   }
 
   @override
-  JsonViewerRoot root;
+  JsonViewerRoot? root;
   @override
-  JsonNode parent;
+  JsonNode? parent;
   @override
-  String nodeName;
+  String? nodeName;
 
   @override
   var nodeValue;
 
   @override
-  double leftOffset;
+  double? leftOffset;
 
   @override
-  int expandDeep;
+  int? expandDeep;
 }

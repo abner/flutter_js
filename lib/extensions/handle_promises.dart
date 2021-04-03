@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter_js/javascript_runtime.dart';
 import 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
 import 'package:flutter_js_platform_interface/js_eval_result.dart';
 
@@ -91,7 +90,7 @@ extension HandlePromises on FlutterJsPlatform {
   }
 
   Future<JsEvalResult> handlePromise(JsEvalResult value,
-      {Duration timeout}) async {
+      {Duration? timeout}) async {
     final completer = Completer<JsEvalResult>();
 
     if (timeout != null) {
@@ -137,6 +136,6 @@ extension HandlePromises on FlutterJsPlatform {
         }
       }
     });
-    return completer.future;
+    return completer.future as Future<JsEvalResult>;
   }
 }

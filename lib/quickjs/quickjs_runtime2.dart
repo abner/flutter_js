@@ -20,12 +20,12 @@ typedef _JsModuleHandler = String Function(String name);
 typedef _JsHostPromiseRejectionHandler = void Function(dynamic reason);
 
 /// Quickjs engine for flutter.
-class FlutterQjs extends FlutterJsPlatform {
+class QuickJsRuntime2 extends FlutterJsPlatform {
   Pointer<JSRuntime>? _rt;
   Pointer<JSContext>? _ctx;
 
   /// Max stack size for quickjs.
-  final int? stackSize;
+  int stackSize;
 
   /// Message Port for event loop. Close it to stop dispatching event loop.
   ReceivePort port = ReceivePort();
@@ -36,11 +36,13 @@ class FlutterQjs extends FlutterJsPlatform {
   /// Handler function to manage js module.
   final _JsHostPromiseRejectionHandler? hostPromiseRejectionHandler;
 
-  FlutterQjs({
+  QuickJsRuntime2({
     this.moduleHandler,
-    this.stackSize,
+    this.stackSize = 1024 * 1024,
     this.hostPromiseRejectionHandler,
-  });
+  }) {
+    this.init();
+  }
 
   _ensureEngine() {
     if (_rt != null) return;
@@ -111,7 +113,6 @@ class FlutterQjs extends FlutterJsPlatform {
         return err;
       }
     }, port);
-    final stackSize = this.stackSize ?? 0;
     if (stackSize > 0) jsSetMaxStackSize(rt, stackSize);
     _rt = rt;
     _ctx = jsNewContext(rt);
@@ -154,7 +155,7 @@ class FlutterQjs extends FlutterJsPlatform {
   }
 
   /// Evaluate js script.
-  dynamic evaluate(
+  JsEvalResult evaluate(
     String command, {
     String? name,
     int? evalFlags,
@@ -169,11 +170,12 @@ class FlutterQjs extends FlutterJsPlatform {
     );
     if (jsIsException(jsval) != 0) {
       jsFreeValue(ctx, jsval);
-      throw _parseJSException(ctx);
+      JSError exception = _parseJSException(ctx);
+      return JsEvalResult(exception.toString(), exception, isError: true);
     }
     final result = _jsToDart(ctx, jsval);
-    jsFreeValue(ctx, jsval);
-    return result;
+    //jsFreeValue(ctx, jsval);
+    return JsEvalResult(result?.toString() ?? "null", jsval);
   }
 
   @override
@@ -183,9 +185,8 @@ class FlutterQjs extends FlutterJsPlatform {
   }
 
   @override
-  T convertValue<T>(JsEvalResult jsValue) {
-    // TODO: implement convertValue
-    throw UnimplementedError();
+  T? convertValue<T>(JsEvalResult jsValue) {
+    return true as T;
   }
 
   @override
