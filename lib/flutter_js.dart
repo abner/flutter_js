@@ -35,16 +35,13 @@ FlutterJsPlatform getJavascriptRuntime(
     // runtime = QuickJsService(engine);
   } else if (Platform.isWindows || Platform.isLinux) {
     // runtime = FlutterJsLinuxWin()..init();
-    runtime = QuickJsRuntime2();//('f1.js');
+    runtime = QuickJsRuntime2(); //('f1.js');
     // runtime = QuickJsRuntime('f1.js');
   } else {
     runtime = JavascriptCoreRuntime();
   }
-  if (!Platform.isWindows) {
-    // setFetchDebug(true);
-    if (xhr) runtime.enableFetch();
-    runtime.enableHandlePromises();
-  }
+  if (xhr) runtime.enableFetch();
+  runtime.enableHandlePromises();
   return runtime;
 }
 
