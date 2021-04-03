@@ -12,7 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  ffi: ">=1.0.0 < 2.0.0"
+  ffi: "^1.0.0"
   http: ^0.13.1
   sync_http: ^0.3.0
   #flutter_js_linux: ^0.0.1
@@ -37,7 +37,8 @@ flutter:
       ios:
         pluginClass: FlutterJsPlugin
       linux:
-        default_package: flutter_js_linux_win
+        #default_package: flutter_js_linux_win
+        pluginClass: FlutterJsPlugin
       macos:
         pluginClass: FlutterJsPlugin
       # windows:

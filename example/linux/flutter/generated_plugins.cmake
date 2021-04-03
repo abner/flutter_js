@@ -4,8 +4,6 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   flutter_js
-  flutter_js_linux
-  flutter_qjs
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

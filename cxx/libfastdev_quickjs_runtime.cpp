@@ -9,8 +9,6 @@
 #endif
 
 #ifdef _MSC_VER
-#include <iostream>
-
 #define DLLEXPORT __declspec(dllexport)
 #else
 #define DLLEXPORT __attribute__((visibility("default"))) __attribute__((used))
@@ -188,7 +186,6 @@ extern "C"
                                         const char *filename, int eval_flags,
                                         int *errors, JSValue *result, char **stringResult)
     {
-        std::cout << "Hello, World!";
         JSRuntime *rt = JS_GetRuntime(ctx);
         JS_UpdateStackTop(rt);
 
