@@ -123,7 +123,7 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
             SizedBox.fromSize(size: Size(double.maxFinite, 20)),
             ElevatedButton(child: const Text('Fetch Remote Data'), onPressed: () async {
               var asyncResult = await javascriptRuntime.evaluateAsync("""
-                fetch('https://raw.githubusercontent.com/abner/flutter_js/master/cxx/quickjs/VERSION.md').then(response => response.text());
+                fetch('https://raw.githubusercontent.com/abner/flutter_js/master/cxx/quickjs/VERSION').then(response => response.text());
               """);
               await javascriptRuntime.executePendingJob();
               final promiseResolved = await javascriptRuntime.handlePromise(asyncResult);
