@@ -41,7 +41,7 @@ class _AjvExampleState extends State<AjvExample> {
 
         widget.jsRuntime.evaluate("var window = global = globalThis;");
 
-        await widget.jsRuntime.evaluateAsync(ajvJS + "");
+        widget.jsRuntime.evaluate(ajvJS + "");
         final evalAjv = widget.jsRuntime.evaluate("""
                     var ajv = new global.Ajv({ allErrors: true, coerceTypes: true });
                     ajv.addSchema(
@@ -73,6 +73,8 @@ class _AjvExampleState extends State<AjvExample> {
                         }
                     }, "obj1");
       """);
+        print(
+            'EVAL AJV: ERROR ?? ${evalAjv.isError} - ${evalAjv.stringResult}');
       } on PlatformException catch (e) {
         print('Failed to init js engine: ${e.details}');
       }

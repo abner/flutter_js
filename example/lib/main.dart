@@ -29,6 +29,10 @@ class _MyAppState extends State<MyApp> {
 class FlutterJsHomeScreen extends StatefulWidget {
   @override
   _FlutterJsHomeScreenState createState() => _FlutterJsHomeScreenState();
+}
+
+class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
+  String _jsResult = '';
 
   final FlutterJsPlatform javascriptRuntime = getJavascriptRuntime();
 
@@ -53,10 +57,6 @@ class FlutterJsHomeScreen extends StatefulWidget {
     print(#abner);
     return jsResult;
   }
-}
-
-class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
-  String _jsResult = '';
 
   @override
   void initState() {
@@ -72,7 +72,8 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   dispose() {
     print('DISPOSE CALLED!!!');
     super.dispose();
-    widget.javascriptRuntime.dispose();
+    //widget.javascriptRuntime.dispose();
+    javascriptRuntime.dispose();
   }
 
   @override
@@ -111,8 +112,8 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (ctx) => AjvExample(
-                    widget.javascriptRuntime,
-                  ),
+                      //widget.javascriptRuntime,
+                      javascriptRuntime),
                 ),
               ),
               child: const Text('See Ajv Example'),
@@ -125,8 +126,10 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
         child: Image.asset('assets/js.ico'),
         onPressed: () {
           setState(() {
-            _jsResult = widget.evalJS();
-            Future.delayed(Duration(milliseconds: 599), widget.evalJS);
+            // _jsResult = widget.evalJS();
+            // Future.delayed(Duration(milliseconds: 599), widget.evalJS);
+            _jsResult = evalJS();
+            Future.delayed(Duration(milliseconds: 599), evalJS);
           });
         },
       ),

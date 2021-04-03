@@ -1,8 +1,8 @@
 /*
  * QuickJS Javascript Engine
  *
- * Copyright (c) 2017-2020 Fabrice Bellard
- * Copyright (c) 2017-2020 Charlie Gordon
+ * Copyright (c) 2017-2021 Fabrice Bellard
+ * Copyright (c) 2017-2021 Charlie Gordon
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,11 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#if defined(__ANDROID__)
+#include <android/log.h>
+#define printf(...) __android_log_print(ANDROID_LOG_INFO, "qjs", __VA_ARGS__)
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,7 +45,11 @@ extern "C" {
 #else
 #define js_likely(x)     (x)
 #define js_unlikely(x)   (x)
+#ifdef _MSC_VER
+#define js_force_inline  __forceinline
+#else
 #define js_force_inline  inline
+#endif
 #define __js_printf_like(a, b)
 #endif
 
@@ -62,6 +71,10 @@ typedef uint32_t JSAtom;
 
 #ifndef JS_PTR64
 #define JS_NAN_BOXING
+#endif
+
+#ifdef _MSC_VER
+typedef size_t ssize_t;
 #endif
 
 enum {
@@ -215,8 +228,23 @@ typedef struct JSValue {
 #define JS_VALUE_GET_FLOAT64(v) ((v).u.float64)
 #define JS_VALUE_GET_PTR(v) ((v).u.ptr)
 
+#ifdef _MSC_VER
+static inline JSValue JS_MKVAL(int tag, int32_t val) {
+    JSValue v;
+    v.u.int32 = val;
+    v.tag = tag;
+    return v;
+}
+static inline JSValue JS_MKPTR(int tag, void *val) {
+    JSValue v;
+    v.u.ptr = val;
+    v.tag = tag;
+    return v;
+}
+#else
 #define JS_MKVAL(tag, val) (JSValue){ (JSValueUnion){ .int32 = val }, tag }
 #define JS_MKPTR(tag, p) (JSValue){ (JSValueUnion){ .ptr = p }, tag }
+#endif
 
 #define JS_TAG_IS_FLOAT64(tag) ((unsigned)(tag) == JS_TAG_FLOAT64)
 
@@ -333,7 +361,11 @@ JSRuntime *JS_NewRuntime(void);
 void JS_SetRuntimeInfo(JSRuntime *rt, const char *info);
 void JS_SetMemoryLimit(JSRuntime *rt, size_t limit);
 void JS_SetGCThreshold(JSRuntime *rt, size_t gc_threshold);
+/* use 0 to disable maximum stack size check */
 void JS_SetMaxStackSize(JSRuntime *rt, size_t stack_size);
+/* should be called when changing thread to update the stack top value
+   used to check stack overflow. */
+void JS_UpdateStackTop(JSRuntime *rt);
 JSRuntime *JS_NewRuntime2(const JSMallocFunctions *mf, void *opaque);
 void JS_FreeRuntime(JSRuntime *rt);
 void *JS_GetRuntimeOpaque(JSRuntime *rt);
@@ -517,9 +549,9 @@ static js_force_inline JSValue JS_NewInt64(JSContext *ctx, int64_t val)
 {
     JSValue v;
     if (val == (int32_t)val) {
-        v = JS_NewInt32(ctx, val);
+        v = JS_NewInt32(ctx, (int32_t)val);
     } else {
-        v = __JS_NewFloat64(ctx, val);
+        v = __JS_NewFloat64(ctx, (double)val);
     }
     return v;
 }
@@ -662,7 +694,7 @@ static inline JSValue JS_DupValue(JSContext *ctx, JSValueConst v)
         JSRefCountHeader *p = (JSRefCountHeader *)JS_VALUE_GET_PTR(v);
         p->ref_count++;
     }
-    return (JSValue)v;
+    return v;
 }
 
 static inline JSValue JS_DupValueRT(JSRuntime *rt, JSValueConst v)
@@ -671,7 +703,7 @@ static inline JSValue JS_DupValueRT(JSRuntime *rt, JSValueConst v)
         JSRefCountHeader *p = (JSRefCountHeader *)JS_VALUE_GET_PTR(v);
         p->ref_count++;
     }
-    return (JSValue)v;
+    return v;
 }
 
 int JS_ToBool(JSContext *ctx, JSValueConst val); /* return -1 for JS_EXCEPTION */
@@ -710,6 +742,7 @@ JSValue JS_NewObjectProto(JSContext *ctx, JSValueConst proto);
 JSValue JS_NewObject(JSContext *ctx);
 
 JS_BOOL JS_IsFunction(JSContext* ctx, JSValueConst val);
+JS_BOOL JS_IsPromise(JSContext* ctx, JSValueConst val);
 JS_BOOL JS_IsConstructor(JSContext* ctx, JSValueConst val);
 JS_BOOL JS_SetConstructorBit(JSContext *ctx, JSValueConst func_obj, JS_BOOL val);
 
@@ -776,7 +809,10 @@ JS_BOOL JS_DetectModule(const char *input, size_t input_len);
 /* 'input' must be zero terminated i.e. input[input_len] = '\0'. */
 JSValue JS_Eval(JSContext *ctx, const char *input, size_t input_len,
                 const char *filename, int eval_flags);
-JSValue JS_EvalFunction(JSContext *ctx, JSValue fun_obj);
+/* same as JS_Eval() but with an explicit 'this_obj' parameter */
+JSValue JS_EvalThis(JSContext *ctx, JSValueConst this_obj,
+                    const char *input, size_t input_len,
+                    const char *filename, int eval_flags);
 JSValue JS_GetGlobalObject(JSContext *ctx);
 int JS_IsInstanceOf(JSContext *ctx, JSValueConst val, JSValueConst obj);
 int JS_DefineProperty(JSContext *ctx, JSValueConst this_obj,
@@ -793,6 +829,7 @@ int JS_DefinePropertyGetSet(JSContext *ctx, JSValueConst this_obj,
                             int flags);
 void JS_SetOpaque(JSValue obj, void *opaque);
 void *JS_GetOpaque(JSValueConst obj, JSClassID class_id);
+JSClassID JS_GetClassID(JSValueConst obj);
 void *JS_GetOpaque2(JSContext *ctx, JSValueConst obj, JSClassID class_id);
 
 /* 'buf' must be zero terminated i.e. buf[buf_len] = '\0'. */
@@ -885,7 +922,9 @@ uint8_t *JS_WriteObject2(JSContext *ctx, size_t *psize, JSValueConst obj,
 #define JS_READ_OBJ_REFERENCE (1 << 3) /* allow object references */
 JSValue JS_ReadObject(JSContext *ctx, const uint8_t *buf, size_t buf_len,
                       int flags);
-
+/* instantiate and evaluate a bytecode function. Only used when
+   reading a script or module with JS_ReadObject() */
+JSValue JS_EvalFunction(JSContext *ctx, JSValue fun_obj);
 /* load the dependencies of the module 'obj'. Useful when JS_ReadObject()
    returns a module. */
 int JS_ResolveModule(JSContext *ctx, JSValueConst obj);

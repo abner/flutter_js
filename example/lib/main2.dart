@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_js_example/ajv_example.dart';
-import 'package:flutter_qjs/flutter_qjs.dart';
+//import 'package:flutter_qjs/flutter_qjs.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,14 +53,14 @@ class FlutterJsHomeScreen extends StatefulWidget {
 class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   String _jsResult = '';
 
-  FlutterQjs engine;
+  //FlutterQjs engine;
 
   @override
   void initState() {
-    engine = FlutterQjs(
-      stackSize: 1024 * 1024, // change stack size here.
-    );
-    engine.dispatch();
+    // engine = FlutterQjs(
+    //   stackSize: 1024 * 1024, // change stack size here.
+    // );
+    // engine.dispatch();
     super.initState();
   }
 

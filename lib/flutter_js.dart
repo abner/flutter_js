@@ -6,7 +6,7 @@ import 'package:flutter_js/javascript_runtime.dart';
 import 'package:flutter_js/javascriptcore/jscore_runtime.dart';
 //import 'package:flutter_js/quickjs-sync-server/quickjs_oasis_jsbridge.dart';
 import 'package:flutter_js/quickjs/quickjs_runtime.dart';
-import 'package:flutter_js_linux_windows/flutter_js_linux_windows.dart';
+// import 'package:flutter_js_linux_windows/flutter_js_linux_windows.dart';
 import 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
 
 export './javascript_runtime.dart';
@@ -36,7 +36,8 @@ FlutterJsPlatform getJavascriptRuntime(
     // FlutterJs engine = FlutterJs();
     // runtime = QuickJsService(engine);
   } else if (Platform.isWindows || Platform.isLinux) {
-    runtime = FlutterJsLinuxWin()..init();
+    // runtime = FlutterJsLinuxWin()..init();
+    runtime = QuickJsRuntime('fileQuickjs.js');
   } else {
     runtime = JavascriptCoreRuntime();
   }

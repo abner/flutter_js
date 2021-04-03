@@ -2,29 +2,15 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'package:ffi/ffi.dart';
+import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_js/javascript_runtime.dart';
 import 'package:flutter_js/quickjs/utf8_null_terminated.dart';
-import 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
-import 'package:flutter_js_platform_interface/js_eval_result.dart';
 
 import 'qjs_typedefs.dart';
 
 final DynamicLibrary qjsDynamicLibrary = Platform.isAndroid
     ? DynamicLibrary.open("libfastdev_quickjs_runtime.so")
-    : (Platform.isWindows
-        ? DynamicLibrary.open('libfastdev_quickjs_runtime.dll')
-        : DynamicLibrary.process());
-// final DynamicLibrary _qjsLib = Platform.environment['FLUTTER_TEST'] == 'true'
-//     ? (Platform.isWindows
-//         ? DynamicLibrary.open('test/build/Debug/ffiquickjs.dll')
-//         : Platform.isMacOS
-//             ? DynamicLibrary.open('test/build/libffiquickjs.dylib')
-//             : DynamicLibrary.open('test/build/libffiquickjs.so'))
-//     : (Platform.isWindows
-//         ? DynamicLibrary.open('flutter_qjs_plugin.dll')
-//         : Platform.isAndroid
-//             ? DynamicLibrary.open('libqjs.so')
-//             : DynamicLibrary.process());
+    : DynamicLibrary.process();
 
 typedef FnBridgeCallback = Function(
     dynamic args); //String Function(String channel, String message);
@@ -67,17 +53,6 @@ Pointer<JSValueConst> bridgeCallbackGlobalHandler(
 Pointer<NativeFunction<ChannelCallback>> consoleLogBridgeFunction;
 Pointer<NativeFunction<ChannelCallback>> setTimeoutBridgeFunction;
 Pointer<NativeFunction<ChannelCallback>> sendNativeBridgeFunction;
-
-typedef DoReturnOne = int Function();
-typedef DoReturnOneNative = Int32 Function();
-
-DoReturnOne doReturnOneNative = qjsDynamicLibrary
-    .lookupFunction<DoReturnOneNative, DoReturnOne>("doReturnOne");
-
-int doReturnOne() {
-  int res = doReturnOneNative();
-  return res;
-}
 
 class QuickJsRuntime extends FlutterJsPlatform {
   Pointer<JSContext> _context;
@@ -201,35 +176,16 @@ class QuickJsRuntime extends FlutterJsPlatform {
     Pointer<Pointer<Utf8NullTerminated>> stringResult =
         calloc<Pointer<Utf8NullTerminated>>();
     Pointer<Int32> errors = calloc<Int32>();
-    errors.value = 0;
-    var jsPointer = Utf8NullTerminated.toUtf8(js);
-    var filenamePointer = Utf8NullTerminated.toUtf8(fileName);
-    _jsEvalWrapper(ctx, jsPointer, js.length, filenamePointer, 0, errors,
-        result, stringResult);
+    _jsEvalWrapper(ctx, Utf8NullTerminated.toUtf8(js), js.length,
+        Utf8NullTerminated.toUtf8(fileName), 0, errors, result, stringResult);
 
-    print('ERRORS: ${errors.value}');
-    calloc.free(filenamePointer);
-    calloc.free(jsPointer);
-
-    if (errors.value == 0) {
-      final strResult = Utf8NullTerminated.fromUtf8(stringResult.value);
-      calloc.free(stringResult);
-      calloc.free(errors);
-      return JsEvalResult(
-        strResult,
-        result,
-        isError: false,
-        isPromise: strResult == '[object Promise]',
-      );
-    } else {
-      calloc.free(errors);
-      return JsEvalResult(
-        'ERROR RESULT',
-        result,
-        isError: true,
-        isPromise: false,
-      );
-    }
+    final strResult = Utf8NullTerminated.fromUtf8(stringResult.value);
+    return JsEvalResult(
+      strResult,
+      result,
+      isError: errors.value == 1,
+      isPromise: strResult == '[object Promise]',
+    );
   }
 
   static T convertToValue<T>(

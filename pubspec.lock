@@ -62,13 +62,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_js_linux_windows:
-    dependency: "direct main"
-    description:
-      path: "packages/flutter_js_linux_windows"
-      relative: true
-    source: path
-    version: "2.0.0"
   flutter_js_platform_interface:
     dependency: "direct main"
     description:
@@ -76,13 +69,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.0+0"
-  flutter_qjs:
-    dependency: transitive
-    description:
-      name: flutter_qjs
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.6"
   flutter_test:
     dependency: "direct dev"
     description: flutter
