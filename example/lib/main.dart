@@ -36,6 +36,8 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
 
   final FlutterJsPlatform javascriptRuntime = getJavascriptRuntime();
 
+  String? _quickjsVersion;
+
   String evalJS() {
     String jsResult = javascriptRuntime.evaluate("""
             if (typeof MyClass == 'undefined') {
@@ -121,12 +123,17 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
             SizedBox.fromSize(size: Size(double.maxFinite, 20)),
             ElevatedButton(child: const Text('Fetch Remote Data'), onPressed: () async {
               var asyncResult = await javascriptRuntime.evaluateAsync("""
-                fetch('http://faker.hook.io/?property=name.findName&locale=pt_BR').then(response => response.text());
+                fetch('https://raw.githubusercontent.com/abner/flutter_js/master/cxx/quickjs/VERSION.md').then(response => response.text());
               """);
               await javascriptRuntime.executePendingJob();
               final promiseResolved = await javascriptRuntime.handlePromise(asyncResult);
-              print(promiseResolved.stringResult);
+              setState(() => _quickjsVersion = promiseResolved.stringResult);
+
             },),
+            Text(
+              'QuickJS Version\n${_quickjsVersion == null ? '<NULL>' : _quickjsVersion}',
+              textAlign: TextAlign.center,
+            )
           ],
         ),
       ),

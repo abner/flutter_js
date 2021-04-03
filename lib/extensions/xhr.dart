@@ -316,15 +316,18 @@ extension JavascriptRuntimeXhrExtension on FlutterJsPlatform {
             break;
         }
         // assuming request was successfully executed
+        String responseText = utf8.decode(response.bodyBytes);
+        try {
+           responseText = jsonEncode(json.decode(responseText));
+        } on Exception {}
         final xhrResult = XmlHttpRequestResponse(
-          responseText: jsonEncode(json.decode( utf8.decode(response.bodyBytes))),
+          responseText: responseText,
           responseInfo:
               XhtmlHttpResponseInfo(statusCode: 200, statusText: "OK"),
         );
 
         final responseInfo = jsonEncode(xhrResult.responseInfo);
-        final responseText =
-            xhrResult.responseText; //.replaceAll("\\n", "\\\n");
+        //final responseText = xhrResult.responseText; //.replaceAll("\\n", "\\\n");
         final error = xhrResult.error;
         // send back to the javascript environment the
         // response for the http pending callback

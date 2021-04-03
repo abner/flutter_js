@@ -10,7 +10,7 @@ With flutter_js Flutter applications can take advantage of great javascript libr
 
 On IOS this library relies on the native JavascriptCore provided by iOS SDK. In Android it uses the amazing and small Javascript Engine QuickJS [https://bellard.org/quickjs/](https://bellard.org/quickjs/) (A spetacular work of the Fabrice Bellard and Charlie Gordon).
 
-On Android you could use JavascriptCore as well You just need add an Android dependency `implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc:0.1.0"` and pass `forceJavascriptCoreOnAndroid: true` to the function `getJavascriptRuntime`. 
+On Android you could use JavascriptCore as well You just need add an Android dependency `implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc:0.1.3"` and pass `forceJavascriptCoreOnAndroid: true` to the function `getJavascriptRuntime`. 
 
 FLutterJS allows to use Javascript to execute validations logic of TextFormField, also we can execute rule engines or redux logic shared from our web applications. The opportunities are huge.
 
