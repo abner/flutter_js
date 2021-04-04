@@ -1,5 +1,3 @@
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
@@ -57,23 +55,8 @@ class FlutterJsPlatformEmpty extends JavascriptRuntime {
   }
 }
 
-abstract class JavascriptRuntime extends PlatformInterface {
-  static final Object _token = Object();
-  static JavascriptRuntime get instance => _instance;
-  static JavascriptRuntime _instance = FlutterJsPlatformEmpty();
-
+abstract class JavascriptRuntime {
   static bool debugEnabled = false;
-
-  JavascriptRuntime() : super(token: _token);
-
-  /// Platform-specific plugins should set this with their own platform-specific
-  /// class that extends [UrlLauncherPlatform] when they register themselves.
-  // TODO(amirh): Extract common platform interface logic.
-  // https://github.com/flutter/flutter/issues/43368
-  static set instance(JavascriptRuntime instance) {
-    PlatformInterface.verifyToken(instance, _token);
-    _instance = instance;
-  }
 
   @protected
   JavascriptRuntime init() {
