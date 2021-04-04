@@ -1,6 +1,6 @@
 # Flutter JS plugin
 
-A Javascript engine to use with flutter. Now it is using QuickJS on Android   through Dart ffi and JavascriptCore on IOS also through dart-ffi. The Javascript runtimes runs synchronously through the dart ffi. So now you can run javascript code as a native citzen inside yours Flutter Mobile Apps.
+A Javascript engine to use with flutter. Now it is using QuickJS on Android   through Dart ffi and JavascriptCore on IOS also through dart-ffi. The Javascript runtimes runs synchronously through the dart ffi. So now you can run javascript code as a native citzen inside yours Flutter ~~Mobile~~ Apps (Android, IOS, Windows, Linux and MacOS are all supported).
 
 In the previous versions we only get the result of evaluated expressions as String. 
 
@@ -11,6 +11,8 @@ With flutter_js Flutter applications can take advantage of great javascript libr
 On IOS this library relies on the native JavascriptCore provided by iOS SDK. In Android it uses the amazing and small Javascript Engine QuickJS [https://bellard.org/quickjs/](https://bellard.org/quickjs/) (A spetacular work of the Fabrice Bellard and Charlie Gordon).
 
 On Android you could use JavascriptCore as well You just need add an Android dependency `implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc:0.1.3"` and pass `forceJavascriptCoreOnAndroid: true` to the function `getJavascriptRuntime`. 
+
+On MacOS the JavascriptCore, provided by the OSX is used. In Windows and Linux the engine used is the QuickJS. In the 0.4.0 version we borrowed the dart ffi source code from the flutter_qjs lib. `flutter_qjs` is a amazing package and they made a excelent work in build a good ffi bridge between Dart and JS, also doing the quickjs source code changes to allow it to run on WIndows. But, flutter_js take the approach to use JavascriptCore on IOS (mainly) to avoid refusals on the Apple Store, which state that `Apps may contain or run code that is not embedded in the binary (e.g. HTML5-based games, bots, etc.), as long as code distribution isn’t the main purpose of the app`. It also says `your app must use WebKit and JavaScript Core to run third-party software and should not attempt to extend or expose native platform APIs to third-party software;` Reference: https://developer.apple.com/app-store/review/guidelines/ [ Session  4.7]. So, we avoid to use quickjs in IOS apps, so flutter_js provides an abstraction called JavascriptRuntime which runs using JavascriptCore on Apple devices and Desktop and QuickJS in Android, Windows and Linux.
 
 FLutterJS allows to use Javascript to execute validations logic of TextFormField, also we can execute rule engines or redux logic shared from our web applications. The opportunities are huge.
 
@@ -198,6 +200,11 @@ and allows your Flutter app to provide dartFunctions as channels through `onMess
 your javascript code.
 
 
+### https://pub.dev/packages/flutter_qjs
+
+Amazing package which does implement the javascript engine using quickjs through Dart ffi.
+The only difference is it uses quickjs also on IOS devices, which we understand would be problematic to pass Apple Store Review process. In the flutter_js 0.4.0 version, which we
+added support to Desktop and also improved the Dart/Js integration, we borrowed the C function bindings and Dart/JS conversions and integrations from the flutter_qjs source code. We just adapted it to support xhr, fetch and to keep the same interface provided on flutter_js through the class JavascriptRuntime.
 
 
 ## Small Apk size
