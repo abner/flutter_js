@@ -1,3 +1,5 @@
+# 0.4.0+1
+- Updated README.md
 # 0.4.0+0
 
 - Added support to windows, macos and linux platforms
