@@ -12,10 +12,9 @@ import 'package:flutter_js/javascriptcore/binding/js_value_ref.dart';
 import 'package:flutter_js/javascriptcore/flutter_jscore.dart';
 import 'package:flutter_js/javascriptcore/jscore/js_value.dart';
 import 'package:flutter_js/javascriptcore/jscore_bindings.dart';
-import 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
-import 'package:flutter_js_platform_interface/js_eval_result.dart';
+import 'package:flutter_js/js_eval_result.dart';
 
-class JavascriptCoreRuntime extends FlutterJsPlatform {
+class JavascriptCoreRuntime extends JavascriptRuntime {
   late Pointer _contextGroup;
   late Pointer _globalContext;
   late JSContext context;

@@ -1,3 +1,8 @@
+# 0.4.0+0
+
+- Added support to windows, macos and linux platforms
+- Fixed fetch error
+- Improved the channels/dart callback integration
 # 0.3.0+0
 
 - Null-safety migration

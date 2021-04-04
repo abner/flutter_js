@@ -6,7 +6,7 @@ import 'ajv_result_screen.dart';
 import 'form.dart';
 
 class AjvExample extends StatefulWidget {
-  final FlutterJsPlatform jsRuntime;
+  final JavascriptRuntime jsRuntime;
   AjvExample(this.jsRuntime, {Key? key}) : super(key: key);
 
   _AjvExampleState createState() => _AjvExampleState();
@@ -42,7 +42,7 @@ class _AjvExampleState extends State<AjvExample> {
         widget.jsRuntime.evaluate("""var window = global = globalThis;""");
 
         widget.jsRuntime.evaluate(ajvJS + "");
-        final evalAjv = widget.jsRuntime.evaluate("""
+        widget.jsRuntime.evaluate("""
                     var ajv = new global.Ajv({ allErrors: true, coerceTypes: true });
                     ajv.addSchema(
                       {

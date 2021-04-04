@@ -1,14 +1,13 @@
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
-import '../flutter_js.dart';
+import 'package:flutter_js/javascript_runtime.dart';
 import './xhr.dart';
 
 var _fetchDebug = false;
 
 setFetchDebug(bool value) => _fetchDebug = value;
 
-extension JavascriptRuntimeFetchExtension on FlutterJsPlatform {
-  Future<FlutterJsPlatform> enableFetch() async {
+extension JavascriptRuntimeFetchExtension on JavascriptRuntime {
+  Future<JavascriptRuntime> enableFetch() async {
     debug('Before enable xhr');
     enableXhr();
     debug('After enable xhr');

@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:flutter_js/javascript_runtime.dart';
 
 import 'package:flutter_js/javascriptcore/jscore_runtime.dart';
 //import 'package:flutter_js/quickjs-sync-server/quickjs_oasis_jsbridge.dart';
 //import 'package:flutter_js/quickjs/quickjs_runtime.dart';
-import 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
 
-export './javascript_runtime.dart';
 export './quickjs/quickjs_runtime.dart';
 
 import './quickjs/quickjs_runtime2.dart';
@@ -18,17 +17,17 @@ export 'quickjs-sync-server/quickjs_oasis_jsbridge.dart';
 import './extensions/fetch.dart';
 import './extensions/handle_promises.dart';
 
-export 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
-export 'package:flutter_js_platform_interface/js_eval_result.dart';
+export 'js_eval_result.dart';
+export 'javascript_runtime.dart';
 
 // import condicional to not import ffi libraries when using web as target
 // import "something.dart" if (dart.library.io) "other.dart";
 // REF:
 // - https://medium.com/flutter-community/conditional-imports-across-flutter-and-web-4b88885a886e
 // - https://github.com/creativecreatorormaybenot/wakelock/blob/master/wakelock/lib/wakelock.dart
-FlutterJsPlatform getJavascriptRuntime(
+JavascriptRuntime getJavascriptRuntime(
     {bool forceJavascriptCoreOnAndroid = false, bool xhr = true}) {
-  FlutterJsPlatform runtime;
+  JavascriptRuntime runtime;
   if ((Platform.isAndroid && !forceJavascriptCoreOnAndroid)) {
     runtime = QuickJsRuntime2();
     // FlutterJs engine = FlutterJs();

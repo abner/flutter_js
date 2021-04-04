@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter_js/flutter_js.dart';
+import 'package:flutter_js/javascript_runtime.dart';
 import 'package:http/http.dart' as http;
 
 /*
@@ -245,7 +244,7 @@ xhrSetHttpClient(http.Client client) {
   httpClient = client;
 }
 
-extension JavascriptRuntimeXhrExtension on FlutterJsPlatform {
+extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
   List<dynamic>? getPendingXhrCalls() {
     return dartContext[XHR_PENDING_CALLS_KEY];
   }
@@ -255,7 +254,7 @@ extension JavascriptRuntimeXhrExtension on FlutterJsPlatform {
     dartContext[XHR_PENDING_CALLS_KEY] = [];
   }
 
-  FlutterJsPlatform enableXhr() {
+  JavascriptRuntime enableXhr() {
     httpClient = httpClient ?? http.Client();
     dartContext[XHR_PENDING_CALLS_KEY] = [];
 
@@ -318,7 +317,7 @@ extension JavascriptRuntimeXhrExtension on FlutterJsPlatform {
         // assuming request was successfully executed
         String responseText = utf8.decode(response.bodyBytes);
         try {
-           responseText = jsonEncode(json.decode(responseText));
+          responseText = jsonEncode(json.decode(responseText));
         } on Exception {}
         final xhrResult = XmlHttpRequestResponse(
           responseText: responseText,

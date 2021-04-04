@@ -7,6 +7,7 @@ import 'dart:isolate';
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:flutter_js/flutter_js.dart';
+import 'package:flutter_js/javascript_runtime.dart';
 import 'ffi.dart';
 export 'ffi.dart' show JSEvalFlag, JSRef;
 
@@ -21,7 +22,7 @@ typedef _JsModuleHandler = String Function(String name);
 typedef _JsHostPromiseRejectionHandler = void Function(dynamic reason);
 
 /// Quickjs engine for flutter.
-class QuickJsRuntime2 extends FlutterJsPlatform {
+class QuickJsRuntime2 extends JavascriptRuntime {
   Pointer<JSRuntime>? _rt;
   Pointer<JSContext>? _ctx;
 
@@ -238,7 +239,7 @@ class QuickJsRuntime2 extends FlutterJsPlatform {
         } else {
           print('No channel $channelName registered');
         }
-        if (FlutterJsPlatform.debugEnabled) {
+        if (JavascriptRuntime.debugEnabled) {
           print('CHANNEL: $channelName - Message: $message');
         }
       }

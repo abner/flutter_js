@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:flutter_js_platform_interface/flutter_js_platform_interface.dart';
-import 'package:flutter_js_platform_interface/js_eval_result.dart';
+import 'package:flutter_js/javascript_runtime.dart';
+import 'package:flutter_js/js_eval_result.dart';
 
 const REGISTER_PROMISE_FUNCTION = 'FLUTTER_NATIVEJS_REGISTER_PROMISE';
 
-extension HandlePromises on FlutterJsPlatform {
+extension HandlePromises on JavascriptRuntime {
   enableHandlePromises() {
     final fnRegisterPromise = evaluate(""" 
      var FLUTTER_NATIVEJS_PENDING_PROMISES = {};
@@ -107,30 +107,31 @@ extension HandlePromises on FlutterJsPlatform {
   Future<JsEvalResult> _doHandlePromise(
       JsEvalResult value, Completer completer) async {
     if (value.stringResult.contains('Instance of \'Future')) {
-       var completed = false;
+      var completed = false;
       Function? fnEvaluatePromise;
       fnEvaluatePromise = () async {
         await this.executePendingJob();
         if (!completed) {
-           await Future.delayed(Duration(milliseconds: 20), () => fnEvaluatePromise!.call());
+          await Future.delayed(
+              Duration(milliseconds: 20), () => fnEvaluatePromise!.call());
         } else {
-          if (FlutterJsPlatform.debugEnabled) {
+          if (JavascriptRuntime.debugEnabled) {
             print('Promise completed');
           }
         }
       };
-      Future.delayed(Duration(milliseconds: 20), () => fnEvaluatePromise!.call());
-      
+      Future.delayed(
+          Duration(milliseconds: 20), () => fnEvaluatePromise!.call());
+
       // Future.delayed(Duration(seconds: 1), () {
       //   this.executePendingJob();
       // });
-      return await (value.rawResult as Future<dynamic>)
-          .then((dynamic res) {
-            final resEval = JsEvalResult(res, value.rawResult);
-            completer.complete(resEval);
-            completed = true;
-            return resEval;
-          });
+      return await (value.rawResult as Future<dynamic>).then((dynamic res) {
+        final resEval = JsEvalResult(res, value.rawResult);
+        completer.complete(resEval);
+        completed = true;
+        return resEval;
+      });
     }
     if (value.stringResult != '[object Promise]') return Future.value(value);
 

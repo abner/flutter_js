@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter_js/flutter_js.dart';
+import 'package:flutter_js/javascript_runtime.dart';
 import 'package:flutter_js/quickjs/utf8_null_terminated.dart';
 
 import 'qjs_typedefs.dart';
@@ -55,7 +56,7 @@ Pointer<NativeFunction<ChannelCallback>>? consoleLogBridgeFunction;
 Pointer<NativeFunction<ChannelCallback>>? setTimeoutBridgeFunction;
 Pointer<NativeFunction<ChannelCallback>>? sendNativeBridgeFunction;
 
-class QuickJsRuntime extends FlutterJsPlatform {
+class QuickJsRuntime extends JavascriptRuntime {
   late Pointer<JSContext> _context;
   late Pointer<JSRuntime> _runtime;
 

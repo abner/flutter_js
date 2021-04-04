@@ -1,11 +1,80 @@
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
-
 import 'package:flutter/foundation.dart';
-import 'package:flutter_js_platform_interface/js_eval_result.dart';
 
-abstract class JavascriptRuntime {
+import 'js_eval_result.dart';
+
+class FlutterJsPlatformEmpty extends JavascriptRuntime {
+  @override
+  JsEvalResult callFunction(Pointer<NativeType> fn, Pointer<NativeType> obj) {
+    throw UnimplementedError();
+  }
+
+  @override
+  T? convertValue<T>(JsEvalResult jsValue) {
+    throw UnimplementedError();
+  }
+
+  @override
+  void dispose() {}
+
+  @override
+  JsEvalResult evaluate(String code) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<JsEvalResult> evaluateAsync(String code) {
+    throw UnimplementedError();
+  }
+
+  @override
+  int executePendingJob() {
+    throw UnimplementedError();
+  }
+
+  @override
+  String getEngineInstanceId() {
+    throw UnimplementedError();
+  }
+
+  @override
+  void initChannelFunctions() {
+    throw UnimplementedError();
+  }
+
+  @override
+  String jsonStringify(JsEvalResult jsValue) {
+    throw UnimplementedError();
+  }
+
+  @override
+  bool setupBridge(String channelName, void Function(dynamic args) fn) {
+    throw UnimplementedError();
+  }
+}
+
+abstract class JavascriptRuntime extends PlatformInterface {
+  static final Object _token = Object();
+  static JavascriptRuntime get instance => _instance;
+  static JavascriptRuntime _instance = FlutterJsPlatformEmpty();
+
+  static bool debugEnabled = false;
+
+  JavascriptRuntime() : super(token: _token);
+
+  /// Platform-specific plugins should set this with their own platform-specific
+  /// class that extends [UrlLauncherPlatform] when they register themselves.
+  // TODO(amirh): Extract common platform interface logic.
+  // https://github.com/flutter/flutter/issues/43368
+  static set instance(JavascriptRuntime instance) {
+    PlatformInterface.verifyToken(instance, _token);
+    _instance = instance;
+  }
+
   @protected
   JavascriptRuntime init() {
     initChannelFunctions();
@@ -14,7 +83,7 @@ abstract class JavascriptRuntime {
     return this;
   }
 
-  Map<String, Pointer?> localContext = {};
+  Map<String, dynamic> localContext = {};
 
   Map<String, dynamic> dartContext = {};
 
@@ -34,7 +103,7 @@ abstract class JavascriptRuntime {
 
   T? convertValue<T>(JsEvalResult jsValue);
 
-  String? jsonStringify(JsEvalResult jsValue);
+  String jsonStringify(JsEvalResult jsValue);
 
   @protected
   void initChannelFunctions();
@@ -80,11 +149,11 @@ abstract class JavascriptRuntime {
       };
       1
     """);
-    // print('SET TIMEOUT EVAL RESULT: $setTImeoutResult');
+    //print('SET TIMEOUT EVAL RESULT: $setTImeoutResult');
     onMessage('SetTimeout', (dynamic args) {
       try {
         int duration = args['timeout'];
-        String? idx = args['timeoutIndex'];
+        String idx = args['timeoutIndex'];
 
         Timer(Duration(milliseconds: duration), () {
           evaluate("""

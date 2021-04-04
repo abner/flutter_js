@@ -14,14 +14,6 @@ dependencies:
   ffi: "^1.0.0"
   http: ^0.13.1
   sync_http: ^0.3.0
-  #flutter_js_linux: ^0.0.1
-  #flutter_js_windows: ^0.0.1
-  #flutter_js_platform_interface: ^0.3.0
-  flutter_js_platform_interface:
-    path: ./packages/flutter_js_platform_interface
-  #flutter_js_linux_windows:
-  #  path: ./packages/flutter_js_linux_windows
-  
 
 dev_dependencies:
   flutter_test:

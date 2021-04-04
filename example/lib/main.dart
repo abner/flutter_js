@@ -1,8 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-
-import 'package:flutter/services.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_js_example/ajv_example.dart';
 
@@ -34,7 +30,7 @@ class FlutterJsHomeScreen extends StatefulWidget {
 class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   String _jsResult = '';
 
-  final FlutterJsPlatform javascriptRuntime = getJavascriptRuntime();
+  final JavascriptRuntime javascriptRuntime = getJavascriptRuntime();
 
   String? _quickjsVersion;
 
@@ -109,7 +105,6 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
                     fontWeight: FontWeight.bold),
               ),
             ),
-
             ElevatedButton(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -121,15 +116,18 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
               child: const Text('See Ajv Example'),
             ),
             SizedBox.fromSize(size: Size(double.maxFinite, 20)),
-            ElevatedButton(child: const Text('Fetch Remote Data'), onPressed: () async {
-              var asyncResult = await javascriptRuntime.evaluateAsync("""
+            ElevatedButton(
+              child: const Text('Fetch Remote Data'),
+              onPressed: () async {
+                var asyncResult = await javascriptRuntime.evaluateAsync("""
                 fetch('https://raw.githubusercontent.com/abner/flutter_js/master/cxx/quickjs/VERSION').then(response => response.text());
               """);
-              await javascriptRuntime.executePendingJob();
-              final promiseResolved = await javascriptRuntime.handlePromise(asyncResult);
-              setState(() => _quickjsVersion = promiseResolved.stringResult);
-
-            },),
+                await javascriptRuntime.executePendingJob();
+                final promiseResolved =
+                    await javascriptRuntime.handlePromise(asyncResult);
+                setState(() => _quickjsVersion = promiseResolved.stringResult);
+              },
+            ),
             Text(
               'QuickJS Version\n${_quickjsVersion == null ? '<NULL>' : _quickjsVersion}',
               textAlign: TextAlign.center,
