@@ -249,6 +249,12 @@ See bellow the screens we added to the example app:
 
 ## MACOS
 
+* To solve `Command Line Tool - Error - xcrun: error: unable to find utility “xcodebuild”, not a developer tool or in PATH`
+
+> sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+In Catalina with XCode 12 i needed to install ruby 2.7.2 in order to install `cocoapods` (Also needed to Flutter on IOS). So i installed `brew`and after `rbenv`.
+
 To enable http calls, add this to your files: 
 
 * DebugProfile.entitlements
