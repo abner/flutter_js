@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_js_example/ajv_example.dart';
@@ -34,6 +37,8 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
 
   String? _quickjsVersion;
 
+  Process? _process;
+  bool _processInitialized = false;
   String evalJS() {
     String jsResult = javascriptRuntime.evaluate("""
             if (typeof MyClass == 'undefined') {
@@ -71,6 +76,7 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
     super.dispose();
     //widget.javascriptRuntime.dispose();
     javascriptRuntime.dispose();
+    _process?.kill(ProcessSignal.sigabrt);
   }
 
   @override
@@ -119,6 +125,27 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
             ElevatedButton(
               child: const Text('Fetch Remote Data'),
               onPressed: () async {
+                print('PATH: ${Directory.current}');
+                if (!_processInitialized)
+                  Process.start(
+                          'node.exe', ['${Directory.current.path}\\script.js'],
+                          mode: ProcessStartMode.detachedWithStdio)
+                      .then((process) {
+                    //print('PROCES: ${process.exitCode}');
+                    if (!_processInitialized) {
+                      _process = process;
+                      process.stdout.pipe(stdout);
+                      process.stderr.pipe(stderr);
+                      process.stdin.writeln('Hi');
+                    }
+                    _processInitialized = true;
+                  }).onError((error, stackTrace) {
+                    print(error.toString());
+                  });
+                if (_processInitialized && _process != null) {
+                  _process?.stdin.writeln('Hi already initialized');
+                }
+
                 var asyncResult = await javascriptRuntime.evaluateAsync("""
                 fetch('https://raw.githubusercontent.com/abner/flutter_js/master/cxx/quickjs/VERSION').then(response => response.text());
               """);
