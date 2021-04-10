@@ -3,6 +3,7 @@
 #include <flutter_linux/flutter_linux.h>
 #include <gtk/gtk.h>
 #include <sys/utsname.h>
+#include <glib.h>
 
 #include <cstring>
 
@@ -53,6 +54,25 @@ static void method_call_cb(FlMethodChannel* channel, FlMethodCall* method_call,
   flutter_js_plugin_handle_method_call(plugin, method_call);
 }
 
+// Gets the directory the current executable is in, borrowed from:
+// https://github.com/flutter/engine/blob/master/shell/platform/linux/fl_dart_project.cc#L27
+//
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in https://github.com/flutter/engine/blob/master/LICENSE.
+static gchar* get_executable_dir() {
+  g_autoptr(GError) error = nullptr;
+  g_autofree gchar* exe_path = g_file_read_link("/proc/self/exe", &error);
+  if (exe_path == nullptr) {
+    g_critical("Failed to determine location of executable: %s",
+               error->message);
+    return nullptr;
+  }
+
+  return g_path_get_dirname(exe_path);
+}
+
+
 void flutter_js_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
   FlutterJsPlugin* plugin = FLUTTER_JS_PLUGIN(
       g_object_new(flutter_js_plugin_get_type(), nullptr));
@@ -67,4 +87,10 @@ void flutter_js_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
                                             g_object_unref);
 
   g_object_unref(plugin);
+
+  g_autofree gchar* executable_dir = get_executable_dir();
+  g_autofree gchar* lib_path =
+  g_build_filename(executable_dir, "lib", "libquickjs_c_bridge_plugin.so", nullptr);
+  setenv("LIBQUICKJSC_PATH", lib_path, 0);
 }
+
