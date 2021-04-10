@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -72,11 +71,9 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
 
   @override
   dispose() {
-    print('DISPOSE CALLED!!!');
     super.dispose();
     //widget.javascriptRuntime.dispose();
     javascriptRuntime.dispose();
-    _process?.kill(ProcessSignal.sigabrt);
   }
 
   @override
@@ -125,27 +122,6 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
             ElevatedButton(
               child: const Text('Fetch Remote Data'),
               onPressed: () async {
-                print('PATH: ${Directory.current}');
-                if (!_processInitialized)
-                  Process.start(
-                          'node.exe', ['${Directory.current.path}\\script.js'],
-                          mode: ProcessStartMode.detachedWithStdio)
-                      .then((process) {
-                    //print('PROCES: ${process.exitCode}');
-                    if (!_processInitialized) {
-                      _process = process;
-                      process.stdout.pipe(stdout);
-                      process.stderr.pipe(stderr);
-                      process.stdin.writeln('Hi');
-                    }
-                    _processInitialized = true;
-                  }).onError((error, stackTrace) {
-                    print(error.toString());
-                  });
-                if (_processInitialized && _process != null) {
-                  _process?.stdin.writeln('Hi already initialized');
-                }
-
                 var asyncResult = await javascriptRuntime.evaluateAsync("""
                 fetch('https://raw.githubusercontent.com/abner/flutter_js/master/cxx/quickjs/VERSION').then(response => response.text());
               """);
