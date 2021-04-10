@@ -120,7 +120,7 @@ final DynamicLibrary _qjsLib = Platform.environment['FLUTTER_TEST'] == 'true'
             ? DynamicLibrary.open('test/build/libffiquickjs.dylib')
             : DynamicLibrary.open('test/build/libffiquickjs.so'))
     : (Platform.isWindows
-        ? DynamicLibrary.open('flutter_js_plugin.dll')
+        ? DynamicLibrary.open('quickjs_c_bridge.dll')
         : Platform.isAndroid
             ? DynamicLibrary.open('libfastdev_quickjs_runtime.so')
             : DynamicLibrary.process());
