@@ -72,7 +72,6 @@ static gchar* get_executable_dir() {
   return g_path_get_dirname(exe_path);
 }
 
-
 void flutter_js_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
   FlutterJsPlugin* plugin = FLUTTER_JS_PLUGIN(
       g_object_new(flutter_js_plugin_get_type(), nullptr));
@@ -87,7 +86,6 @@ void flutter_js_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
                                             g_object_unref);
 
   g_object_unref(plugin);
-
   g_autofree gchar* executable_dir = get_executable_dir();
   g_autofree gchar* lib_path =
   g_build_filename(executable_dir, "lib", "libquickjs_c_bridge_plugin.so", nullptr);

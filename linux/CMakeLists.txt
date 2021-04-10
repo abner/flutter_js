@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/../cxx/quickjs.cmake")
-target_compile_options(quickjs PRIVATE "-fPIC")
 
 set(PROJECT_NAME "flutter_js")
 project(${PROJECT_NAME} LANGUAGES CXX C)
@@ -11,15 +9,9 @@ set(PLUGIN_NAME "${PROJECT_NAME}_plugin")
 set(CMAKE_C_COMPILER "gcc")
 set(CMAKE_CXX_COMPILER "g++")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -DANDROID_STL=c++_static -DDEBUGGER_SERVER_PORT=${DEBUGGER_SERVER_PORT}")
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=incompatible-pointer-types-discards-qualifiers")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-int-conversion")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-variable")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-but-set-variable")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-maybe-uninitialized")
 
 add_library(${PLUGIN_NAME} SHARED
   "flutter_js_plugin.cc"
-  "${CXX_LIB_DIR}/libfastdev_quickjs_runtime.cpp"
 )
 
 apply_standard_settings(${PLUGIN_NAME})
@@ -31,7 +23,6 @@ target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter)
-target_link_libraries(${PLUGIN_NAME} PRIVATE quickjs)
 target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::GTK)
 
 # List of absolute paths to libraries that should be bundled with the plugin
@@ -39,8 +30,6 @@ set(flutter_qjs_bundled_libraries
   "$<TARGET_FILE:libquickjs_c_bridge_plugin.so>"
   PARENT_SCOPE
 )
-
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/shared/libquickjs_c_bridge_plugin.so")
 
 set(BUILD_BUNDLE_DIR "${PROJECT_BINARY_DIR}/bundle")
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
