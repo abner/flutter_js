@@ -1,3 +1,7 @@
+# 0.4.0+2
+- Updated README.md with information about github repository containing the C bridge used on
+Windows and Linux
+
 # 0.4.0+1
 - Updated README.md
 # 0.4.0+0
