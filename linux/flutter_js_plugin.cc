@@ -86,9 +86,11 @@ void flutter_js_plugin_register_with_registrar(FlPluginRegistrar* registrar) {
                                             g_object_unref);
 
   g_object_unref(plugin);
+  // get the current executable dir
   g_autofree gchar* executable_dir = get_executable_dir();
-  g_autofree gchar* lib_path =
-  g_build_filename(executable_dir, "lib", "libquickjs_c_bridge_plugin.so", nullptr);
+  // resolve the shared library path 
+  g_autofree gchar* lib_path = g_build_filename(executable_dir, "lib", "libquickjs_c_bridge_plugin.so", nullptr);
+  // share the libpath to Dart through an environment variable
   setenv("LIBQUICKJSC_PATH", lib_path, 0);
 }
 
