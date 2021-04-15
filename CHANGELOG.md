@@ -1,3 +1,7 @@
+# 0.4.0+4
+
+- Small README.md fix
+
 # 0.4.0+3
 
 - Fixed dynamic library load for tests

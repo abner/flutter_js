@@ -350,4 +350,4 @@ so you can fill-in the build folder into the `PATH` on Windows and the `LIBQUICK
 }
 ```
 
-> For running unit tests on MacOSx no extra step is needed.
+> For running unit tests on MacOSx no extra steps are needed.
