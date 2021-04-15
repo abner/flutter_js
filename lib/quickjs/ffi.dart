@@ -118,7 +118,7 @@ final DynamicLibrary _qjsLib = Platform.environment['FLUTTER_TEST'] == 'true'
         ? DynamicLibrary.open('quickjs_c_bridge.dll')
         : Platform.isMacOS
             ? DynamicLibrary.process()
-            : DynamicLibrary.open(Platform.environment['LIBQUICKJSC_PATH'] ??
+            : DynamicLibrary.open(Platform.environment['LIBQUICKJSC_TEST_PATH'] ??
                 'libquickjs_c_bridge_plugin.so'))
     : (Platform.isWindows
         ? DynamicLibrary.open('quickjs_c_bridge.dll')

@@ -314,24 +314,40 @@ With the library being compiled and published to jitpack, applications using the
 
 We can unit test evaluation of expressions on flutter_js using the desktop platforms (windows, linux and macos).
 
-For `Windows` environment you need to build the executable first, and after you need to add the
-path `build\windows\runner\Debug` (the absolute path) to your environment path.
+For `Windows` and `Linux` you need to build your app Desktop executable first: `flutter build -d windows` or `flutter build -d linux`.
+
+On Windows, after build your application for the first time, at least, add the path `build\windows\runner\Debug` (the absolute path) to your environment path.
 
 In powershell, just run `$env:path += ";${pwd}\build\windows\runner\Debug"`. Now you can run the test in the command line session where you added the `\build\windows\runner\Debug` into the path.
 
-To run the test integrated Visual Studio Code, you will need to setup a launcher to the .vscode/launch.json
-so you can fill-in the build folder into the PATH:
+For `Linux` you need to exports an environment variable called `LIBQUICKJSC_TEST_PATH` pointing to `build/linux/debug/bundle/lib/libquickjs_c_bridge_plugin.so`. eg: `export LIBQUICKJSC_TEST_PATH="$PWD/build/linux/debug/bundle/lib/libquickjs_c_bridge_plugin.so"`
+
+
+To run the test integrated Visual Studio Code, you will need to setup a launcher to the `.vscode/launch.json` file,
+so you can fill-in the build folder into the `PATH` on Windows and the `LIBQUICKJSC_TEST_PATH` for linux:
 
 ```json
+{
+    "version": "0.2.0",
+    "configurations": [
         {
             "name": "test-with-flutterjs",
             "type": "dart",
             "program": "test/flutter_js_test.dart",
-            "env": {
-                "PATH": "${env:Path};${workspaceFolder}\\build\\windows\\runner\\Debug"
+            "windows": {
+                "env": {
+                    "PATH": "${env:Path};${workspaceFolder}\\example\\build\\windows\\runner\\Debug"
+                }
+            },
+            "linux": {
+                "env": {
+                    "LIBQUICKJSC_TEST_PATH": "${workspaceFolder}/example/build/linux/debug/bundle/lib/libquickjs_c_bridge_plugin.so"
+                }
             },
             "request": "launch"
         }
+    ]
+}
 ```
 
-> For MacOSx and Linux no extra step is needed.
+> For running unit tests on MacOSx no extra step is needed.
