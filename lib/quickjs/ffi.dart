@@ -115,17 +115,19 @@ abstract class JSPropertyEnum extends Opaque {}
 
 final DynamicLibrary _qjsLib = Platform.environment['FLUTTER_TEST'] == 'true'
     ? (Platform.isWindows
-        ? DynamicLibrary.open('test/build/Debug/ffiquickjs.dll')
+        ? DynamicLibrary.open('quickjs_c_bridge.dll')
         : Platform.isMacOS
-            ? DynamicLibrary.open('test/build/libffiquickjs.dylib')
-            : DynamicLibrary.open('test/build/libffiquickjs.so'))
+            ? DynamicLibrary.process()
+            : DynamicLibrary.open(Platform.environment['LIBQUICKJSC_PATH'] ??
+                'libquickjs_c_bridge_plugin.so'))
     : (Platform.isWindows
         ? DynamicLibrary.open('quickjs_c_bridge.dll')
         : (Platform.isLinux
-          ? DynamicLibrary.open(Platform.environment['LIBQUICKJSC_PATH'] ?? 'libquickjs_c_bridge_plugin.so')
-          : (Platform.isAndroid
-              ? DynamicLibrary.open('libfastdev_quickjs_runtime.so')
-              : DynamicLibrary.process())));
+            ? DynamicLibrary.open(Platform.environment['LIBQUICKJSC_PATH'] ??
+                'libquickjs_c_bridge_plugin.so')
+            : (Platform.isAndroid
+                ? DynamicLibrary.open('libfastdev_quickjs_runtime.so')
+                : DynamicLibrary.process())));
 
 /// DLLEXPORT JSValue *jsThrow(JSContext *ctx, JSValue *obj)
 final Pointer<JSValue> Function(

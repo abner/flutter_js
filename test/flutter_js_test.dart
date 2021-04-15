@@ -7,13 +7,24 @@ void main() {
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  late JavascriptRuntime jsRuntime;
+
   setUp(() {
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      return '42';
-    });
+    jsRuntime = getJavascriptRuntime();
   });
 
   tearDown(() {
-    channel.setMockMethodCallHandler(null);
+    try {
+      jsRuntime.dispose();
+    } on Error catch (_) {}
+  });
+
+  test('evaluate javascript', () {
+    final result = jsRuntime.evaluate('Math.pow(5,3)');
+    print('${result.rawResult}, ${result.stringResult}');
+    print(
+        '${result.rawResult.runtimeType}, ${result.stringResult.runtimeType}');
+    expect(result.rawResult, equals(125));
+    expect(result.stringResult, equals('125'));
   });
 }
