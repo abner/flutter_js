@@ -23,6 +23,15 @@
             "cwd": "packages",
             "request": "launch",
             "type": "dart"
+        },
+        {
+            "name": "test-with-flutterjs",
+            "type": "dart",
+            "program": "test/flutter_js_test.dart",
+            "env": {
+                "PATH": "${env:Path};${workspaceFolder}\\example\\build\\windows\\runner\\Debug"
+            },
+            "request": "launch"
         }
     ]
 }

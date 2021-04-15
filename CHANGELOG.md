@@ -1,3 +1,8 @@
+# 0.4.0+3
+
+- Fixed dynamic library load for tests
+- Added info about tests into the [README.md](README.md)
+
 # 0.4.0+2
 - Updated README.md with information about github repository containing the C bridge used on
 Windows and Linux

@@ -308,3 +308,30 @@ We just separated the code to allow build it and in this repository we have only
 The library wrapper, both QuickJS and JavascriptCore, are also compiled in a separated repository: https://github.com/fast-development/android-js-runtimes
 
 With the library being compiled and published to jitpack, applications using the wrappers, through flutter_js does not need to compile the shared library using Android NDK.
+
+
+## Unit Testing javascript evaluation
+
+We can unit test evaluation of expressions on flutter_js using the desktop platforms (windows, linux and macos).
+
+For `Windows` environment you need to build the executable first, and after you need to add the
+path `build\windows\runner\Debug` (the absolute path) to your environment path.
+
+In powershell, just run `$env:path += ";${pwd}\build\windows\runner\Debug"`. Now you can run the test in the command line session where you added the `\build\windows\runner\Debug` into the path.
+
+To run the test integrated Visual Studio Code, you will need to setup a launcher to the .vscode/launch.json
+so you can fill-in the build folder into the PATH:
+
+```json
+        {
+            "name": "test-with-flutterjs",
+            "type": "dart",
+            "program": "test/flutter_js_test.dart",
+            "env": {
+                "PATH": "${env:Path};${workspaceFolder}\\build\\windows\\runner\\Debug"
+            },
+            "request": "launch"
+        }
+```
+
+> For MacOSx and Linux no extra step is needed.
