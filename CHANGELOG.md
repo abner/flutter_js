@@ -1,3 +1,7 @@
+# 0.4.0+5
+
+- Removed console.log from fetch.js
+
 # 0.4.0+4
 
 - Fixed issue on xhr requests - wasn't passing headers to the requests

@@ -1,6 +1,5 @@
 function fetch(url, options) {
 	options = options || {};
-	console.log('fetCH OPTIONS: '+ JSON.stringify(arguments));
 	return new Promise( (resolve, reject) => {
 		const request = new XMLHttpRequest();
 		const keys = [];
