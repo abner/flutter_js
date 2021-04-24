@@ -1,3 +1,7 @@
+# 0.4.0+4
+
+- Fixed issue on xhr requests - wasn't passing headers to the requests
+
 # 0.4.0+3
 
 - Fixed dynamic library load for tests
