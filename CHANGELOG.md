@@ -1,3 +1,6 @@
+# 0.4.0+6
+
+- Fix executePendingJobs (wasn't dispatching in the most current version)
 # 0.4.0+5
 
 - Removed console.log from fetch.js
