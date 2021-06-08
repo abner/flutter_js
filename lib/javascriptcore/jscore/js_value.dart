@@ -169,7 +169,7 @@ class JSValue {
   }
 
   /// JavaScript context
-  late final JSContext context;
+  final JSContext context;
 
   /// C pointer
   final Pointer pointer;
@@ -177,39 +177,39 @@ class JSValue {
   JSValue(this.context, this.pointer);
 
   /// Creates a JavaScript value of the undefined type.
-  JSValue.makeUndefined(JSContext this.context)
+  JSValue.makeUndefined(this.context)
       : this.pointer = JSValueRef.jSValueMakeUndefined(context.pointer);
 
   /// Creates a JavaScript value of the null type.
-  JSValue.makeNull(JSContext this.context)
+  JSValue.makeNull(this.context)
       : this.pointer = JSValueRef.jSValueMakeNull(context.pointer);
 
   /// Creates a JavaScript value of the boolean type.
   /// [boolean] The bool to assign to the newly created JSValue.
-  JSValue.makeBoolean(JSContext this.context, bool boolean)
+  JSValue.makeBoolean(this.context, bool boolean)
       : this.pointer = JSValueRef.jSValueMakeBoolean(
             context.pointer, boolean == true ? 1 : 0);
 
   /// Creates a JavaScript value of the number type.
   /// [number] The double to assign to the newly created JSValue.
-  JSValue.makeNumber(JSContext this.context, double number)
+  JSValue.makeNumber(this.context, double number)
       : this.pointer = JSValueRef.jSValueMakeNumber(context.pointer, number);
 
   /// Creates a JavaScript value of the string type.
   /// [string] The double to assign to the newly created JSValue.
-  JSValue.makeString(JSContext this.context, String string)
+  JSValue.makeString(this.context, String string)
       : this.pointer = JSValueRef.jSValueMakeString(
             context.pointer, JSString.fromString(string).pointer);
 
   /// Creates a JavaScript value of the symbol type.
   /// [description] A description of the newly created symbol value.
-  JSValue.makeSymbol(JSContext this.context, String description)
+  JSValue.makeSymbol(this.context, String description)
       : this.pointer = JSValueRef.jSValueMakeSymbol(
             context.pointer, JSString.fromString(description).pointer);
 
   /// Creates a JavaScript value from a JSON formatted string.
   /// [string] The JSString containing the JSON string to be parsed.
-  JSValue.makeFromJSONString(JSContext this.context, String string)
+  JSValue.makeFromJSONString(this.context, String string)
       : this.pointer = JSValueRef.jSValueMakeFromJSONString(
             context.pointer, JSString.fromString(string).pointer);
 
@@ -307,9 +307,9 @@ class JSValue {
   /// Creates a JavaScript string containing the JSON serialized representation of a JS value.
   /// [indent] The number of spaces to indent when nesting.  If 0, the resulting JSON will not contains newlines.  The size of the indent is clamped to 10 spaces.
   /// [exception] A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
-  JSString createJSONString(
-    JSValuePointer? exception, {
+  JSString createJSONString({
     int indent = 4,
+    JSValuePointer? exception,
   }) {
     return JSString(JSValueRef.jSValueCreateJSONString(context.pointer, pointer,
         indent, (exception ?? JSValuePointer(nullptr)).pointer));
@@ -332,7 +332,7 @@ class JSValue {
   /// Converts a JavaScript value to number and returns the resulting string.
   String? get string {
     JSString jsString = toStringCopy();
-    String? str = jsString.string;
+    final str = jsString.string;
     jsString.release();
     return str;
   }
@@ -390,21 +390,21 @@ class JSValue {
 /// JSValueRef pointer
 class JSValuePointer {
   /// C pointer
-  late final Pointer<Pointer> pointer;
+  final Pointer<Pointer> pointer;
 
   /// Pointer array count
   final int count;
 
   JSValuePointer([Pointer? value])
       : this.count = 1,
-        this.pointer = calloc<Pointer>() {
+        this.pointer = malloc.call<Pointer>(1) {
     pointer.value = value ?? nullptr;
   }
 
   /// JSValueRef array
   JSValuePointer.array(List<JSValue> array)
       : this.count = array.length,
-        this.pointer = calloc<Pointer>(array.length) {
+        this.pointer = malloc.call<Pointer>(array.length) {
     for (int i = 0; i < array.length; i++) {
       this.pointer[i] = array[i].pointer;
     }

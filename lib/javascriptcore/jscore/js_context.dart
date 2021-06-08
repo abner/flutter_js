@@ -11,11 +11,11 @@ import 'js_value.dart';
 /// A JavaScript execution context. Holds the global object and other execution state.
 class JSContext {
   /// C pointer
-  late Pointer _pointer;
+  Pointer _pointer;
   Pointer get pointer => _pointer;
 
   /// Exception (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
-  JSValuePointer? exception = JSValuePointer();
+  JSValuePointer exception = JSValuePointer();
 
   JSContext(this._pointer);
 
@@ -110,7 +110,7 @@ class JSContext {
           thisObject == null ? nullptr : thisObject.pointer,
           sourceURL == null ? nullptr : JSString.fromString(sourceURL).pointer,
           startingLineNumber,
-          exception?.pointer,
+          exception.pointer,
         ));
   }
 }

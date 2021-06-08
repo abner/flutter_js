@@ -9,7 +9,7 @@ import 'jsc_ffi.dart';
 /// [numChars] (size_t) The number of characters to copy from the buffer pointed to by chars.
 /// [@result] (JSStringRef) A JSString containing chars. Ownership follows the Create Rule.
 final Pointer Function(Pointer<Pointer> chars, Pointer numChars)
-    jSStringCreateWithCharacters = jscLib!
+    jSStringCreateWithCharacters = JscFfi.lib
         .lookup<NativeFunction<Pointer Function(Pointer<Pointer>, Pointer)>>(
             'JSStringCreateWithCharacters')
         .asFunction();
@@ -18,7 +18,7 @@ final Pointer Function(Pointer<Pointer> chars, Pointer numChars)
 /// [string] (char*) The null-terminated UTF8 string to copy into the new JSString.
 /// [@result] (JSStringRef) A JSString containing string. Ownership follows the Create Rule.
 final Pointer Function(Pointer<Utf8> string) jSStringCreateWithUTF8CString =
-    jscLib!
+    JscFfi.lib
         .lookup<NativeFunction<Pointer Function(Pointer<Utf8>)>>(
             'JSStringCreateWithUTF8CString')
         .asFunction();
@@ -26,20 +26,20 @@ final Pointer Function(Pointer<Utf8> string) jSStringCreateWithUTF8CString =
 /// Retains a JavaScript string.
 /// [string] (JSStringRef) The JSString to retain.
 /// [@result] (JSStringRef) A JSString that is the same as string.
-final Pointer Function(Pointer string) jSStringRetain = jscLib!
+final Pointer Function(Pointer string) jSStringRetain = JscFfi.lib
     .lookup<NativeFunction<Pointer Function(Pointer)>>('JSStringRetain')
     .asFunction();
 
 /// Releases a JavaScript string.
 /// [string] (JSStringRef) The JSString to release.
-final void Function(Pointer string) jSStringRelease = jscLib!
+final void Function(Pointer string) jSStringRelease = JscFfi.lib
     .lookup<NativeFunction<Void Function(Pointer)>>('JSStringRelease')
     .asFunction();
 
 /// Returns the number of Unicode characters in a JavaScript string.
 /// [string] (JSStringRef) The JSString whose length (in Unicode characters) you want to know.
 /// [@result] (size_t) The number of Unicode characters stored in string.
-final int Function(Pointer string) jSStringGetLength = jscLib!
+final int Function(Pointer string) jSStringGetLength = JscFfi.lib
     .lookup<NativeFunction<Int32 Function(Pointer)>>('JSStringGetLength')
     .asFunction();
 
@@ -47,7 +47,8 @@ final int Function(Pointer string) jSStringGetLength = jscLib!
 /// serves as the backing store for a JavaScript string.
 /// [string] (JSStringRef) The JSString whose backing store you want to access.
 /// [@result] (const JSChar*) A pointer to the Unicode character buffer that serves as string's backing store, which will be deallocated when string is deallocated.
-final Pointer<Utf16> Function(Pointer string) jSStringGetCharactersPtr = jscLib!
+final Pointer<Utf16> Function(Pointer string) jSStringGetCharactersPtr = JscFfi
+    .lib
     .lookup<NativeFunction<Pointer<Utf16> Function(Pointer)>>(
         'JSStringGetCharactersPtr')
     .asFunction();
@@ -56,7 +57,8 @@ final Pointer<Utf16> Function(Pointer string) jSStringGetCharactersPtr = jscLib!
 /// take up if converted into a null-terminated UTF8 string.
 /// [string] (JSStringRef) The JSString whose maximum converted size (in bytes) you want to know.
 /// [@result] (size_t) The maximum number of bytes that could be required to convert string into a null-terminated UTF8 string. The number of bytes that the conversion actually ends up requiring could be less than this, but never more.
-final int Function(Pointer string) jSStringGetMaximumUTF8CStringSize = jscLib!
+final int Function(Pointer string) jSStringGetMaximumUTF8CStringSize = JscFfi
+    .lib
     .lookup<NativeFunction<Uint32 Function(Pointer)>>(
         'JSStringGetMaximumUTF8CStringSize')
     .asFunction();
@@ -68,7 +70,7 @@ final int Function(Pointer string) jSStringGetMaximumUTF8CStringSize = jscLib!
 /// [bufferSize] (size_t) The size of the external buffer in bytes.
 /// [@result] (size_t) The number of bytes written into buffer (including the null-terminator byte).
 final int Function(Pointer string, Pointer buffer, int bufferSize)
-    jSStringGetUTF8CString = jscLib!
+    jSStringGetUTF8CString = JscFfi.lib
         .lookup<NativeFunction<Uint32 Function(Pointer, Pointer, Uint32)>>(
             'JSStringGetUTF8CString')
         .asFunction();
@@ -77,7 +79,7 @@ final int Function(Pointer string, Pointer buffer, int bufferSize)
 /// [a] (JSStringRef) The first JSString to test.
 /// [b] (JSStringRef) The second JSString to test.
 /// [@result] (bool) true if the two strings match, otherwise false.
-final int Function(Pointer a, Pointer b) jSStringIsEqual = jscLib!
+final int Function(Pointer a, Pointer b) jSStringIsEqual = JscFfi.lib
     .lookup<NativeFunction<Uint8 Function(Pointer, Pointer)>>('JSStringIsEqual')
     .asFunction();
 
@@ -86,7 +88,7 @@ final int Function(Pointer a, Pointer b) jSStringIsEqual = jscLib!
 /// [b] (char*) The null-terminated UTF8 string to test.
 /// [@result] (bool) true if the two strings match, otherwise false.
 final Pointer Function(Pointer a, Pointer b) jSStringIsEqualToUTF8CString =
-    jscLib!
+    JscFfi.lib
         .lookup<NativeFunction<Pointer Function(Pointer, Pointer)>>(
             'JSStringIsEqualToUTF8CString')
         .asFunction();

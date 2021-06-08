@@ -248,7 +248,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     } else if (jSValueIsObject(_globalContext, jsValue.rawResult) == 1 ||
         jSValueIsArray(_globalContext, jsValue.rawResult) == 1) {
       JSValue objValue = JSValuePointer(jsValue.rawResult).getValue(context);
-      String serialized = objValue.createJSONString(null).string!;
+      String serialized = objValue.createJSONString().string!;
       return jsonDecode(serialized);
     } else {
       return null;
@@ -258,7 +258,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   @override
   String jsonStringify(JsEvalResult jsValue) {
     JSValue objValue = JSValuePointer(jsValue.rawResult).getValue(context);
-    return objValue.createJSONString(null).string!;
+    return objValue.createJSONString().string!;
   }
 
   @override

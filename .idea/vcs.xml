@@ -3,5 +3,6 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/example/ios/.symlinks/plugins/flutter_js" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/example/windows/flutter/ephemeral/.plugin_symlinks/flutter_js" vcs="Git" />
   </component>
 </project>

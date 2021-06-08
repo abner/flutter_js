@@ -18,12 +18,12 @@ typedef JSTypedArrayBytesDeallocatorDart = void Function(
 /// [exception] (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
 /// [@result] (JSValueRef) The JSValue that results from evaluating script, or NULL if an exception is thrown.
 final Pointer Function(Pointer ctx, Pointer script, Pointer thisObject,
-        Pointer sourceURL, int startingLineNumber, Pointer<Pointer>? exception)
-    jSEvaluateScript = jscLib!
+        Pointer sourceURL, int startingLineNumber, Pointer<Pointer> exception)
+    jSEvaluateScript = JscFfi.lib
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Pointer, Pointer, Pointer, Int32,
-                    Pointer?)>>('JSEvaluateScript')
+                    Pointer)>>('JSEvaluateScript')
         .asFunction();
 
 /// Checks for syntax errors in a string of JavaScript.
@@ -35,7 +35,7 @@ final Pointer Function(Pointer ctx, Pointer script, Pointer thisObject,
 /// [@result] (bool) true if the script is syntactically correct, otherwise false.
 final Pointer Function(Pointer ctx, Pointer script, Pointer sourceURL,
         int startingLineNumber, Pointer<Pointer> exception)
-    jSCheckScriptSyntax = jscLib!
+    jSCheckScriptSyntax = JscFfi.lib
         .lookup<
             NativeFunction<
                 Pointer Function(Pointer, Pointer, Pointer, Int32,
@@ -52,6 +52,6 @@ final Pointer Function(Pointer ctx, Pointer script, Pointer sourceURL,
 /// within a context group are automatically destroyed when the last reference
 /// to the context group is released.
 /// [ctx] (JSContextRef) The execution context to use.
-final void Function(Pointer ctx) jSGarbageCollect = jscLib!
+final void Function(Pointer ctx) jSGarbageCollect = JscFfi.lib
     .lookup<NativeFunction<Void Function(Pointer)>>('JSGarbageCollect')
     .asFunction();

@@ -25,14 +25,20 @@ export 'javascript_runtime.dart';
 // REF:
 // - https://medium.com/flutter-community/conditional-imports-across-flutter-and-web-4b88885a886e
 // - https://github.com/creativecreatorormaybenot/wakelock/blob/master/wakelock/lib/wakelock.dart
-JavascriptRuntime getJavascriptRuntime(
-    {bool forceJavascriptCoreOnAndroid = false, bool xhr = true}) {
+JavascriptRuntime getJavascriptRuntime({
+  bool forceJavascriptCoreOnAndroid = false,
+  bool xhr = true,
+  Map<String, dynamic>? extraArgs = const {},
+}) {
   JavascriptRuntime runtime;
   if ((Platform.isAndroid && !forceJavascriptCoreOnAndroid)) {
-    runtime = QuickJsRuntime2();
+    int stackSize = extraArgs?['stackSize'] ?? 0;
+    runtime = QuickJsRuntime2(stackSize: stackSize);
     // FlutterJs engine = FlutterJs();
     // runtime = QuickJsService(engine);
-  } else if (Platform.isWindows || Platform.isLinux) {
+  } else if (Platform.isWindows) {
+    runtime = QuickJsRuntime2();
+  } else if (Platform.isLinux) {
     // runtime = FlutterJsLinuxWin()..init();
     runtime = QuickJsRuntime2(); //('f1.js');
     // runtime = QuickJsRuntime('f1.js');

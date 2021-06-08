@@ -15,13 +15,13 @@ class JSString {
 
   /// Creates a JavaScript string from dart String.
   /// [string] The dart String.
-  JSString.fromString(String string) {
+  JSString.fromString(String? string) {
     if (string == null) {
       _pointer = nullptr;
     } else {
       var cString = string.toNativeUtf8();
       _pointer = JSStringRef.jSStringCreateWithUTF8CString(cString);
-      calloc.free(cString);
+      malloc.free(cString);
     }
   }
 
@@ -72,21 +72,21 @@ class JSString {
 /// JSStringRef pointer
 class JSStringPointer {
   /// C pointer
-  late final Pointer<Pointer> pointer;
+  final Pointer<Pointer> pointer;
 
   /// Pointer array count
   final int count;
 
   JSStringPointer([Pointer? value])
       : this.count = 1,
-        this.pointer = calloc<Pointer>() {
+        this.pointer = malloc.call<Pointer>(1) {
     pointer.value = value ?? nullptr;
   }
 
   /// JSStringRef array
   JSStringPointer.array(List<String> array)
       : this.count = array.length,
-        this.pointer = calloc.allocate<Pointer>(array.length) {
+        this.pointer = malloc.call<Pointer>(array.length) {
     for (int i = 0; i < array.length; i++) {
       this.pointer[i] = JSString.fromString(array[i]).pointer;
     }
