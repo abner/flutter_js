@@ -366,21 +366,21 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
       try {
         String? method = arguments[0];
         String? url = arguments[1];
-        List<String> headersList =
-            (arguments[2] as List<dynamic>).cast<String>();
+        dynamic headersList = arguments[2];
         String? body = arguments[3];
         int? idRequest = arguments[4];
 
         Map<String, String> headers = {};
-        headersList.forEach((value) {
-          final headerMatch = regexpHeader.allMatches(value).first;
-          String? headerName = headerMatch.group(0);
-          String? headerValue = headerMatch.group(1);
-          if (headerName != null) {
-            headers[headerName] = headerValue ?? '';
-          }
+        headersList.forEach((header) {
+          // final headerMatch = regexpHeader.allMatches(value).first;
+          // String? headerName = headerMatch.group(0);
+          // String? headerValue = headerMatch.group(1);
+          // if (headerName != null) {
+          //   headers[headerName] = headerValue ?? '';
+          // }
+          String headerKey = header[0];
+          headers[headerKey] = header[1];
         });
-
         (dartContext[XHR_PENDING_CALLS_KEY] as List<dynamic>).add(
           XhrPendingCall(
             idRequest: idRequest,

@@ -15,10 +15,10 @@ function fetch(url, options) {
 			json: () => { 
 				// TODO: review this handle because it may discard \n from json attributes
 				try {
-					console.log('RESPONSE TEXT IN FETCH: ' + request.responseText);
+					// console.log('RESPONSE TEXT IN FETCH: ' + request.responseText);
 					return Promise.resolve(JSON.parse(request.responseText));
 				} catch (e) {
-					console.log('ERROR on fetch parsing JSON: ' + e.message);
+					// console.log('ERROR on fetch parsing JSON: ' + e.message);
 					return Promise.resolve(request.responseText);
 				}
 			},
@@ -47,8 +47,16 @@ function fetch(url, options) {
 
 		request.withCredentials = options.credentials=='include';
 
-		for (const i in options.headers) {
-			request.setRequestHeader(i, options.headers[i]);
+		if (options.headers) {
+			if (options.headers.constructor.name == 'Object') {
+				for (const i in options.headers) {
+					request.setRequestHeader(i, options.headers[i]);
+				}
+			} else { // if it is some Headers pollyfill, the way to iterate is through for of
+				for (const header of options.headers) {
+					request.setRequestHeader(header[0], header[1]);
+				}
+			}
 		}
 
 		request.send(options.body || null);

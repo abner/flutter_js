@@ -127,7 +127,7 @@ extension HandlePromises on JavascriptRuntime {
       //   this.executePendingJob();
       // });
       return await (value.rawResult as Future<dynamic>).then((dynamic res) {
-        final resEval = JsEvalResult(res, value.rawResult);
+        final resEval = JsEvalResult("$res", value.rawResult);
         completer.complete(resEval);
         completed = true;
         return resEval;

@@ -1,10 +1,19 @@
+# 0.5.0+1
+
+- Fix the handle_promises when the promise result is not a string
 # 0.5.0+0
 
 - Fixes issue relative to build on Dart 2.13 (issues #41 and #42)
+# 0.4.0+6
+
+- Fix executePendingJobs (wasn't dispatching in the most current version)
+# 0.4.0+5
+
+- Removed console.log from fetch.js
 
 # 0.4.0+4
 
-- Small README.md fix
+- Fixed issue on xhr requests - wasn't passing headers to the requests
 
 # 0.4.0+3
 
