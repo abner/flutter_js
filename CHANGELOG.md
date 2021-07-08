@@ -1,3 +1,7 @@
+# 0.5.0+2
+
+- Fix the minimal stack size for 1MB for QuickJS Runtime
+
 # 0.5.0+1
 
 - Fix the handle_promises when the promise result is not a string
