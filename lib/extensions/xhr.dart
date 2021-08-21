@@ -271,7 +271,7 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
       pendingCalls.forEach((element) async {
         XhrPendingCall pendingCall = element as XhrPendingCall;
         HttpMethod eMethod = HttpMethod.values.firstWhere(
-            (e) => e.toString().toLowerCase() == ("HttpMethod.${pendingCall.method?.toLowerCase()}"));
+            (e) => e.toString().toLowerCase() == ("HttpMethod.${pendingCall.method}".toLowerCase()));
         late http.Response response;
         switch (eMethod) {
           case HttpMethod.head:
