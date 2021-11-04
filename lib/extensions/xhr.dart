@@ -270,8 +270,9 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
       // for each pending call, calls the remote http service
       pendingCalls.forEach((element) async {
         XhrPendingCall pendingCall = element as XhrPendingCall;
-        HttpMethod eMethod = HttpMethod.values.firstWhere(
-            (e) => e.toString() == ("HttpMethod.${pendingCall.method}"));
+        HttpMethod eMethod = HttpMethod.values.firstWhere((e) =>
+            e.toString().toLowerCase() ==
+            ("HttpMethod.${pendingCall.method}".toLowerCase()));
         late http.Response response;
         switch (eMethod) {
           case HttpMethod.head:
@@ -289,21 +290,27 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
           case HttpMethod.post:
             response = await httpClient!.post(
               Uri.parse(pendingCall.url!),
-              body: jsonEncode(pendingCall.body),
+              body: (pendingCall.body is String)
+                  ? pendingCall.body
+                  : jsonEncode(pendingCall.body),
               headers: pendingCall.headers as Map<String, String>?,
             );
             break;
           case HttpMethod.put:
             response = await httpClient!.put(
               Uri.parse(pendingCall.url!),
-              body: jsonEncode(pendingCall.body),
+              body: (pendingCall.body is String)
+                  ? pendingCall.body
+                  : jsonEncode(pendingCall.body),
               headers: pendingCall.headers as Map<String, String>?,
             );
             break;
           case HttpMethod.patch:
             response = await httpClient!.patch(
               Uri.parse(pendingCall.url!),
-              body: jsonEncode(pendingCall.body),
+              body: (pendingCall.body is String)
+                  ? pendingCall.body
+                  : jsonEncode(pendingCall.body),
               headers: pendingCall.headers as Map<String, String>?,
             );
             break;

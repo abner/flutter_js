@@ -143,7 +143,7 @@ Pointer<JSValue> _dartToJs(Pointer<JSContext> ctx, dynamic val,
 dynamic _jsToDart(Pointer<JSContext> ctx, Pointer<JSValue> val,
     {Map<int, dynamic>? cache}) {
   if (cache == null) cache = Map();
-  final tag = jsValueGetTag(val);
+  final tag = jsValueGetTag(val).toSigned(64);
   if (jsTagIsFloat64(tag) != 0) {
     return jsToFloat64(ctx, val);
   }

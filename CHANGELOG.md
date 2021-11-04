@@ -1,3 +1,10 @@
+# 0.5.0+4
+
+- Accept PR [54](https://github.com/abner/flutter_js/pull/54) to adjust channelFunction to return the function result
+# 0.5.0+3
+
+- Fix the network call bug: https://github.com/abner/flutter_js/pull/57
+
 # 0.5.0+2
 
 - Fix the minimal stack size for 1MB for QuickJS Runtime

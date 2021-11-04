@@ -235,7 +235,7 @@ class QuickJsRuntime2 extends JavascriptRuntime {
             .channelFunctionsRegistered[getEngineInstanceId()]!;
 
         if (channelFunctions.containsKey(channelName)) {
-          channelFunctions[channelName]!.call(jsonDecode(message));
+          return channelFunctions[channelName]!.call(jsonDecode(message));
         } else {
           print('No channel $channelName registered');
         }
