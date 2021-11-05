@@ -79,7 +79,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     bool isPromise = false;
     if (exceptionValue.isObject) {
       result =
-          'ERROR: ${exceptionValue.toObject().getProperty("message").string}';
+          'ERROR: ${exceptionValue.toObject().getProperty("message").string} \n  at ${exceptionValue.toObject().getProperty("stack").string}';
     } else {
       result = _getJsValue(jsValueRef);
       JSValue resultValue = JSValuePointer(jsValueRef).getValue(context);
