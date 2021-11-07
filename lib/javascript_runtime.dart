@@ -166,7 +166,7 @@ abstract class JavascriptRuntime {
     }
   }
 
-  onMessage(String channelName, void Function(dynamic args) fn) {
+  onMessage(String channelName, dynamic Function(dynamic args) fn) {
     setupBridge(channelName, fn);
   }
 
