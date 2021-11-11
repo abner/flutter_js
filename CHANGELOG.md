@@ -1,6 +1,6 @@
 # 0.5.0+5
 
-- Accept PR [67](https://github.com/abner/flutter_js/pull/67) to adjust channelFunction to return the function result when using JavascriptCore
+- Accept PR [67](https://github.com/abner/flutter_js/pull/67) to adjust channelFunction to return the function result when using JavascriptCore on Android
 
 # 0.5.0+4
 
