@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_js/javascript_runtime.dart';
 import 'package:flutter_js/javascriptcore/binding/js_context_ref.dart';
 import 'package:flutter_js/javascriptcore/binding/js_object_ref.dart'
@@ -125,7 +126,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
       Pointer<Pointer> arguments,
       Pointer<Pointer> exception) {
     if (_sendMessageDartFunc != null) {
-      _sendMessageDartFunc!(
+      return _sendMessageDartFunc!(
           ctx, function, thisObject, argumentCount, arguments, exception);
     }
     return nullptr;
@@ -180,7 +181,13 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     String message = _getJsValue(arguments[1]);
 
     if (channelFunctions.containsKey(channelName)) {
-      channelFunctions[channelName]!.call(jsonDecode(message));
+      final result = channelFunctions[channelName]!.call(jsonDecode(message));
+      try {
+        final encoded = json.encode(result);
+        return JSValue.makeFromJSONString(context, encoded).pointer;
+      } catch (err) {
+        print('Could not encode return value of message on channel $channelName to json... returning null');
+      }
     } else {
       print('No channel $channelName registered');
     }
