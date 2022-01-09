@@ -107,7 +107,9 @@ abstract class JavascriptRuntime {
       }
     }""");
     onMessage('ConsoleLog', (dynamic args) {
-      print(args[1]);
+      args..removeAt(0);
+      String output = args.join(' ');
+      print(output);
     });
   }
 
