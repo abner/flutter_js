@@ -57,6 +57,7 @@ class FlutterJsPlatformEmpty extends JavascriptRuntime {
 
 abstract class JavascriptRuntime {
   static bool debugEnabled = false;
+  static bool useFlutterTerminal = true;
 
   @protected
   JavascriptRuntime init() {
@@ -106,11 +107,13 @@ abstract class JavascriptRuntime {
         sendMessage('ConsoleLog', JSON.stringify(['error', ...arguments]));
       }
     }""");
-    onMessage('ConsoleLog', (dynamic args) {
-      args..removeAt(0);
-      String output = args.join(' ');
-      print(output);
-    });
+    if (useFlutterTerminal) {
+      onMessage('ConsoleLog', (dynamic args) {
+        args..removeAt(0);
+        String output = args.join(' ');
+        print(output);
+      });
+    }
   }
 
   void _setupSetTimeout() {

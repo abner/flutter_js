@@ -28,9 +28,11 @@ export 'javascript_runtime.dart';
 JavascriptRuntime getJavascriptRuntime({
   bool forceJavascriptCoreOnAndroid = false,
   bool xhr = true,
+  bool useFlutterTerminal = true,
   Map<String, dynamic>? extraArgs = const {},
 }) {
   JavascriptRuntime runtime;
+  JavascriptRuntime.useFlutterTerminal = useFlutterTerminal;
   if ((Platform.isAndroid && !forceJavascriptCoreOnAndroid)) {
     int stackSize = extraArgs?['stackSize'] ?? 1024 * 1024;
     runtime = QuickJsRuntime2(stackSize: stackSize);
