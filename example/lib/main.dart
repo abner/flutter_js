@@ -32,8 +32,7 @@ class FlutterJsHomeScreen extends StatefulWidget {
 class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   String _jsResult = '';
 
-  final JavascriptRuntime javascriptRuntime =
-      getJavascriptRuntime(forceJavascriptCoreOnAndroid: true);
+  final JavascriptRuntime javascriptRuntime = getJavascriptRuntime();
 
   String? _quickjsVersion;
 
@@ -141,7 +140,7 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.transparent,
+        //backgroundColor: Colors.transparent,
         child: Image.asset('assets/js.ico'),
         onPressed: () {
           setState(() {
