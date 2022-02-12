@@ -1,3 +1,10 @@
+# 0.5.0+6
+
+- Accpted PR [66](https://github.com/abner/flutter_js/pull/66) to return the stack 
+trace into the error message from javascriptcore
+- Accepted PR [#74] which prints multiples args passed into console.log
+- Updated example application with new Flutter version (2.10.1)
+
 # 0.5.0+5
 
 - Accept PR [67](https://github.com/abner/flutter_js/pull/67) to adjust channelFunction to return the function result when using JavascriptCore on Android
