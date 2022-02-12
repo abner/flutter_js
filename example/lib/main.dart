@@ -123,7 +123,7 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
               child: const Text('Fetch Remote Data'),
               onPressed: () async {
                 var asyncResult = await javascriptRuntime.evaluateAsync("""
-                fetch('https://raw.githubusercontent.com/abner/flutter_js/master/.gitignore').then(response => response.text());
+                fetch('https://raw.githubusercontent.com/abner/flutter_js/master/FIXED_RESOURCE.txt').then(response => response.text());
               """);
                 await javascriptRuntime.executePendingJob();
                 final promiseResolved =
