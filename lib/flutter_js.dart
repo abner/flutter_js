@@ -40,8 +40,8 @@ JavascriptRuntime getJavascriptRuntime({
     runtime = QuickJsRuntime2();
   } else if (Platform.isLinux) {
     // runtime = FlutterJsLinuxWin()..init();
-    runtime = QuickJsRuntime2(); //('f1.js');
-    // runtime = QuickJsRuntime('f1.js');
+    //runtime = JavascriptCoreRuntime(); //('f1.js');
+    runtime = QuickJsRuntime2();
   } else {
     runtime = JavascriptCoreRuntime();
   }

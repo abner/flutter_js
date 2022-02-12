@@ -32,7 +32,8 @@ class FlutterJsHomeScreen extends StatefulWidget {
 class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   String _jsResult = '';
 
-  final JavascriptRuntime javascriptRuntime = getJavascriptRuntime();
+  final JavascriptRuntime javascriptRuntime =
+      getJavascriptRuntime(forceJavascriptCoreOnAndroid: true);
 
   String? _quickjsVersion;
 
@@ -123,12 +124,13 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
               child: const Text('Fetch Remote Data'),
               onPressed: () async {
                 var asyncResult = await javascriptRuntime.evaluateAsync("""
-                fetch('https://raw.githubusercontent.com/abner/flutter_js/master/cxx/quickjs/VERSION').then(response => response.text());
+                fetch('https://raw.githubusercontent.com/abner/flutter_js/master/.gitignore').then(response => response.text());
               """);
                 await javascriptRuntime.executePendingJob();
                 final promiseResolved =
                     await javascriptRuntime.handlePromise(asyncResult);
-                setState(() => _quickjsVersion = promiseResolved.stringResult);
+                var result = promiseResolved.stringResult;
+                setState(() => _quickjsVersion = result);
               },
             ),
             Text(

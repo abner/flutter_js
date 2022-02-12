@@ -151,9 +151,9 @@ class QuickJsRuntime2 extends JavascriptRuntime {
 
   /// Dispatch JavaScript Event loop.
   Future<void> dispatch() async {
-    await for (final _ in port) {
-      _executePendingJob();
-    }
+    //await for (final _ in port) {
+    _executePendingJob();
+    //}
   }
 
   /// Evaluate js script.
