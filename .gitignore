@@ -6,3 +6,7 @@
 
 build/
 .idea/
+
+**/macos/flutter/ephemeral
+**/windows/flutter/ephemeral
+**/linux/flutter/ephemeral
