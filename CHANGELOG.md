@@ -1,3 +1,7 @@
+# 0.5.1
+
+- Remove deprecated jCenter android repository in favor of mavenCentral
+
 # 0.5.0+6
 
 - Accpted PR [66](https://github.com/abner/flutter_js/pull/66) to return the stack 
