@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  ffi: "^1.0.0"
+  ffi: ^2.0.0
   http: ^0.13.4
   sync_http: ^0.3.0
 dev_dependencies:
