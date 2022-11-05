@@ -3,15 +3,10 @@ import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_js/javascript_runtime.dart';
-import 'package:flutter_js/javascriptcore/binding/js_context_ref.dart';
 import 'package:flutter_js/javascriptcore/binding/js_object_ref.dart'
     as jsObject;
-import 'package:flutter_js/javascriptcore/binding/js_string_ref.dart';
-import 'package:flutter_js/javascriptcore/binding/js_value_ref.dart';
 import 'package:flutter_js/javascriptcore/flutter_jscore.dart';
-import 'package:flutter_js/javascriptcore/jscore/js_value.dart';
 import 'package:flutter_js/javascriptcore/jscore_bindings.dart';
 import 'package:flutter_js/js_eval_result.dart';
 
@@ -186,7 +181,8 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
         final encoded = json.encode(result);
         return JSValue.makeFromJSONString(context, encoded).pointer;
       } catch (err) {
-        print('Could not encode return value of message on channel $channelName to json... returning null');
+        print(
+            'Could not encode return value of message on channel $channelName to json... returning null');
       }
     } else {
       print('No channel $channelName registered');

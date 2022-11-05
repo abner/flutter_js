@@ -1,10 +1,11 @@
 import 'dart:async';
+
 import 'package:flutter_js/flutter_js.dart';
 
 // example to show how to an api call can be made and used a Future in dart
 Future<dynamic> getUser() {
   final completer = Completer();
-  final code = """
+  const code = """
     try {
       const response = await fetch('https://reqres.in/api/users?page=2');
       const body = await response.json();
