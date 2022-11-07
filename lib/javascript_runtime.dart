@@ -17,7 +17,9 @@ class FlutterJsPlatformEmpty extends JavascriptRuntime {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   JsEvalResult evaluate(String code) {
@@ -56,6 +58,10 @@ class FlutterJsPlatformEmpty extends JavascriptRuntime {
 }
 
 abstract class JavascriptRuntime {
+  bool _streamLogMessages = false;
+
+  StreamController<String> _logStreamController = StreamController.broadcast();
+  
   static bool debugEnabled = false;
 
   @protected
@@ -70,7 +76,10 @@ abstract class JavascriptRuntime {
 
   Map<String, dynamic> dartContext = {};
 
-  void dispose();
+  @mustCallSuper
+  void dispose() {
+    _logStreamController.close();
+  }
 
   static Map<String, Map<String, Function(dynamic arg)>>
       _channelFunctionsRegistered = {};
@@ -109,7 +118,11 @@ abstract class JavascriptRuntime {
     onMessage('ConsoleLog', (dynamic args) {
       args..removeAt(0);
       String output = args.join(' ');
-      print(output);
+      if (_streamLogMessages && !_logStreamController.isClosed) {
+        _logStreamController.sink.add(output);
+      } else {
+        print(output);
+      }
     });
   }
 
@@ -175,4 +188,8 @@ abstract class JavascriptRuntime {
   bool setupBridge(String channelName, void Function(dynamic args) fn);
 
   String getEngineInstanceId();
+
+  void setLogOutputStreamEnabled(bool streamLogOutput) {
+    _streamLogMessages = streamLogOutput;
+  }
 }

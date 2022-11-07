@@ -29,6 +29,7 @@ JavascriptRuntime getJavascriptRuntime({
   bool forceJavascriptCoreOnAndroid = false,
   bool xhr = true,
   Map<String, dynamic>? extraArgs = const {},
+  bool streamLogOutput = false,
 }) {
   JavascriptRuntime runtime;
   if ((Platform.isAndroid && !forceJavascriptCoreOnAndroid)) {
@@ -47,6 +48,7 @@ JavascriptRuntime getJavascriptRuntime({
   }
   if (xhr) runtime.enableFetch();
   runtime.enableHandlePromises();
+  runtime.setLogOutputStreamEnabled(streamLogOutput);
   return runtime;
 }
 

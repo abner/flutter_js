@@ -100,6 +100,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
 
   @override
   void dispose() {
+    super.dispose();
     jSContextGroupRelease(_contextGroup);
   }
 

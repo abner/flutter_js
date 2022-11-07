@@ -253,6 +253,7 @@ class QuickJsRuntime extends JavascriptRuntime {
 
   @override
   void dispose() {
+    super.dispose();
     // Todo: free runtime and context
   }
 

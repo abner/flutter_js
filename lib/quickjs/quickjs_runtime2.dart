@@ -204,6 +204,7 @@ class QuickJsRuntime2 extends JavascriptRuntime {
 
   @override
   void dispose() {
+    super.dispose();
     // TODO: implement dispose
   }
 
