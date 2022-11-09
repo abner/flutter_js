@@ -5,15 +5,17 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
+
 import 'package:ffi/ffi.dart';
 import 'package:flutter_js/flutter_js.dart';
-import 'package:flutter_js/javascript_runtime.dart';
+
 import 'ffi.dart';
+
 export 'ffi.dart' show JSEvalFlag, JSRef;
 
 part './isolate.dart';
-part './wrapper.dart';
 part './object.dart';
+part './wrapper.dart';
 
 /// Handler function to manage js module.
 typedef _JsModuleHandler = String Function(String name);

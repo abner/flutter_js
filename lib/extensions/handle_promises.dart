@@ -110,7 +110,7 @@ extension HandlePromises on JavascriptRuntime {
       var completed = false;
       Function? fnEvaluatePromise;
       fnEvaluatePromise = () async {
-        await this.executePendingJob();
+        this.executePendingJob();
         if (!completed) {
           await Future.delayed(
               Duration(milliseconds: 20), () => fnEvaluatePromise!.call());

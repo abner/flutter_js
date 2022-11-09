@@ -37,7 +37,7 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   String? _quickjsVersion;
 
   Process? _process;
-  bool _processInitialized = false;
+  final bool _processInitialized = false;
   String evalJS() {
     String jsResult = javascriptRuntime.evaluate("""
             if (typeof MyClass == 'undefined') {
@@ -90,16 +90,16 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
               'JS Evaluate Result:\n\n$_jsResult\n',
               textAlign: TextAlign.center,
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(10),
               child: Text(
                   'Click on the big JS Yellow Button to evaluate the expression bellow using the flutter_js plugin'),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Text(
                 "Math.trunc(Math.random() * 100).toString();",
                 style: TextStyle(
@@ -118,14 +118,14 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
               ),
               child: const Text('See Ajv Example'),
             ),
-            SizedBox.fromSize(size: Size(double.maxFinite, 20)),
+            SizedBox.fromSize(size: const Size(double.maxFinite, 20)),
             ElevatedButton(
               child: const Text('Fetch Remote Data'),
               onPressed: () async {
                 var asyncResult = await javascriptRuntime.evaluateAsync("""
                 fetch('https://raw.githubusercontent.com/abner/flutter_js/master/FIXED_RESOURCE.txt').then(response => response.text());
               """);
-                await javascriptRuntime.executePendingJob();
+                javascriptRuntime.executePendingJob();
                 final promiseResolved =
                     await javascriptRuntime.handlePromise(asyncResult);
                 var result = promiseResolved.stringResult;
@@ -133,7 +133,7 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
               },
             ),
             Text(
-              'QuickJS Version\n${_quickjsVersion == null ? '<NULL>' : _quickjsVersion}',
+              'QuickJS Version\n${_quickjsVersion ?? '<NULL>'}',
               textAlign: TextAlign.center,
             )
           ],
@@ -147,7 +147,7 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
             // _jsResult = widget.evalJS();
             // Future.delayed(Duration(milliseconds: 599), widget.evalJS);
             _jsResult = evalJS();
-            Future.delayed(Duration(milliseconds: 599), evalJS);
+            Future.delayed(const Duration(milliseconds: 599), evalJS);
           });
         },
       ),

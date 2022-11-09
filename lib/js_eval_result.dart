@@ -1,5 +1,3 @@
-
-
 class JsEvalResult {
   final String stringResult;
   final dynamic rawResult;

@@ -136,7 +136,7 @@ void _runJsIsolate(Map spawnMessage) async {
     try {
       switch (msg[#type]) {
         case #evaluate:
-          data = await qjs.evaluate(
+          data = qjs.evaluate(
             msg[#command],
             name: msg[#name],
             evalFlags: msg[#flag],

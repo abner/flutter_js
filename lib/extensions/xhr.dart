@@ -278,13 +278,13 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
           case HttpMethod.head:
             response = await httpClient!.head(
               Uri.parse(pendingCall.url!),
-              headers: pendingCall.headers as Map<String, String>?,
+              headers: pendingCall.headers,
             );
             break;
           case HttpMethod.get:
             response = await httpClient!.get(
               Uri.parse(pendingCall.url!),
-              headers: pendingCall.headers as Map<String, String>?,
+              headers: pendingCall.headers,
             );
             break;
           case HttpMethod.post:
@@ -293,7 +293,7 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
               body: (pendingCall.body is String)
                   ? pendingCall.body
                   : jsonEncode(pendingCall.body),
-              headers: pendingCall.headers as Map<String, String>?,
+              headers: pendingCall.headers,
             );
             break;
           case HttpMethod.put:
@@ -302,7 +302,7 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
               body: (pendingCall.body is String)
                   ? pendingCall.body
                   : jsonEncode(pendingCall.body),
-              headers: pendingCall.headers as Map<String, String>?,
+              headers: pendingCall.headers,
             );
             break;
           case HttpMethod.patch:
@@ -311,13 +311,13 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
               body: (pendingCall.body is String)
                   ? pendingCall.body
                   : jsonEncode(pendingCall.body),
-              headers: pendingCall.headers as Map<String, String>?,
+              headers: pendingCall.headers,
             );
             break;
           case HttpMethod.delete:
             response = await httpClient!.delete(
               Uri.parse(pendingCall.url!),
-              headers: pendingCall.headers as Map<String, String>?,
+              headers: pendingCall.headers,
             );
             break;
         }
@@ -493,7 +493,7 @@ class XmlHttpRequestResponse {
 
 void executeHttp(String url, String method, Map<String, String> headers) {
   HttpMethod eMethod = HttpMethod.values
-      .firstWhere((e) => e.toString() == ("HttpMethod.${method}"));
+      .firstWhere((e) => e.toString() == ("HttpMethod.$method"));
   String idRequest = "1";
   var callbackResponse = (http.Response response) {
     final xhrResult = XmlHttpRequestResponse(
