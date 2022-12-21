@@ -5,7 +5,8 @@
 .pub/
 
 build/
-.idea/
+**/.idea/
+.vscode
 
 **/macos/flutter/ephemeral
 **/windows/flutter/ephemeral

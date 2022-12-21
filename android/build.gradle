@@ -26,9 +26,9 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 33
 
-    ndkVersion "21.3.6528147"
+    ndkVersion "25.1.8937393"
 
 
     kotlinOptions {
