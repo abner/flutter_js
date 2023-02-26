@@ -189,7 +189,7 @@ class QuickJsRuntime2 extends JavascriptRuntime {
     //   print(
     //       'RESULT: ${result.onError((error, stackTrace) => print('ERROR: $error _-----------------'))}');
     // }
-    //jsFreeValue(ctx, jsval);
+    jsFreeValue(ctx, jsval);
     return JsEvalResult(result?.toString() ?? "null", result);
   }
 
@@ -206,7 +206,12 @@ class QuickJsRuntime2 extends JavascriptRuntime {
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    try {
+      port.close(); // stop dispatch loop
+      close(); // close engine
+    } on JSError catch (e) {
+      print(e); // catch reference leak exception
+    }
   }
 
   @override
