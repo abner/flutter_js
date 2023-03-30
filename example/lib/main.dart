@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_js/flutter_js.dart';
@@ -32,14 +33,14 @@ class FlutterJsHomeScreen extends StatefulWidget {
 class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   String _jsResult = '';
 
-  final JavascriptRuntime javascriptRuntime = getJavascriptRuntime();
+  final JavascriptRuntime javascriptRuntime = getJavascriptRuntime(forceJavascriptCoreOnAndroid: true);
 
   String? _quickjsVersion;
 
   Process? _process;
   final bool _processInitialized = false;
-  String evalJS() {
-    String jsResult = javascriptRuntime.evaluate("""
+  Future<String> evalJS() async {
+    JsEvalResult jsResult = await javascriptRuntime.evaluateAsync("""
             if (typeof MyClass == 'undefined') {
               var MyClass = class  {
                 constructor(id) {
@@ -51,29 +52,39 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
                 }
               }
             }
-            var obj = new MyClass(1);
-            var jsonStringified = JSON.stringify(obj);
-            var value = Math.trunc(Math.random() * 100).toString();
-            JSON.stringify({ "object": jsonStringified, "expression": value});
-            """).stringResult;
-    return jsResult;
+            async function test() {
+              var obj = new MyClass(1);
+              var jsonStringified = JSON.stringify(obj);
+              var value = Math.trunc(Math.random() * 100).toString();
+              var asyncResult = await sendMessage("getDataAsync", JSON.stringify({"count": Math.trunc(Math.random() * 10)}));
+              return {"object": jsonStringified, "expression": value, "asyncResult": asyncResult};
+            }
+            test();
+            """);
+    javascriptRuntime.executePendingJob();
+    JsEvalResult asyncResult = await javascriptRuntime.handlePromise(jsResult);
+    return asyncResult.stringResult;
   }
 
   @override
   void initState() {
     super.initState();
-
-    // widget.javascriptRuntime.onMessage('ConsoleLog2', (args) {
-    //   print('ConsoleLog2 (Dart Side): $args');
-    //   return json.encode(args);
-    // });
+    javascriptRuntime.onMessage('getDataAsync', (args) async {
+      await Future.delayed(const Duration(seconds: 1));
+      final int count = args['count'];
+      Random rnd = Random();
+      final result = <Map<String, int>>[];
+      for (int i = 0; i < count; i++) {
+        result.add({'key$i': rnd.nextInt(100)});
+      }
+      return result;
+    });
   }
 
   @override
-  dispose() {
-    super.dispose();
-    //widget.javascriptRuntime.dispose();
+  void dispose() {
     javascriptRuntime.dispose();
+    super.dispose();
   }
 
   @override
@@ -142,12 +153,11 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
       floatingActionButton: FloatingActionButton(
         //backgroundColor: Colors.transparent,
         child: Image.asset('assets/js.ico'),
-        onPressed: () {
+        onPressed: () async {
+          final result = await evalJS();
+          if (!mounted) return;
           setState(() {
-            // _jsResult = widget.evalJS();
-            // Future.delayed(Duration(milliseconds: 599), widget.evalJS);
-            _jsResult = evalJS();
-            Future.delayed(const Duration(milliseconds: 599), evalJS);
+            _jsResult = result;
           });
         },
       ),

@@ -158,18 +158,6 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
       int argumentCount,
       Pointer<Pointer> arguments,
       Pointer<Pointer> exception) {
-    String msg = 'No Message';
-    if (argumentCount != 0) {
-      msg = '';
-      for (int i = 0; i < argumentCount; i++) {
-        if (i != 0) {
-          msg += '\n';
-        }
-        var jsValueRef = arguments[i];
-        msg += _getJsValue(jsValueRef);
-      }
-    }
-
     final channelFunctions =
         JavascriptRuntime.channelFunctionsRegistered[getEngineInstanceId()]!;
 
@@ -179,6 +167,9 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     if (channelFunctions.containsKey(channelName)) {
       final result = channelFunctions[channelName]!.call(jsonDecode(message));
       try {
+        if (result is Future) {
+          return _constructPromiseFor(result);
+        }
         final encoded = json.encode(result);
         return JSValue.makeFromJSONString(context, encoded).pointer;
       } catch (err) {
@@ -190,6 +181,30 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     }
 
     return nullptr;
+  }
+
+  Pointer<NativeType> _constructPromiseFor(Future future) {
+    Pointer<Utf8> scriptCString = ('var __JSC_promise_result = {};' +
+            'new Promise(function(resolve, reject) { __JSC_promise_result.resolve = resolve;' +
+            ' __JSC_promise_result.reject = reject;});')
+        .toNativeUtf8();
+
+    var jsValueRef = jSEvaluateScript(
+        _globalContext,
+        jSStringCreateWithUTF8CString(scriptCString),
+        nullptr,
+        nullptr,
+        1,
+        nullptr);
+    calloc.free(scriptCString);
+
+    future.then((value) {
+      final encoded = json.encode(value);
+      evaluate('__JSC_promise_result.resolve($encoded);');
+    }).catchError((error) {
+      evaluate('__JSC_promise_result.reject($error);');
+    });
+    return jsValueRef;
   }
 
   @override
