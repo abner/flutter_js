@@ -12,6 +12,7 @@ void main() {
 
 class MyApp extends StatefulWidget {
   GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -33,12 +34,14 @@ class FlutterJsHomeScreen extends StatefulWidget {
 class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   String _jsResult = '';
 
-  final JavascriptRuntime javascriptRuntime = getJavascriptRuntime(forceJavascriptCoreOnAndroid: true);
+  final JavascriptRuntime javascriptRuntime =
+      getJavascriptRuntime(forceJavascriptCoreOnAndroid: true);
 
   String? _quickjsVersion;
 
   Process? _process;
   final bool _processInitialized = false;
+
   Future<String> evalJS() async {
     JsEvalResult jsResult = await javascriptRuntime.evaluateAsync("""
             if (typeof MyClass == 'undefined') {
@@ -57,7 +60,13 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
               var jsonStringified = JSON.stringify(obj);
               var value = Math.trunc(Math.random() * 100).toString();
               var asyncResult = await sendMessage("getDataAsync", JSON.stringify({"count": Math.trunc(Math.random() * 10)}));
-              return {"object": jsonStringified, "expression": value, "asyncResult": asyncResult};
+              var err;
+              try {
+                await sendMessage("asyncWithError", "{}");
+              } catch(e) {
+                err = e;
+              }
+              return {"object": jsonStringified, "expression": value, "asyncResult": asyncResult, "expectedError": err};
             }
             test();
             """);
@@ -78,6 +87,10 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
         result.add({'key$i': rnd.nextInt(100)});
       }
       return result;
+    });
+    javascriptRuntime.onMessage('asyncWithError', (_) async {
+      await Future.delayed(const Duration(milliseconds: 100));
+      throw Exception('Some error');
     });
   }
 

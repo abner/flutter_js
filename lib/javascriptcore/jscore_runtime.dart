@@ -184,9 +184,10 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   }
 
   Pointer<NativeType> _constructPromiseFor(Future future) {
-    Pointer<Utf8> scriptCString = ('var __JSC_promise_result = {};' +
-            'new Promise(function(resolve, reject) { __JSC_promise_result.resolve = resolve;' +
-            ' __JSC_promise_result.reject = reject;});')
+    final id = future.hashCode;
+    Pointer<Utf8> scriptCString = ('var __JSC_promise_result$id = {};' +
+            'new Promise(function(resolve, reject) { __JSC_promise_result$id.resolve = resolve;' +
+            ' __JSC_promise_result$id.reject = reject;});')
         .toNativeUtf8();
 
     var jsValueRef = jSEvaluateScript(
@@ -200,9 +201,9 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
 
     future.then((value) {
       final encoded = json.encode(value);
-      evaluate('__JSC_promise_result.resolve($encoded);');
+      evaluate('__JSC_promise_result$id.resolve($encoded);');
     }).catchError((error) {
-      evaluate('__JSC_promise_result.reject($error);');
+      evaluate('__JSC_promise_result$id.reject("$error");');
     });
     return jsValueRef;
   }
