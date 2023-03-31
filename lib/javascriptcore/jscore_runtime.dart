@@ -201,9 +201,9 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
 
     future.then((value) {
       final encoded = json.encode(value);
-      evaluate('__JSC_promise_result$id.resolve($encoded);');
+      evaluate('__JSC_promise_result$id.resolve($encoded); __JSC_promise_result$id = null;');
     }).catchError((error) {
-      evaluate('__JSC_promise_result$id.reject("$error");');
+      evaluate('__JSC_promise_result$id.reject("$error"); __JSC_promise_result$id = null;');
     });
     return jsValueRef;
   }
