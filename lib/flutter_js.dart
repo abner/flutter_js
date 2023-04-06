@@ -170,6 +170,9 @@ class FlutterJs {
       "convertTo": convertTo
     };
     final rs = await _methodChannel.invokeMethod("evaluate", arguments);
+    
+    print('RS: $rs');
+    
     final String? jsResult = rs is Map || rs is List ? json.encode(rs) : rs;
     if (DEBUG) {
       print("${DateTime.now().toIso8601String()} - JS RESULT : $jsResult");
