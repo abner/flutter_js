@@ -6,7 +6,7 @@ import 'package:ffi/ffi.dart';
 
 class Utf8NullTerminated extends Struct {
   @Uint8()
-  external int? char;
+  external int char;
 
   static Pointer<Utf8NullTerminated> toUtf8(String s) {
     final bytes = Utf8Encoder().convert(s);
@@ -25,7 +25,7 @@ class Utf8NullTerminated extends Struct {
     while (true) {
       final char = ptr.elementAt(len++).ref.char;
       if (char == 0) break;
-      bytes.add(char!);
+      bytes.add(char);
     }
     return Utf8Decoder().convert(bytes);
   }
