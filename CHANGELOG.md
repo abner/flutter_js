@@ -1,3 +1,6 @@
+# 0.7.0
+- **Breaking**: require dart 3.0 and Flutter 3 and above
+- now supports Flutter 3.10 and Dart 3.0
 # 0.6.0
 
 - **Breaking**: require dart 2.17

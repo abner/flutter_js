@@ -4,9 +4,9 @@ import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 
-class Utf8NullTerminated extends Struct {
+final class Utf8NullTerminated extends Struct {
   @Uint8()
-  external int? char;
+  external int char;
 
   static Pointer<Utf8NullTerminated> toUtf8(String s) {
     final bytes = Utf8Encoder().convert(s);
