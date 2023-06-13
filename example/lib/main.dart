@@ -43,7 +43,8 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   final bool _processInitialized = false;
 
   Future<String> evalJS() async {
-    JsEvalResult jsResult = await javascriptRuntime.evaluateAsync("""
+    JsEvalResult jsResult =
+        await javascriptRuntime.evaluateAsync(sourceUrl: 'script.js', """
             if (typeof MyClass == 'undefined') {
               var MyClass = class  {
                 constructor(id) {
@@ -78,6 +79,7 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   @override
   void initState() {
     super.initState();
+    javascriptRuntime.setInspectable(true);
     javascriptRuntime.onMessage('getDataAsync', (args) async {
       await Future.delayed(const Duration(seconds: 1));
       final int count = args['count'];

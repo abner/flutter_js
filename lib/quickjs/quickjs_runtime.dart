@@ -162,6 +162,11 @@ class QuickJsRuntime extends JavascriptRuntime {
     );
   }
 
+  @override
+  void setInspectable(bool inspectable) {
+    // Nothing to do.
+  }
+
   static Type getTypeForJsValue(Pointer<JSValueConst> jsValue) {
     int value = _jsGetTypeTag(jsValue);
 
@@ -183,7 +188,7 @@ class QuickJsRuntime extends JavascriptRuntime {
     }
   }
 
-  JsEvalResult evaluate(String js) {
+  JsEvalResult evaluate(String js, {String? sourceUrl}) {
     return jsEval(_context, js);
   }
 
@@ -302,7 +307,7 @@ class QuickJsRuntime extends JavascriptRuntime {
   }
 
   @override
-  Future<JsEvalResult> evaluateAsync(String code) {
+  Future<JsEvalResult> evaluateAsync(String code, {String? sourceUrl}) {
     return Future.value(evaluate(code));
   }
 }

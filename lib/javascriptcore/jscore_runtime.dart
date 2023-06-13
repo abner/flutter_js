@@ -56,18 +56,22 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   }
 
   @override
-  JsEvalResult evaluate(String js) {
+  JsEvalResult evaluate(String js, {String? sourceUrl}) {
     Pointer<Utf8> scriptCString = js.toNativeUtf8();
+    Pointer<Utf8>? sourceUrlCString = sourceUrl?.toNativeUtf8();
 
     JSValuePointer exception = JSValuePointer();
     var jsValueRef = jSEvaluateScript(
         _globalContext,
         jSStringCreateWithUTF8CString(scriptCString),
         nullptr,
-        nullptr,
+        sourceUrlCString != null ? jSStringCreateWithUTF8CString(sourceUrlCString) : nullptr,
         1,
         exception.pointer);
     calloc.free(scriptCString);
+    if (sourceUrlCString != null) {
+      calloc.free(sourceUrlCString);
+    }
 
     String result;
 
@@ -101,6 +105,11 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
 
   @override
   String getEngineInstanceId() => hashCode.abs().toString();
+
+  @override
+  void setInspectable(bool inspectable) {
+    context.setInspectable(inspectable);
+  }
 
   @override
   bool setupBridge(String channelName, Function(dynamic args) fn) {
@@ -282,7 +291,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   }
 
   @override
-  Future<JsEvalResult> evaluateAsync(String code) {
-    return Future.value(evaluate(code));
+  Future<JsEvalResult> evaluateAsync(String code, {String? sourceUrl}) {
+    return Future.value(evaluate(code, sourceUrl: sourceUrl));
   }
 }

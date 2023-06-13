@@ -21,12 +21,12 @@ class FlutterJsPlatformEmpty extends JavascriptRuntime {
   void dispose() {}
 
   @override
-  JsEvalResult evaluate(String code) {
+  JsEvalResult evaluate(String code, {String? sourceUrl}) {
     throw UnimplementedError();
   }
 
   @override
-  Future<JsEvalResult> evaluateAsync(String code) {
+  Future<JsEvalResult> evaluateAsync(String code, {String? sourceUrl}) {
     throw UnimplementedError();
   }
 
@@ -54,6 +54,11 @@ class FlutterJsPlatformEmpty extends JavascriptRuntime {
   bool setupBridge(String channelName, void Function(dynamic args) fn) {
     throw UnimplementedError();
   }
+
+  @override
+  void setInspectable(bool inspectable) {
+    throw UnimplementedError();
+  }
 }
 
 abstract class JavascriptRuntime {
@@ -79,9 +84,9 @@ abstract class JavascriptRuntime {
   static Map<String, Map<String, Function(dynamic arg)>>
       get channelFunctionsRegistered => _channelFunctionsRegistered;
 
-  JsEvalResult evaluate(String code);
+  JsEvalResult evaluate(String code, {String? sourceUrl});
 
-  Future<JsEvalResult> evaluateAsync(String code);
+  Future<JsEvalResult> evaluateAsync(String code, {String? sourceUrl});
 
   JsEvalResult callFunction(Pointer fn, Pointer obj);
 
@@ -176,4 +181,6 @@ abstract class JavascriptRuntime {
   bool setupBridge(String channelName, void Function(dynamic args) fn);
 
   String getEngineInstanceId();
+
+  void setInspectable(bool inspectable);
 }
