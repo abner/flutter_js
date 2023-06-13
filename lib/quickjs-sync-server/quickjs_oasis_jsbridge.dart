@@ -58,7 +58,7 @@ class QuickJsService extends JavascriptRuntime {
     _flutterJs.dispose();
   }
 
-  JsEvalResult evaluate(String code) {
+  JsEvalResult evaluate(String code, {String? sourceUrl}) {
     var request = SyncHttpClient.postUrl(new Uri.http(
       "localhost:${FlutterJs.httpPort}",
       "",
@@ -127,6 +127,11 @@ class QuickJsService extends JavascriptRuntime {
   }
 
   @override
+  void setInspectable(bool inspectable) {
+    // Nothing to do.
+  }
+
+  @override
   bool setupBridge(String channelName, dynamic Function(dynamic args) fn) {
     // final channelFunctionCallbacks =
     //     JavascriptRuntime.channelFunctionsRegistered[getEngineInstanceId()];
@@ -147,7 +152,7 @@ class QuickJsService extends JavascriptRuntime {
   }
 
   @override
-  Future<JsEvalResult> evaluateAsync(String code) async {
+  Future<JsEvalResult> evaluateAsync(String code, {String? sourceUrl}) async {
     String strResult = await _flutterJs.eval(code);
     return JsEvalResult(
       strResult,

@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import '../binding/js_base.dart' as JSBase;
 import '../binding/js_context_ref.dart' as JSContextRef;
+import '../binding/js_global_context_ref.dart' as JSGlobalContextRef;
 import 'js_class.dart';
 import 'js_context_group.dart';
 import 'js_object.dart';
@@ -12,6 +13,7 @@ import 'js_value.dart';
 class JSContext {
   /// C pointer
   Pointer _pointer;
+
   Pointer get pointer => _pointer;
 
   /// Exception (JSValueRef*) A pointer to a JSValueRef in which to store an exception, if any. Pass NULL if you do not care to store an exception.
@@ -112,5 +114,9 @@ class JSContext {
           startingLineNumber,
           exception.pointer,
         ));
+  }
+
+  void setInspectable(bool inspectable) {
+    JSGlobalContextRef.jSGlobalContextSetInspectable(_pointer, inspectable);
   }
 }
