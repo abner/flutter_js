@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ffi';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
@@ -106,9 +107,12 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   @override
   String getEngineInstanceId() => hashCode.abs().toString();
 
+  /// Works only for iOS & MacOS.
   @override
   void setInspectable(bool inspectable) {
-    context.setInspectable(inspectable);
+    if (Platform.isIOS || Platform.isMacOS) {
+      context.setInspectable(inspectable);
+    }
   }
 
   @override
