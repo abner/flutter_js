@@ -29,7 +29,8 @@ android {
     compileSdkVersion flutter.compileSdkVersion
     
     ndkVersion "21.3.6528147"
-
+    
+  
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -40,7 +41,10 @@ android {
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        main {
+            java.srcDirs += 'src/main/kotlin'
+            jniLibs.srcDirs = ['jniLibs']
+        }
     }
 
     defaultConfig {
@@ -52,6 +56,25 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        // externalNativeBuild {
+        //     cmake {
+        //         cppFlags "-std=c++14 -fexceptions -frtti"
+        //         arguments "-DANDROID_ARM_NEON=TRUE",'-DANDROID_STL=c++_shared'
+        //     }
+        // }
+
+        externalNativeBuild {
+
+        cmake {
+
+            cppFlags ""
+
+            arguments "-DANDROID_STL=c++_shared", "-DANDROID_ARM_NEON=TRUE"
+
+            }
+
+        }
     }
 
     buildTypes {
@@ -74,5 +97,6 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    // implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc-intl:0.3.4"
     implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc:0.3.4"
 }
