@@ -158,11 +158,17 @@ class QuickJsRuntime2 extends JavascriptRuntime {
     //}
   }
 
+  @override
+  void setInspectable(bool inspectable) {
+    // Nothing to do.
+  }
+
   /// Evaluate js script.
   JsEvalResult evaluate(
     String command, {
     String? name,
     int? evalFlags,
+    String? sourceUrl,
   }) {
     _ensureEngine();
     final ctx = _ctx!;
@@ -215,8 +221,8 @@ class QuickJsRuntime2 extends JavascriptRuntime {
   }
 
   @override
-  Future<JsEvalResult> evaluateAsync(String code) {
-    return Future.value(evaluate(code));
+  Future<JsEvalResult> evaluateAsync(String code, {String? sourceUrl}) {
+    return Future.value(evaluate(code, sourceUrl: sourceUrl));
   }
 
   @override
