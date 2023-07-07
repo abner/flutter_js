@@ -35,7 +35,7 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   String _jsResult = '';
 
   final JavascriptRuntime javascriptRuntime =
-      getJavascriptRuntime(forceJavascriptCoreOnAndroid: true);
+      getJavascriptRuntime(forceJavascriptCoreOnAndroid: false);
 
   String? _quickjsVersion;
 
@@ -43,8 +43,8 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
   final bool _processInitialized = false;
 
   Future<String> evalJS() async {
-    JsEvalResult jsResult =
-        await javascriptRuntime.evaluateAsync(sourceUrl: 'script.js', """
+    JsEvalResult jsResult = await javascriptRuntime.evaluateAsync(
+      """
             if (typeof MyClass == 'undefined') {
               var MyClass = class  {
                 constructor(id) {
@@ -60,17 +60,20 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
               var obj = new MyClass(1);
               var jsonStringified = JSON.stringify(obj);
               var value = Math.trunc(Math.random() * 100).toString();
-              var asyncResult = await sendMessage("getDataAsync", JSON.stringify({"count": Math.trunc(Math.random() * 10)}));
-              var err;
-              try {
-                await sendMessage("asyncWithError", "{}");
-              } catch(e) {
-                err = e;
-              }
-              return {"object": jsonStringified, "expression": value, "asyncResult": asyncResult, "expectedError": err};
+              //var asyncResult = await sendMessage("getDataAsync", JSON.stringify({"count": Math.trunc(Math.random() * 10)}));
+              // var err;
+              // try {
+              //   await sendMessage("asyncWithError", "{}");
+              // } catch(e) {
+              //   err = e;
+              // }
+              //return {"object": jsonStringified, "expression": value, "asyncResult": asyncResult, "expectedError": err};
+              return {"object": jsonStringified, "expression": value};
             }
             test();
-            """);
+            """,
+      sourceUrl: 'script.js',
+    );
     javascriptRuntime.executePendingJob();
     JsEvalResult asyncResult = await javascriptRuntime.handlePromise(jsResult);
     return asyncResult.stringResult;

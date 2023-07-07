@@ -31,6 +31,12 @@ class QuickJsRuntime2 extends JavascriptRuntime {
   /// Max stack size for quickjs.
   int stackSize;
 
+  /// Max stack size for quickjs.
+  final int? timeout;
+
+  /// Max memory for quickjs.
+  final int? memoryLimit;
+
   /// Message Port for event loop. Close it to stop dispatching event loop.
   ReceivePort port = ReceivePort();
 
@@ -43,6 +49,8 @@ class QuickJsRuntime2 extends JavascriptRuntime {
   QuickJsRuntime2({
     this.moduleHandler,
     this.stackSize = 1024 * 1024,
+    this.timeout,
+    this.memoryLimit,
     this.hostPromiseRejectionHandler,
   }) {
     this.init();
@@ -116,8 +124,11 @@ class QuickJsRuntime2 extends JavascriptRuntime {
         }
         return err;
       }
-    }, port);
+    }, timeout ?? 0, port);
+    final stackSize = this.stackSize ?? 0;
     if (stackSize > 0) jsSetMaxStackSize(rt, stackSize);
+    final memoryLimit = this.memoryLimit ?? 0;
+    if (memoryLimit > 0) jsSetMemoryLimit(rt, memoryLimit);
     _rt = rt;
     _ctx = jsNewContext(rt);
   }

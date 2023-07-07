@@ -161,11 +161,13 @@ typedef _JSChannelNative = Pointer<JSValue> Function(
 /// JSRuntime *jsNewRuntime(JSChannel channel)
 final Pointer<JSRuntime> Function(
   Pointer<NativeFunction<_JSChannelNative>>,
+  int,
 ) _jsNewRuntime = _qjsLib
     .lookup<
         NativeFunction<
             Pointer<JSRuntime> Function(
               Pointer<NativeFunction<_JSChannelNative>>,
+              Int64,
             )>>('jsNewRuntime')
     .asFunction();
 
@@ -202,9 +204,10 @@ Pointer<JSValue>? channelDispacher(
 
 Pointer<JSRuntime> jsNewRuntime(
   _JSChannel callback,
+  int timeout,
   ReceivePort port,
 ) {
-  final rt = _jsNewRuntime(Pointer.fromFunction(channelDispacher));
+  final rt = _jsNewRuntime(Pointer.fromFunction(channelDispacher), timeout);
   runtimeOpaques[rt] = _RuntimeOpaque(callback, port);
   return rt;
 }
@@ -220,6 +223,19 @@ final void Function(
               Pointer<JSRuntime>,
               IntPtr,
             )>>('jsSetMaxStackSize')
+    .asFunction();
+
+/// DLLEXPORT void jsSetMemoryLimit(JSRuntime *rt, size_t limit);
+final void Function(
+  Pointer<JSRuntime>,
+  int,
+) jsSetMemoryLimit = _qjsLib
+    .lookup<
+        NativeFunction<
+            Void Function(
+              Pointer<JSRuntime>,
+              IntPtr,
+            )>>('jsSetMemoryLimit')
     .asFunction();
 
 /// void jsFreeRuntime(JSRuntime *rt)
@@ -287,6 +303,7 @@ final Pointer<JSContext> Function(
 
 Pointer<JSContext> jsNewContext(Pointer<JSRuntime> rt) {
   final ctx = _jsNewContext(rt);
+  if (ctx.address == 0) throw Exception('Context create failed!');
   final runtimeOpaque = runtimeOpaques[rt];
   if (runtimeOpaque == null) throw Exception('Runtime has been released!');
   runtimeOpaque._dartObjectClassId = jsNewClass(ctx, 'DartObject');
