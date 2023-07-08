@@ -113,7 +113,11 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   @override
   void setInspectable(bool inspectable) {
     if (Platform.isIOS || Platform.isMacOS) {
-      context.setInspectable(inspectable);
+      try {
+        context.setInspectable(inspectable);
+      } on Error {
+        print('Could not set inspectable to $inspectable');
+      }
     }
   }
 

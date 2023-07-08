@@ -39,9 +39,6 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
 
   String? _quickjsVersion;
 
-  Process? _process;
-  final bool _processInitialized = false;
-
   Future<String> evalJS() async {
     JsEvalResult jsResult = await javascriptRuntime.evaluateAsync(
       """
