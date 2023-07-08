@@ -1,10 +1,8 @@
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('flutter_js');
-
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late JavascriptRuntime jsRuntime;
@@ -21,9 +19,11 @@ void main() {
 
   test('evaluate javascript', () {
     final result = jsRuntime.evaluate('Math.pow(5,3)');
-    print('${result.rawResult}, ${result.stringResult}');
-    print(
-        '${result.rawResult.runtimeType}, ${result.stringResult.runtimeType}');
+    if (kDebugMode) {
+      print('${result.rawResult}, ${result.stringResult}');
+      print(
+          '${result.rawResult.runtimeType}, ${result.stringResult.runtimeType}');
+    }
     expect(result.rawResult, equals(125));
     expect(result.stringResult, equals('125'));
   });

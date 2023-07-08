@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_js_example/json_viewer.dart';
 
 class AjvResultScreen extends StatelessWidget {
-  const AjvResultScreen(this.jsonString, {this.notRoot = false});
+  const AjvResultScreen(this.jsonString, {super.key, this.notRoot = false});
 
   final String jsonString;
   final bool notRoot;
@@ -14,14 +14,12 @@ class AjvResultScreen extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(title: const Text('Ajv Result')),
         body: SafeArea(
-          child: Container(
-            child: SingleChildScrollView(
-                //child: JsonViewerWidget(json.decode(jsonString), notRoot: notRoot )
-                child: JsonViewerRoot(
-              jsonObj: json.decode(jsonString),
-              expandDeep: 4,
-            )),
-          ),
+          child: SingleChildScrollView(
+              //child: JsonViewerWidget(json.decode(jsonString), notRoot: notRoot )
+              child: JsonViewerRoot(
+            jsonObj: json.decode(jsonString),
+            expandDeep: 4,
+          )),
         ));
   }
 }

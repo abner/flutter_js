@@ -6,8 +6,11 @@ typedef OnBuildNode = Widget Function(
   dynamic nodeValue,
 );
 
+// ignore: must_be_immutable
 class JsonViewerRoot extends StatefulWidget {
   JsonViewerRoot({
+    super.key,
+
     /// json object
     required this.jsonObj,
 
@@ -70,6 +73,7 @@ class JsonViewerRootState extends State<JsonViewerRoot> {
   }
 }
 
+// ignore: must_be_immutable
 abstract class JsonNode<T> implements Widget {
   /// 最顶级的
   JsonViewerRoot? root;
@@ -90,14 +94,18 @@ abstract class JsonNode<T> implements Widget {
   int? expandDeep;
 }
 
+// ignore: must_be_immutable
 abstract class JsonOpenNode implements Widget {
   bool isOpen = false;
 
   List<Widget> buildChild();
 }
 
+// ignore: must_be_immutable
 class JsonViewerMapNode extends StatefulWidget
     implements JsonNode<Map<String, dynamic>>, JsonOpenNode {
+  JsonViewerMapNode({super.key});
+
   @override
   State<StatefulWidget> createState() => JsonViewerMapNodeState();
 
@@ -134,7 +142,6 @@ class JsonViewerMapNode extends StatefulWidget
 class JsonViewerMapNodeState extends State<JsonViewerMapNode> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     widget.isOpen = widget.expandDeep! > 0;
   }
@@ -176,8 +183,11 @@ class JsonViewerMapNodeState extends State<JsonViewerMapNode> {
 
 /// list类型的节点
 /// 如: [value1,value2]
+// ignore: must_be_immutable
 class JsonViewerListNode extends StatefulWidget
     implements JsonNode<List<dynamic>>, JsonOpenNode {
+  JsonViewerListNode({super.key});
+
   @override
   State<StatefulWidget> createState() => JsonViewerListNodeState();
 
@@ -257,7 +267,10 @@ class JsonViewerListNodeState extends State<JsonViewerListNode> {
   }
 }
 
+// ignore: must_be_immutable
 class JsonViewerNode extends StatelessWidget implements JsonNode {
+  JsonViewerNode({super.key});
+
   @override
   Widget build(BuildContext context) {
     var color = Colors.black;
@@ -309,7 +322,7 @@ class JsonViewerNode extends StatelessWidget implements JsonNode {
   String? nodeName;
 
   @override
-  var nodeValue;
+  dynamic nodeValue;
 
   @override
   double? leftOffset;

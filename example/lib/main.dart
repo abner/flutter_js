@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -11,7 +10,9 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-  GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
+  final GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
+
+  MyApp({super.key});
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -20,13 +21,15 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: FlutterJsHomeScreen(),
     );
   }
 }
 
 class FlutterJsHomeScreen extends StatefulWidget {
+  const FlutterJsHomeScreen({super.key});
+
   @override
   _FlutterJsHomeScreenState createState() => _FlutterJsHomeScreenState();
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_js/flutter_js.dart';
@@ -37,7 +38,9 @@ class _AjvExampleState extends State<AjvExample> {
         .evaluate("""var ajvIsLoaded = (typeof ajv == 'undefined') ? 
           "0" : "1"; ajvIsLoaded;
         """).stringResult;
-    print("AJV is Loaded $ajvIsLoaded");
+    if (kDebugMode) {
+      print("AJV is Loaded $ajvIsLoaded");
+    }
     if (ajvIsLoaded == "0") {
       try {
         String ajvJS = await rootBundle.loadString("assets/js/ajv.js");
@@ -77,7 +80,9 @@ class _AjvExampleState extends State<AjvExample> {
                     }, "obj1");
       """);
       } on PlatformException catch (e) {
-        print('Failed to init js engine: ${e.details}');
+        if (kDebugMode) {
+          print('Failed to init js engine: ${e.details}');
+        }
       }
     }
 

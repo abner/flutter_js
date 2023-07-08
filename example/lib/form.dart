@@ -33,6 +33,7 @@ class ValidationResult {
   }
 }
 
+// ignore: constant_identifier_names
 enum FormWidgetOperation { New, Edit }
 
 class FormWidget extends StatefulWidget {
@@ -62,7 +63,6 @@ class FormWidgetState extends State<FormWidget> {
   final Map<String, String> _savedValues = {};
   final Map<String, GlobalKey<FormFieldState>> _fieldsStates = {};
   final Map<String, List<ValidationResult>> _errorsMap = {};
-  final Map<String, bool> _stateFromAsync = {};
   final Map<String, Debouncer> _fieldsDebounces = {};
   final Map<String, FocusNode> _fieldsFocusNodes = {};
 
@@ -90,7 +90,6 @@ class FormWidgetState extends State<FormWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     for (var fieldName in widget.fields) {
       _fieldsStates[fieldName] = GlobalKey();
@@ -106,25 +105,23 @@ class FormWidgetState extends State<FormWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: FocusScope(
-          node: widget._focusScopeNode,
-          child: Form(
-              key: widget.formKey,
-              autovalidateMode: AutovalidateMode.always,
-              child: Column(
-                children: widget.fields
-                    .map(
-                      (field) => Padding(
-                        padding: const EdgeInsets.fromLTRB(4.0, 4, 4, 8),
-                        child: getInputWidgetForField(field),
-                      ),
-                    )
-                    .toList(),
-              )),
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: FocusScope(
+        node: widget._focusScopeNode,
+        child: Form(
+            key: widget.formKey,
+            autovalidateMode: AutovalidateMode.always,
+            child: Column(
+              children: widget.fields
+                  .map(
+                    (field) => Padding(
+                      padding: const EdgeInsets.fromLTRB(4.0, 4, 4, 8),
+                      child: getInputWidgetForField(field),
+                    ),
+                  )
+                  .toList(),
+            )),
       ),
     );
   }
