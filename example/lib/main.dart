@@ -60,15 +60,14 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
               var obj = new MyClass(1);
               var jsonStringified = JSON.stringify(obj);
               var value = Math.trunc(Math.random() * 100).toString();
-              //var asyncResult = await sendMessage("getDataAsync", JSON.stringify({"count": Math.trunc(Math.random() * 10)}));
-              // var err;
-              // try {
-              //   await sendMessage("asyncWithError", "{}");
-              // } catch(e) {
-              //   err = e;
-              // }
-              //return {"object": jsonStringified, "expression": value, "asyncResult": asyncResult, "expectedError": err};
-              return {"object": jsonStringified, "expression": value};
+              var asyncResult = await sendMessage("getDataAsync", JSON.stringify({"count": Math.trunc(Math.random() * 10)}));
+              var err;
+              try {
+                await sendMessage("asyncWithError", "{}");
+              } catch(e) {
+                err = e.message;
+              }
+              return {"object": jsonStringified, "expression": value, "asyncResult": asyncResult, "expectedError": err};
             }
             test();
             """,
