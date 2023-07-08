@@ -65,7 +65,7 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
               try {
                 await sendMessage("asyncWithError", "{}");
               } catch(e) {
-                err = e.message;
+                err = e.message || e;
               }
               return {"object": jsonStringified, "expression": value, "asyncResult": asyncResult, "expectedError": err};
             }
@@ -94,7 +94,7 @@ class _FlutterJsHomeScreenState extends State<FlutterJsHomeScreen> {
     });
     javascriptRuntime.onMessage('asyncWithError', (_) async {
       await Future.delayed(const Duration(milliseconds: 100));
-      throw Exception('Some error');
+      return Future.error('Some error');
     });
   }
 

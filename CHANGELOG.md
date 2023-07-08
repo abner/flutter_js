@@ -1,3 +1,7 @@
+# 0.7.2
+- upgraded quickjs code (to allow set timeout and set maxMemory) in preparation for further improvements
+- reduced the json output in the example app 
+
 # 0.7.1
 - async callback for JSC runtime
 - upgraded jsc core in example app
