@@ -98,9 +98,9 @@ class QuickJsRuntime extends JavascriptRuntime {
       .lookup<
           NativeFunction<
               Void Function(
-        Pointer<JSRuntime>,
-        IntPtr,
-      )>>('jsSetMaxStackSize')
+                Pointer<JSRuntime>,
+                IntPtr,
+              )>>('jsSetMaxStackSize')
       .asFunction();
 
   // NATIVE BRIDGE DECLARATIONS
@@ -220,7 +220,7 @@ class QuickJsRuntime extends JavascriptRuntime {
     if (_jsIsArray(context, evalResult.rawResult) == 1) {
       Pointer<JSValueConst>? stringifiedValue = calloc();
       Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = calloc();
-      int res = _jSJSONStringify(
+      _jSJSONStringify(
         context,
         evalResult.rawResult,
         stringifiedValue,
@@ -243,7 +243,7 @@ class QuickJsRuntime extends JavascriptRuntime {
         Pointer<JSValueConst>? stringifiedValue = calloc<JSValueConst>();
         Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = calloc();
 
-        int res = _jSJSONStringify(
+        _jSJSONStringify(
           context,
           evalResult.rawResult,
           stringifiedValue,
@@ -285,7 +285,7 @@ class QuickJsRuntime extends JavascriptRuntime {
   String jsonStringify(JsEvalResult jsValue) {
     Pointer<JSValueConst>? stringifiedValue = calloc();
     Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = calloc();
-    int res = _jSJSONStringify(
+    _jSJSONStringify(
       _context,
       jsValue.rawResult,
       stringifiedValue,

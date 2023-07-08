@@ -46,6 +46,7 @@ const JS_TAG_FIRST = -11,
     JS_TAG_EXCEPTION = 6,
     JS_TAG_FLOAT64 = 7;
 
+// ignore: camel_case_types
 typedef JS_NewRuntimeDartBridge = Pointer<JSRuntime> Function();
 
 typedef ChannelCallback = Pointer<JSValueConst> Function(
@@ -54,6 +55,7 @@ typedef ChannelCallback = Pointer<JSValueConst> Function(
   Pointer<Utf8NullTerminated>,
 );
 
+// ignore: camel_case_types
 typedef JS_NewContextFn = Pointer<JSContext> Function(
   Pointer<JSRuntime>? jrt,
   Pointer<NativeFunction<ChannelCallback>>? fnConsoleLog,
@@ -71,6 +73,7 @@ typedef JSEvalWrapper = Pointer Function(
     Pointer<JSValueConst> result,
     Pointer<Pointer<Utf8NullTerminated>> stringResult);
 
+// ignore: camel_case_types
 typedef JS_GetNullValue = Pointer Function(
   Pointer<JSContext> ctx,
   Pointer<JSValueConst> v,

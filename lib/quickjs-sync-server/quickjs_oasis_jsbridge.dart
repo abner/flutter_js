@@ -7,19 +7,19 @@ import 'dart:ui';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:sync_http/sync_http.dart';
 
-ReceivePort _callDartReceivePort = new ReceivePort();
+// ReceivePort _callDartReceivePort = new ReceivePort();
 
-void _setupCallDartPorts() {
-  IsolateNameServer.registerPortWithName(
-      _callDartReceivePort.sendPort, 'QuickJsServiceCallDart');
+// void _setupCallDartPorts() {
+//   IsolateNameServer.registerPortWithName(
+//       _callDartReceivePort.sendPort, 'QuickJsServiceCallDart');
 
-  _callDartReceivePort.listen((portMessage) {
-    final decodedMessage = (portMessage as String).split(':');
-    int idEngine = int.parse(decodedMessage[0]);
-    String channel = decodedMessage[1];
-    String message = utf8.decode(base64.decode(decodedMessage[2]));
-  });
-}
+//   _callDartReceivePort.listen((portMessage) {
+//     final decodedMessage = (portMessage as String).split(':');
+//     int idEngine = int.parse(decodedMessage[0]);
+//     String channel = decodedMessage[1];
+//     String message = utf8.decode(base64.decode(decodedMessage[2]));
+//   });
+// }
 
 class QuickJsService extends JavascriptRuntime {
   ReceivePort _receivePort = new ReceivePort();
@@ -34,7 +34,6 @@ class QuickJsService extends JavascriptRuntime {
     _startServer();
     IsolateNameServer.registerPortWithName(
         _receivePort.sendPort, 'QuickJsService');
-    // TODO: remove from here
     initChannelFunctions();
   }
 

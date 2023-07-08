@@ -125,7 +125,7 @@ class QuickJsRuntime2 extends JavascriptRuntime {
         return err;
       }
     }, timeout ?? 0, port);
-    final stackSize = this.stackSize ?? 0;
+    final stackSize = this.stackSize;
     if (stackSize > 0) jsSetMaxStackSize(rt, stackSize);
     final memoryLimit = this.memoryLimit ?? 0;
     if (memoryLimit > 0) jsSetMemoryLimit(rt, memoryLimit);
@@ -196,23 +196,12 @@ class QuickJsRuntime2 extends JavascriptRuntime {
       return JsEvalResult(exception.toString(), exception, isError: true);
     }
     final result = _jsToDart(ctx, jsval);
-    // if (result is Future) {
-    //   result.then((e) {
-    //     print('E: $e');
-    //     return e;
-    //   });
-    //   print(
-    //       'RESULT: ${result.whenComplete(() => print('COMPLETED _-----------------'))}');
-    //   print(
-    //       'RESULT: ${result.onError((error, stackTrace) => print('ERROR: $error _-----------------'))}');
-    // }
     jsFreeValue(ctx, jsval);
     return JsEvalResult(result?.toString() ?? "null", result);
   }
 
   @override
   JsEvalResult callFunction(Pointer<NativeType> fn, Pointer<NativeType> obj) {
-    // TODO: implement callFunction
     throw UnimplementedError();
   }
 
@@ -268,18 +257,10 @@ class QuickJsRuntime2 extends JavascriptRuntime {
         }
       }
     ]);
-    //  final sendMessageCreateFnResult = evaluate("""
-    //     function sendMessage(channelName, message) {
-    //       return FLUTTER_JS_NATIVE_BRIDGE_sendMessage.apply(globalThis, [channelName, message]);
-    //     }
-    //     sendMessage
-    //   """);
-    //print('RESULT creating sendMessage function: $sendMessageCreateFnResult');
   }
 
   @override
   String jsonStringify(JsEvalResult jsValue) {
-    // TODO: implement jsonStringify
     throw UnimplementedError();
   }
 

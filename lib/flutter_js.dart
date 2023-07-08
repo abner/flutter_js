@@ -134,6 +134,7 @@ class FlutterJs {
 
   bool isReady() => _ready;
 
+  // ignore: non_constant_identifier_names
   static bool DEBUG = false;
 
   Future<String> eval(String code) {

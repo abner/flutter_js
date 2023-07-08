@@ -120,7 +120,7 @@ abstract class JavascriptRuntime {
   }
 
   void _setupSetTimeout() {
-    final setTImeoutResult = evaluate("""
+    evaluate("""
       var __NATIVE_FLUTTER_JS__setTimeoutCount = -1;
       var __NATIVE_FLUTTER_JS__setTimeoutCallbacks = {};
       function setTimeout(fnTimeout, timeout) {
