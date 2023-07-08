@@ -25,7 +25,7 @@ final class Utf8NullTerminated extends Struct {
     while (true) {
       final char = ptr.elementAt(len++).ref.char;
       if (char == 0) break;
-      bytes.add(char!);
+      bytes.add(char);
     }
     return Utf8Decoder().convert(bytes);
   }
