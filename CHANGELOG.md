@@ -1,3 +1,7 @@
+# 0.8.0
+
+- upgrade http dependency to ^1.0.0
+
 # 0.7.2
 - upgraded quickjs code (to allow set timeout and set maxMemory) in preparation for further improvements
 - reduced the json output in the example app 
