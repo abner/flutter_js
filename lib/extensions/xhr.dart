@@ -245,6 +245,33 @@ xhrSetHttpClient(http.Client client) {
   httpClient = client;
 }
 
+enum XhrHandlerStage {
+  preRequest,
+  postRequest
+}
+
+const XHR_HANDLERS_KEY = "xhrHandlers";
+
+enum XhrHandleType {
+  respond,
+  reject,
+  skip
+}
+
+class XhrHandle {
+  final XhrHandleType type;
+
+  final XhtmlHttpResponseInfo? info;
+
+  final String? body;
+
+  XhrHandle(this.type, this.info, this.body);
+}
+
+typedef XhrHandler = Future<XhrHandle> Function(Uri url, Map<String, String> headers, http.Response? response);
+
+typedef XhrHandlers = Map<XhrHandlerStage, List<XhrHandler>>;
+
 extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
   List<dynamic>? getPendingXhrCalls() {
     return dartContext[XHR_PENDING_CALLS_KEY];
@@ -255,9 +282,18 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
     dartContext[XHR_PENDING_CALLS_KEY] = [];
   }
 
+  void addXhrHandler(XhrHandlerStage stage, XhrHandler handler) {
+    (dartContext[XHR_HANDLERS_KEY] as XhrHandlers)[stage]?.add(handler);
+  }
+
   JavascriptRuntime enableXhr() {
     httpClient = httpClient ?? http.Client();
     dartContext[XHR_PENDING_CALLS_KEY] = [];
+
+    dartContext[XHR_HANDLERS_KEY] = {
+      XhrHandlerStage.preRequest: [],
+      XhrHandlerStage.postRequest: [],
+    };
 
     Timer.periodic(Duration(milliseconds: 40), (timer) {
       // exits if there is no pending call to remote
@@ -274,23 +310,49 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
         HttpMethod eMethod = HttpMethod.values.firstWhere((e) =>
             e.toString().toLowerCase() ==
             ("HttpMethod.${pendingCall.method}".toLowerCase()));
-        late http.Response response;
+        http.Response? response;
+
+        final url = Uri.parse(pendingCall.url!);
+
+        String? responseText;
+
+        XhtmlHttpResponseInfo? responseInfo;
+
+        if (dartContext[XHR_HANDLERS_KEY][XhrHandlerStage.preRequest].length != 0) {
+          for (final handler in ((dartContext[XHR_HANDLERS_KEY] as XhrHandlers)[XhrHandlerStage.preRequest]!)) {
+            final handle = await handler(url, pendingCall.headers, null);
+
+            switch (handle.type) {
+              case XhrHandleType.skip: break;
+              case XhrHandleType.reject: {
+                final text = handle.body ?? "Request rejected by client.";
+                responseText = text;
+                responseInfo = handle.info ?? XhtmlHttpResponseInfo(statusCode: 403, statusText: text);
+              } break;
+              case XhrHandleType.respond: {
+                responseText = handle.body ?? "";
+                responseInfo = handle.info ?? XhtmlHttpResponseInfo(statusCode: 200, statusText: "OK");
+              } break;
+            }
+          }
+        }
+
         switch (eMethod) {
           case HttpMethod.head:
             response = await httpClient!.head(
-              Uri.parse(pendingCall.url!),
+              url,
               headers: pendingCall.headers,
             );
             break;
           case HttpMethod.get:
             response = await httpClient!.get(
-              Uri.parse(pendingCall.url!),
+              url,
               headers: pendingCall.headers,
             );
             break;
           case HttpMethod.post:
             response = await httpClient!.post(
-              Uri.parse(pendingCall.url!),
+              url,
               body: (pendingCall.body is String)
                   ? pendingCall.body
                   : jsonEncode(pendingCall.body),
@@ -299,7 +361,7 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
             break;
           case HttpMethod.put:
             response = await httpClient!.put(
-              Uri.parse(pendingCall.url!),
+              url,
               body: (pendingCall.body is String)
                   ? pendingCall.body
                   : jsonEncode(pendingCall.body),
@@ -308,7 +370,7 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
             break;
           case HttpMethod.patch:
             response = await httpClient!.patch(
-              Uri.parse(pendingCall.url!),
+              url,
               body: (pendingCall.body is String)
                   ? pendingCall.body
                   : jsonEncode(pendingCall.body),
@@ -317,29 +379,57 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
             break;
           case HttpMethod.delete:
             response = await httpClient!.delete(
-              Uri.parse(pendingCall.url!),
+              url,
               headers: pendingCall.headers,
             );
             break;
         }
-        // assuming request was successfully executed
-        String responseText = utf8.decode(response.bodyBytes);
-        try {
-          responseText = jsonEncode(json.decode(responseText));
-        } on Exception {}
-        final xhrResult = XmlHttpRequestResponse(
-          responseText: responseText,
-          responseInfo:
-              XhtmlHttpResponseInfo(statusCode: 200, statusText: "OK"),
-        );
 
-        final responseInfo = jsonEncode(xhrResult.responseInfo);
+        XmlHttpRequestResponse? xhrResult;
+
+        String? error;
+
+        // ignore: unnecessary_null_comparison
+        if (response != null) {
+          xhrResult = XmlHttpRequestResponse(
+            responseText: responseText,
+            responseInfo: XhtmlHttpResponseInfo(statusCode: response.statusCode, statusText: response.reasonPhrase),
+          );
+          error = xhrResult.error;
+
+          responseText = utf8.decode(response.bodyBytes);
+        }
+
+        if (dartContext[XHR_HANDLERS_KEY][XhrHandlerStage.postRequest].length != 0) {
+          for (final handler in ((dartContext[XHR_HANDLERS_KEY] as XhrHandlers)[XhrHandlerStage.postRequest]!)) {
+            final handle = await handler(url, pendingCall.headers, response);
+
+            switch (handle.type) {
+              case XhrHandleType.skip: break;
+              case XhrHandleType.reject: {
+                final text = handle.body ?? "Request rejected by client.";
+                responseText = text;
+                responseInfo = handle.info ?? XhtmlHttpResponseInfo(statusCode: 403, statusText: text);
+              } break;
+              case XhrHandleType.respond: {
+                responseText = handle.body ?? "";
+                responseInfo = handle.info ?? XhtmlHttpResponseInfo(statusCode: 200, statusText: "OK");
+              } break;
+            }
+          }
+        }
+
+        // unused
+
+        // try {
+        //   responseText = jsonEncode(json.decode(responseText));
+        // } on Exception {}
+
         //final responseText = xhrResult.responseText; //.replaceAll("\\n", "\\\n");
-        final error = xhrResult.error;
         // send back to the javascript environment the
         // response for the http pending callback
         this.evaluate(
-          "globalThis.xhrRequests[${pendingCall.idRequest}].callback($responseInfo, `$responseText`, $error);",
+          "globalThis.xhrRequests[${pendingCall.idRequest}].callback(${jsonEncode(responseInfo ?? xhrResult!.responseInfo)}, `$responseText`, $error);",
         );
       });
     });
