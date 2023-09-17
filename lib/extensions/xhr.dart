@@ -268,7 +268,7 @@ class XhrHandle {
   XhrHandle(this.type, [this.info, this.body]);
 }
 
-typedef XhrHandler = Future<XhrHandle> Function(Uri url, Map<String, String> headers, http.Response? response);
+typedef XhrHandler = Future<XhrHandle> Function(Uri url, HttpMethod method, {Map<String, String>? headers, String? body, http.Response? response});
 
 typedef XhrHandlers = Map<XhrHandlerStage, List<XhrHandler>>;
 
@@ -320,7 +320,12 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
 
         if (dartContext[XHR_HANDLERS_KEY][XhrHandlerStage.preRequest].length != 0) {
           for (final handler in ((dartContext[XHR_HANDLERS_KEY] as XhrHandlers)[XhrHandlerStage.preRequest]!)) {
-            final handle = await handler(url, pendingCall.headers, null);
+            final handle = await handler(
+              url, 
+              eMethod, 
+              headers: pendingCall.headers.isNotEmpty ? pendingCall.headers : null, 
+              body: pendingCall.body == null ? ((pendingCall.body is String) ? pendingCall.body : jsonEncode(pendingCall.body)) : null,
+            );
 
             switch (handle.type) {
               case XhrHandleType.skip: break;
@@ -402,7 +407,13 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
 
         if (dartContext[XHR_HANDLERS_KEY][XhrHandlerStage.postRequest].length != 0) {
           for (final handler in ((dartContext[XHR_HANDLERS_KEY] as XhrHandlers)[XhrHandlerStage.postRequest]!)) {
-            final handle = await handler(url, pendingCall.headers, response);
+            final handle = await handler(
+              url, 
+              eMethod, 
+              headers: pendingCall.headers.isNotEmpty ? pendingCall.headers : null, 
+              body: pendingCall.body == null ? ((pendingCall.body is String) ? pendingCall.body : jsonEncode(pendingCall.body)) : null,
+              response: response,
+            );
 
             switch (handle.type) {
               case XhrHandleType.skip: break;
