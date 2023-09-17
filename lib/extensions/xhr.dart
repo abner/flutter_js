@@ -265,7 +265,7 @@ class XhrHandle {
 
   final String? body;
 
-  XhrHandle(this.type, this.info, this.body);
+  XhrHandle(this.type, [this.info, this.body]);
 }
 
 typedef XhrHandler = Future<XhrHandle> Function(Uri url, Map<String, String> headers, http.Response? response);
