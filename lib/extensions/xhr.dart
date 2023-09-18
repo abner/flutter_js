@@ -283,17 +283,19 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
   }
 
   void addXhrHandler(XhrHandlerStage stage, XhrHandler handler) {
-    (dartContext[XHR_HANDLERS_KEY] as XhrHandlers)[stage]?.add(handler);
+    dartContext[XHR_HANDLERS_KEY][stage].add(handler);
   }
 
   JavascriptRuntime enableXhr() {
     httpClient = httpClient ?? http.Client();
     dartContext[XHR_PENDING_CALLS_KEY] = [];
 
-    dartContext[XHR_HANDLERS_KEY] = {
+    var xhrHandlers = Map<XhrHandlerStage, List<XhrHandler>>() = {
       XhrHandlerStage.preRequest: [],
       XhrHandlerStage.postRequest: [],
     };
+
+    dartContext[XHR_HANDLERS_KEY] = xhrHandlers;
 
     Timer.periodic(Duration(milliseconds: 40), (timer) {
       // exits if there is no pending call to remote
