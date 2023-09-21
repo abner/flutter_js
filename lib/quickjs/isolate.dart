@@ -168,10 +168,6 @@ void _runJsIsolate(Map spawnMessage) async {
 class IsolateQjs extends QuickJsRuntime2 {
   Future<SendPort>? _sendPort;
 
-  /// Max stack size for quickjs.
-  @override
-  late int stackSize;
-
   /// Asynchronously handler to manage js module.
   late _JsModuleHandler moduleHandler;
 
