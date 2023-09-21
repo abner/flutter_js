@@ -199,8 +199,7 @@ class IsolateQjs extends QuickJsRuntime2 {
       _runJsIsolate,
       {
         #port: port.sendPort,
-        // ignore: unnecessary_null_comparison
-        ...(stackSize == null ? {} : { #stackSize: stackSize })
+        #stackSize: stackSize ?? 1024 * 1024,
       },
       errorsAreFatal: true,
     );
