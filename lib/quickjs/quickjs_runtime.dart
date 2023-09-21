@@ -202,7 +202,7 @@ class QuickJsRuntime extends JavascriptRuntime {
         calloc<Pointer<Utf8NullTerminated>>();
     Pointer<Int32> errors = calloc<Int32>();
     _jsEvalWrapper(ctx, Utf8NullTerminated.toUtf8(js), js.length,
-        Utf8NullTerminated.toUtf8(fileName), JSEvalFlag.MODULE, errors, result, stringResult);
+        Utf8NullTerminated.toUtf8(fileName), JSEvalFlag.GLOBAL, errors, result, stringResult);
 
     final strResult = Utf8NullTerminated.fromUtf8(stringResult.value);
     return JsEvalResult(

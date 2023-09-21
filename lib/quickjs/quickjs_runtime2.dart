@@ -187,7 +187,7 @@ class QuickJsRuntime2 extends JavascriptRuntime {
       ctx,
       command,
       name ?? '<eval>',
-      evalFlags ?? JSEvalFlag.MODULE,
+      evalFlags ?? JSEvalFlag.GLOBAL,
     );
 
     if (jsIsException(jsval) != 0) {
