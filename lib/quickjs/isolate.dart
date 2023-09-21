@@ -45,7 +45,7 @@ dynamic _encodeData(dynamic data, {Map<dynamic, dynamic>? cache}) {
     data.then((value) {
       futurePort.first.then((port) {
         futurePort.close();
-        (port as SendPort).send(_encodeData(value));
+        (port as SendPort).send(_encodeData(Pointer.fromAddress(value)));
       });
     }, onError: (e) {
       futurePort.first.then((port) {
