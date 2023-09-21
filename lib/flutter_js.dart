@@ -32,15 +32,15 @@ JavascriptRuntime getJavascriptRuntime({
   JavascriptRuntime runtime;
   if ((Platform.isAndroid && !forceJavascriptCoreOnAndroid)) {
     int stackSize = extraArgs?['stackSize'] ?? 1024 * 1024;
-    runtime = QuickJsRuntime2(stackSize: stackSize);
+    runtime = IsolateQjs(stackSize: stackSize) as JavascriptRuntime;
     // FlutterJs engine = FlutterJs();
     // runtime = QuickJsService(engine);
   } else if (Platform.isWindows) {
-    runtime = QuickJsRuntime2();
+    runtime = IsolateQjs() as JavascriptRuntime;
   } else if (Platform.isLinux) {
     // runtime = FlutterJsLinuxWin()..init();
     //runtime = JavascriptCoreRuntime(); //('f1.js');
-    runtime = QuickJsRuntime2();
+    runtime = IsolateQjs() as JavascriptRuntime;
   } else {
     runtime = JavascriptCoreRuntime();
   }
