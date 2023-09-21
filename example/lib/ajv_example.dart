@@ -34,10 +34,10 @@ class _AjvExampleState extends State<AjvExample> {
 // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initJsEngine() async {
     // loads ajv only once into the jsRuntime
-    var ajvIsLoaded = widget.jsRuntime
+    var ajvIsLoaded = (await widget.jsRuntime
         .evaluate("""var ajvIsLoaded = (typeof ajv == 'undefined') ? 
           "0" : "1"; ajvIsLoaded;
-        """).stringResult;
+        """)).stringResult;
     if (kDebugMode) {
       print("AJV is Loaded $ajvIsLoaded");
     }
@@ -93,7 +93,7 @@ class _AjvExampleState extends State<AjvExample> {
   }
 
   _validateFunctionFor() {
-    return (String field, String valor, Map<String, String> data) {
+    return (String field, String valor, Map<String, String> data) async {
       var formData = {};
       formData.addAll(data);
       formData.removeWhere((key, value) => value.toString().trim().isEmpty);
@@ -106,7 +106,7 @@ class _AjvExampleState extends State<AjvExample> {
                          );
                          JSON.stringify(ajv.errors);
                          """;
-      JsEvalResult jsResult = widget.jsRuntime.evaluate(expression);
+      JsEvalResult jsResult = await widget.jsRuntime.evaluate(expression);
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
