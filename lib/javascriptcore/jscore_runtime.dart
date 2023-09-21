@@ -57,7 +57,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   }
 
   @override
-  JsEvalResult evaluate(String js, {String? sourceUrl}) {
+  Future<JsEvalResult> evaluate(String js, {String? sourceUrl}) async {
     Pointer<Utf8> scriptCString = js.toNativeUtf8();
     Pointer<Utf8>? sourceUrlCString = sourceUrl?.toNativeUtf8();
 

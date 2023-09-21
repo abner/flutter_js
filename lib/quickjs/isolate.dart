@@ -163,16 +163,17 @@ void _runJsIsolate(Map spawnMessage) async {
   await qjs.dispatch();
 }
 
-typedef _JsAsyncModuleHandler = Future<String> Function(String name);
+// typedef _JsAsyncModuleHandler = Future<String> Function(String name);
 
-class IsolateQjs {
+class IsolateQjs extends QuickJsRuntime2 {
   Future<SendPort>? _sendPort;
 
   /// Max stack size for quickjs.
-  final int? stackSize;
+  @override
+  late int stackSize;
 
   /// Asynchronously handler to manage js module.
-  final _JsAsyncModuleHandler? moduleHandler;
+  late _JsModuleHandler moduleHandler;
 
   /// Handler function to manage js module.
   final _JsHostPromiseRejectionHandler? hostPromiseRejectionHandler;
@@ -182,10 +183,14 @@ class IsolateQjs {
   /// Pass handlers to implement js-dart interaction and resolving modules. The `methodHandler` is
   /// used in isolate, so **the handler function must be a top-level function or a static method**.
   IsolateQjs({
-    this.moduleHandler,
-    this.stackSize,
+    _JsModuleHandler? moduleHandler,
+    int? stackSize,
     this.hostPromiseRejectionHandler,
-  });
+  }) {
+    if (moduleHandler != null) this.moduleHandler = moduleHandler;
+
+    if (stackSize != null) this.stackSize = stackSize;
+  }
 
   _ensureEngine() {
     if (_sendPort != null) return;
@@ -255,8 +260,10 @@ class IsolateQjs {
   }
 
   /// Evaluate js script.
-  Future<dynamic> evaluate(
+  @override
+  Future<JsEvalResult> evaluate(
     String command, {
+    String? sourceUrl,
     String? name,
     int? evalFlags,
   }) async {

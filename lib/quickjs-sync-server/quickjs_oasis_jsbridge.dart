@@ -57,7 +57,7 @@ class QuickJsService extends JavascriptRuntime {
     _flutterJs.dispose();
   }
 
-  JsEvalResult evaluate(String code, {String? sourceUrl}) {
+  Future<JsEvalResult> evaluate(String code, {String? sourceUrl}) async {
     var request = SyncHttpClient.postUrl(new Uri.http(
       "localhost:${FlutterJs.httpPort}",
       "",

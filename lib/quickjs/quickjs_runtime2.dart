@@ -175,12 +175,12 @@ class QuickJsRuntime2 extends JavascriptRuntime {
   }
 
   /// Evaluate js script.
-  JsEvalResult evaluate(
+  Future<JsEvalResult> evaluate(
     String command, {
     String? name,
     int? evalFlags,
     String? sourceUrl,
-  }) {
+  }) async {
     _ensureEngine();
     final ctx = _ctx!;
     final jsval = jsEval(
@@ -237,10 +237,10 @@ class QuickJsRuntime2 extends JavascriptRuntime {
   }
 
   @override
-  void initChannelFunctions() {
+  void initChannelFunctions() async {
     JavascriptRuntime.channelFunctionsRegistered[getEngineInstanceId()] = {};
     final setToGlobalObject =
-        evaluate("(key, val) => { this[key] = val; }").rawResult;
+        (await evaluate("(key, val) => { this[key] = val; }")).rawResult;
     (setToGlobalObject as JSInvokable).invoke([
       'sendMessage',
       (String channelName, String message) {

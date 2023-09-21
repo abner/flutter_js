@@ -188,7 +188,7 @@ class QuickJsRuntime extends JavascriptRuntime {
     }
   }
 
-  JsEvalResult evaluate(String js, {String? sourceUrl}) {
+  Future<JsEvalResult> evaluate(String js, {String? sourceUrl}) async {
     return jsEval(_context, js);
   }
 

@@ -16,8 +16,8 @@ void main() {
     } on Error catch (_) {}
   });
 
-  test('evaluate javascript', () {
-    final result = jsRuntime.evaluate('Math.pow(5,3)');
+  test('evaluate javascript', () async {
+    final result = await jsRuntime.evaluate('Math.pow(5,3)');
     print('${result.rawResult}, ${result.stringResult}');
     print(
         '${result.rawResult.runtimeType}, ${result.stringResult.runtimeType}');

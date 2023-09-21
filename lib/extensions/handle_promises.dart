@@ -6,7 +6,7 @@ import 'package:flutter_js/js_eval_result.dart';
 const REGISTER_PROMISE_FUNCTION = 'FLUTTER_NATIVEJS_REGISTER_PROMISE';
 
 extension HandlePromises on JavascriptRuntime {
-  enableHandlePromises() {
+  enableHandlePromises() async {
     evaluate(""" 
      var FLUTTER_NATIVEJS_PENDING_PROMISES = {};
       var FLUTTER_NATIVEJS_PENDING_PROMISES_COUNT = -1;
@@ -74,19 +74,19 @@ extension HandlePromises on JavascriptRuntime {
       FLUTTER_NATIVEJS_MakeQuerablePromise;
     """);
 
-    localContext['makeQuerablePromise'] = fnResult.rawResult;
+    localContext['makeQuerablePromise'] = (await fnResult).rawResult;
   }
 
-  bool isPendingPromise(int idx) {
+  Future<bool> isPendingPromise(int idx) async {
     String resultIsPending =
-        evaluate("FLUTTER_NATIVEJS_IS_PENDING_PROMISE($idx)").stringResult;
+        (await evaluate("FLUTTER_NATIVEJS_IS_PENDING_PROMISE($idx)")).stringResult;
 
     return "true" == resultIsPending;
   }
 
-  bool isFulfilledPromise(int idx) {
+  Future<bool> isFulfilledPromise(int idx) async {
     return "true" ==
-        evaluate("FLUTTER_NATIVEJS_IS_FULLFILLED_PROMISE($idx)").stringResult;
+        (await evaluate("FLUTTER_NATIVEJS_IS_FULLFILLED_PROMISE($idx)")).stringResult;
   }
 
   Future<JsEvalResult> handlePromise(JsEvalResult value,
@@ -131,14 +131,14 @@ extension HandlePromises on JavascriptRuntime {
     }
     if (value.stringResult != '[object Promise]') return Future.value(value);
 
-    final fnRegisterPromiseFunction = evaluate(REGISTER_PROMISE_FUNCTION);
+    final fnRegisterPromiseFunction = await evaluate(REGISTER_PROMISE_FUNCTION);
     final evalRegisterPromise = fnRegisterPromiseFunction.rawResult;
     // print(fnRegisterPromiseFunction);
     // todo: investigate - application is crashing around this point
     final promiseQuerableIdx =
         callFunction(evalRegisterPromise, value.rawResult).stringResult;
     int idxPromise = int.parse(promiseQuerableIdx);
-    Timer.periodic(Duration(milliseconds: 20), (timer) {
+    Timer.periodic(Duration(milliseconds: 20), (timer) async {
       // call to _JS_ExecutePendingJob
       this.executePendingJob();
       //eval(REGISTER_PROMISE_FUNCTION);
@@ -148,13 +148,13 @@ extension HandlePromises on JavascriptRuntime {
       //  * https://docs.rs/crate/quick-js/0.2.3/source/src/bindings.rs
 
       //  * Vue view generation using QuickJS - https://github.com/galvez/fast-vue-ssr/
-      if (!isPendingPromise(idxPromise)) {
+      if (!(await isPendingPromise(idxPromise))) {
         timer.cancel();
         final value = evaluate(
           "JSON.stringify(FLUTTER_NATIVEJS_PENDING_PROMISES[$idxPromise].getValue())",
         );
 
-        final isFullfilled = isFulfilledPromise(idxPromise);
+        final isFullfilled = await isFulfilledPromise(idxPromise);
 
         evaluate("FLUTTER_NATIVEJS_CLEAN_PROMISE($idxPromise);");
 
