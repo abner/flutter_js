@@ -151,7 +151,7 @@ extension HandlePromises on JavascriptRuntime {
       if (!isPendingPromise(idxPromise)) {
         timer.cancel();
         final value = evaluate(
-          "JSON.stringify(FLUTTER_NATIVEJS_PENDING_PROMISES[$idxPromise].getValue())",
+          "FLUTTER_NATIVEJS_PENDING_PROMISES[$idxPromise].getValue()",
         );
 
         final isFullfilled = isFulfilledPromise(idxPromise);
