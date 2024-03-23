@@ -33,6 +33,7 @@ class ValidationResult {
   }
 }
 
+// ignore: constant_identifier_names
 enum FormWidgetOperation { New, Edit }
 
 class FormWidget extends StatefulWidget {
@@ -58,13 +59,12 @@ class FormWidget extends StatefulWidget {
 }
 
 class FormWidgetState extends State<FormWidget> {
-  Map<String, String> _fieldValues = {};
-  Map<String, String> _savedValues = {};
-  Map<String, GlobalKey<FormFieldState>> _fieldsStates = {};
-  Map<String, List<ValidationResult>> _errorsMap = {};
-  Map<String, bool> _stateFromAsync = {};
-  Map<String, Debouncer> _fieldsDebounces = {};
-  Map<String, FocusNode> _fieldsFocusNodes = {};
+  final Map<String, String> _fieldValues = {};
+  final Map<String, String> _savedValues = {};
+  final Map<String, GlobalKey<FormFieldState>> _fieldsStates = {};
+  final Map<String, List<ValidationResult>> _errorsMap = {};
+  final Map<String, Debouncer> _fieldsDebounces = {};
+  final Map<String, FocusNode> _fieldsFocusNodes = {};
 
   // setErrorAsync(String field, List<ValidationResult> errors) {
   //   _errorsMap[field] = errors;
@@ -76,8 +76,9 @@ class FormWidgetState extends State<FormWidget> {
     return (String? value) {
       String actualValue = _savedValues[field] ?? '';
       _fieldValues[field] = actualValue;
-      _errorsMap[field] = widget.validateFunction(field, actualValue, _fieldValues);
-      return (_errorsMap[field] ?? []).length > 0 ? 'Campo inválido' : null;
+      _errorsMap[field] =
+          widget.validateFunction(field, actualValue, _fieldValues);
+      return (_errorsMap[field] ?? []).isNotEmpty ? 'Campo inválido' : null;
     };
   }
 
@@ -89,13 +90,12 @@ class FormWidgetState extends State<FormWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    widget.fields.forEach((fieldName) {
+    for (var fieldName in widget.fields) {
       _fieldsStates[fieldName] = GlobalKey();
       _fieldsDebounces[fieldName] = Debouncer(milliseconds: 200);
       _fieldsFocusNodes[fieldName] = FocusNode();
-    });
+    }
   }
 
   bool shouldFocus(String fieldName) {
@@ -105,25 +105,23 @@ class FormWidgetState extends State<FormWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: FocusScope(
-          node: widget._focusScopeNode,
-          child: Form(
-              key: widget.formKey,
-              autovalidateMode: AutovalidateMode.always,
-              child: Column(
-                children: widget.fields
-                    .map(
-                      (field) => Padding(
-                        padding: const EdgeInsets.fromLTRB(4.0, 4, 4, 8),
-                        child: getInputWidgetForField(field),
-                      ),
-                    )
-                    .toList(),
-              )),
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: FocusScope(
+        node: widget._focusScopeNode,
+        child: Form(
+            key: widget.formKey,
+            autovalidateMode: AutovalidateMode.always,
+            child: Column(
+              children: widget.fields
+                  .map(
+                    (field) => Padding(
+                      padding: const EdgeInsets.fromLTRB(4.0, 4, 4, 8),
+                      child: getInputWidgetForField(field),
+                    ),
+                  )
+                  .toList(),
+            )),
       ),
     );
   }
@@ -142,13 +140,13 @@ class FormWidgetState extends State<FormWidget> {
       onChanged: (value) {
         setState(() {
           _fieldValues[field] = value.toString();
-          WidgetsBinding.instance!.addPostFrameCallback((_) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
             widget.formKey.currentState!.validate();
           });
         });
       },
       title: Text(field),
-      subtitle: Text(
+      subtitle: const Text(
         'Requerido',
         style: TextStyle(color: Colors.red),
       ),
@@ -168,13 +166,13 @@ class FormWidgetState extends State<FormWidget> {
           suffixIcon: (field == 'age')
               ? IconButton(
                   autofocus: false,
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.warning,
                     color: Colors.orange,
                   ),
                   onPressed: () {
-                    WidgetsBinding.instance!.addPostFrameCallback((_) {
-                      WidgetsBinding.instance!.focusManager.primaryFocus
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      WidgetsBinding.instance.focusManager.primaryFocus
                           ?.unfocus();
                       FocusScope.of(context).requestFocus(FocusNode());
 
@@ -186,7 +184,7 @@ class FormWidgetState extends State<FormWidget> {
                             'Aviso no campo $field',
                           ),
                           actions: <Widget>[
-                            FlatButton(
+                            TextButton(
                               child: const Text('OK'),
                               onPressed: () => Navigator.of(context).pop(),
                             ),
@@ -203,10 +201,10 @@ class FormWidgetState extends State<FormWidget> {
               : null,
           //floatingLabelBehavior: FloatingLabelBehavior.always,
           border: OutlineInputBorder(
-            borderSide:
-                BorderSide(color: Theme.of(context).accentColor, width: 1.5),
+            borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.secondary, width: 1.5),
           ),
-          contentPadding: EdgeInsets.fromLTRB(8, 1, 8, 2),
+          contentPadding: const EdgeInsets.fromLTRB(8, 1, 8, 2),
           alignLabelWithHint: true,
         ),
         validator: _validatorFor(field),
@@ -228,7 +226,7 @@ class FormWidgetState extends State<FormWidget> {
 }
 
 class Debouncer {
-  late  final int milliseconds;
+  late final int milliseconds;
   VoidCallback? action;
   Timer? _timer;
 

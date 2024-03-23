@@ -1,24 +1,23 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_js/javascript_runtime.dart';
-
 import 'package:flutter_js/javascriptcore/jscore_runtime.dart';
+
+import './extensions/fetch.dart';
+import './extensions/handle_promises.dart';
+import './quickjs/quickjs_runtime2.dart';
+
+export './extensions/handle_promises.dart';
 //import 'package:flutter_js/quickjs-sync-server/quickjs_oasis_jsbridge.dart';
 //import 'package:flutter_js/quickjs/quickjs_runtime.dart';
 
 export './quickjs/quickjs_runtime.dart';
-
-import './quickjs/quickjs_runtime2.dart';
 export './quickjs/quickjs_runtime2.dart';
-
-export './extensions/handle_promises.dart';
-export 'quickjs-sync-server/quickjs_oasis_jsbridge.dart';
-import './extensions/fetch.dart';
-import './extensions/handle_promises.dart';
-
-export 'js_eval_result.dart';
 export 'javascript_runtime.dart';
+export 'js_eval_result.dart';
+export 'quickjs-sync-server/quickjs_oasis_jsbridge.dart';
 
 // import condicional to not import ffi libraries when using web as target
 // import "something.dart" if (dart.library.io) "other.dart";
@@ -42,8 +41,8 @@ JavascriptRuntime getJavascriptRuntime({
     runtime = QuickJsRuntime2();
   } else if (Platform.isLinux) {
     // runtime = FlutterJsLinuxWin()..init();
-    runtime = QuickJsRuntime2(); //('f1.js');
-    // runtime = QuickJsRuntime('f1.js');
+    //runtime = JavascriptCoreRuntime(); //('f1.js');
+    runtime = QuickJsRuntime2();
   } else {
     runtime = JavascriptCoreRuntime();
   }
@@ -137,6 +136,7 @@ class FlutterJs {
 
   bool isReady() => _ready;
 
+  // ignore: non_constant_identifier_names
   static bool DEBUG = false;
 
   Future<String> eval(String code) {

@@ -20,6 +20,7 @@ import 'package:http/http.dart' as http;
  * limitations under the License.
  */
 
+// ignore: non_constant_identifier_names
 var _XHR_DEBUG = false;
 
 setXhrDebug(bool value) => _XHR_DEBUG = value;
@@ -278,13 +279,13 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
           case HttpMethod.head:
             response = await httpClient!.head(
               Uri.parse(pendingCall.url!),
-              headers: pendingCall.headers as Map<String, String>?,
+              headers: pendingCall.headers,
             );
             break;
           case HttpMethod.get:
             response = await httpClient!.get(
               Uri.parse(pendingCall.url!),
-              headers: pendingCall.headers as Map<String, String>?,
+              headers: pendingCall.headers,
             );
             break;
           case HttpMethod.post:
@@ -293,7 +294,7 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
               body: (pendingCall.body is String)
                   ? pendingCall.body
                   : jsonEncode(pendingCall.body),
-              headers: pendingCall.headers as Map<String, String>?,
+              headers: pendingCall.headers,
             );
             break;
           case HttpMethod.put:
@@ -302,7 +303,7 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
               body: (pendingCall.body is String)
                   ? pendingCall.body
                   : jsonEncode(pendingCall.body),
-              headers: pendingCall.headers as Map<String, String>?,
+              headers: pendingCall.headers,
             );
             break;
           case HttpMethod.patch:
@@ -311,13 +312,13 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
               body: (pendingCall.body is String)
                   ? pendingCall.body
                   : jsonEncode(pendingCall.body),
-              headers: pendingCall.headers as Map<String, String>?,
+              headers: pendingCall.headers,
             );
             break;
           case HttpMethod.delete:
             response = await httpClient!.delete(
               Uri.parse(pendingCall.url!),
-              headers: pendingCall.headers as Map<String, String>?,
+              headers: pendingCall.headers,
             );
             break;
         }
@@ -337,7 +338,7 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
         final error = xhrResult.error;
         // send back to the javascript environment the
         // response for the http pending callback
-        final xhrEvalCallback = this.evaluate(
+        this.evaluate(
           "globalThis.xhrRequests[${pendingCall.idRequest}].callback($responseInfo, `$responseText`, $error);",
         );
       });
@@ -405,51 +406,6 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
     });
     return this;
   }
-
-  void responseCallback(int idRequest, http.Response response) {
-    // String body = response.body.replaceAll("\n", "").replaceAll("\r", "");
-    // print('Here 1: $body');
-    //XmlHttpRequestResponse xhrResult;
-    // try {
-    //   print('Here 1.1');
-    //   xhrResult = XmlHttpRequestResponse(
-    //     responseText: jsonEncode(body),
-    //     responseInfo: XhtmlHttpResponseInfo(statusCode: 200, statusText: "OK"),
-    //   );
-    //   print('Here 2');
-    // } on Error catch (e) {
-    //   print('Here 3: $e');
-    //   xhrResult = XmlHttpRequestResponse(
-    //     responseText: e.toString(),
-    //     responseInfo: XhtmlHttpResponseInfo(statusCode: 200, statusText: "OK"),
-    //   );
-    // } on Exception catch (e) {
-    //   print('Here 4: $e');
-    //   xhrResult = XmlHttpRequestResponse(
-    //     responseText: e.toString(),
-    //     responseInfo: XhtmlHttpResponseInfo(statusCode: 200, statusText: "OK"),
-    //   );
-    // }
-
-    // final responseInfo = jsonEncode(xhrResult.responseInfo);
-    // print('Here 3');
-    // final responseText = xhrResult.responseText;
-    // final error = xhrResult.error;
-
-    // String responseText =
-    //     '{"ok": true, "time": "${DateTime.now().toIso8601String()}" }'; //"{\"userId\": 1,  \"id\": 1,  \"title\": \"sunt aut facere repellat provident occaecati excepturi optio reprehenderit\",  \"body\": \"quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto\"}";
-    // String responseInfo =
-    //     """{"statusCode":200,"statusText":"{}","responseHeaders":"[]"}""";
-    // String error = "null";
-    // print('HERE 11111');
-    // final xhrEvalCallback = this.eval(
-    //   "globalThis.xhrRequests[$idRequest].callback($responseInfo, $responseText, $error);",
-    // );
-    // print('HERE 22222');
-
-    // // if (_XHR_DEBUG) print('xhrcallback call result: $xhrEvalCallback');
-    // print('Here 5');
-  }
 }
 
 class XhtmlHttpResponseInfo {
@@ -489,30 +445,4 @@ class XmlHttpRequestResponse {
       'error': error
     };
   }
-}
-
-void executeHttp(String url, String method, Map<String, String> headers) {
-  HttpMethod eMethod = HttpMethod.values
-      .firstWhere((e) => e.toString() == ("HttpMethod.${method}"));
-  String idRequest = "1";
-  var callbackResponse = (http.Response response) {
-    final xhrResult = XmlHttpRequestResponse(
-      responseText: utf8.decode(response.bodyBytes),
-      responseInfo: XhtmlHttpResponseInfo(statusCode: 200, statusText: "{}"),
-    );
-
-    final responseInfo = jsonEncode(xhrResult.responseInfo);
-    final responseText = xhrResult.responseText;
-    final error = xhrResult.error;
-
-    print(
-      "globalThis.xhrRequests[$idRequest].callback($responseInfo, $responseText, $error);",
-    );
-  };
-  http
-      .get(
-        Uri.parse(url),
-        headers: headers,
-      )
-      .then(callbackResponse);
 }

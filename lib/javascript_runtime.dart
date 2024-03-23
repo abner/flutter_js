@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
+
 import 'package:flutter/foundation.dart';
 
 import 'js_eval_result.dart';
@@ -20,12 +21,12 @@ class FlutterJsPlatformEmpty extends JavascriptRuntime {
   void dispose() {}
 
   @override
-  JsEvalResult evaluate(String code) {
+  JsEvalResult evaluate(String code, {String? sourceUrl}) {
     throw UnimplementedError();
   }
 
   @override
-  Future<JsEvalResult> evaluateAsync(String code) {
+  Future<JsEvalResult> evaluateAsync(String code, {String? sourceUrl}) {
     throw UnimplementedError();
   }
 
@@ -51,6 +52,11 @@ class FlutterJsPlatformEmpty extends JavascriptRuntime {
 
   @override
   bool setupBridge(String channelName, void Function(dynamic args) fn) {
+    throw UnimplementedError();
+  }
+
+  @override
+  void setInspectable(bool inspectable) {
     throw UnimplementedError();
   }
 }
@@ -79,9 +85,9 @@ abstract class JavascriptRuntime {
   static Map<String, Map<String, Function(dynamic arg)>>
       get channelFunctionsRegistered => _channelFunctionsRegistered;
 
-  JsEvalResult evaluate(String code);
+  JsEvalResult evaluate(String code, {String? sourceUrl});
 
-  Future<JsEvalResult> evaluateAsync(String code);
+  Future<JsEvalResult> evaluateAsync(String code, {String? sourceUrl});
 
   JsEvalResult callFunction(Pointer fn, Pointer obj);
 
@@ -117,7 +123,7 @@ abstract class JavascriptRuntime {
   }
 
   void _setupSetTimeout() {
-    final setTImeoutResult = evaluate("""
+    evaluate("""
       var __NATIVE_FLUTTER_JS__setTimeoutCount = -1;
       var __NATIVE_FLUTTER_JS__setTimeoutCallbacks = {};
       function setTimeout(fnTimeout, timeout) {
@@ -178,4 +184,6 @@ abstract class JavascriptRuntime {
   bool setupBridge(String channelName, void Function(dynamic args) fn);
 
   String getEngineInstanceId();
+
+  void setInspectable(bool inspectable);
 }

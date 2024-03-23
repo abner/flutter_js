@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
+
 import 'package:ffi/ffi.dart';
 import 'package:flutter_js/flutter_js.dart';
-import 'package:flutter_js/javascript_runtime.dart';
 import 'package:flutter_js/quickjs/utf8_null_terminated.dart';
 
 import 'qjs_typedefs.dart';
@@ -98,9 +98,9 @@ class QuickJsRuntime extends JavascriptRuntime {
       .lookup<
           NativeFunction<
               Void Function(
-        Pointer<JSRuntime>,
-        IntPtr,
-      )>>('jsSetMaxStackSize')
+                Pointer<JSRuntime>,
+                IntPtr,
+              )>>('jsSetMaxStackSize')
       .asFunction();
 
   // NATIVE BRIDGE DECLARATIONS
@@ -162,6 +162,11 @@ class QuickJsRuntime extends JavascriptRuntime {
     );
   }
 
+  @override
+  void setInspectable(bool inspectable) {
+    // Nothing to do.
+  }
+
   static Type getTypeForJsValue(Pointer<JSValueConst> jsValue) {
     int value = _jsGetTypeTag(jsValue);
 
@@ -183,7 +188,7 @@ class QuickJsRuntime extends JavascriptRuntime {
     }
   }
 
-  JsEvalResult evaluate(String js) {
+  JsEvalResult evaluate(String js, {String? sourceUrl}) {
     return jsEval(_context, js);
   }
 
@@ -215,7 +220,7 @@ class QuickJsRuntime extends JavascriptRuntime {
     if (_jsIsArray(context, evalResult.rawResult) == 1) {
       Pointer<JSValueConst>? stringifiedValue = calloc();
       Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = calloc();
-      int res = _jSJSONStringify(
+      _jSJSONStringify(
         context,
         evalResult.rawResult,
         stringifiedValue,
@@ -238,7 +243,7 @@ class QuickJsRuntime extends JavascriptRuntime {
         Pointer<JSValueConst>? stringifiedValue = calloc<JSValueConst>();
         Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = calloc();
 
-        int res = _jSJSONStringify(
+        _jSJSONStringify(
           context,
           evalResult.rawResult,
           stringifiedValue,
@@ -280,7 +285,7 @@ class QuickJsRuntime extends JavascriptRuntime {
   String jsonStringify(JsEvalResult jsValue) {
     Pointer<JSValueConst>? stringifiedValue = calloc();
     Pointer<Pointer<Utf8NullTerminated>> stringResultPointer = calloc();
-    int res = _jSJSONStringify(
+    _jSJSONStringify(
       _context,
       jsValue.rawResult,
       stringifiedValue,
@@ -302,7 +307,7 @@ class QuickJsRuntime extends JavascriptRuntime {
   }
 
   @override
-  Future<JsEvalResult> evaluateAsync(String code) {
+  Future<JsEvalResult> evaluateAsync(String code, {String? sourceUrl}) {
     return Future.value(evaluate(code));
   }
 }

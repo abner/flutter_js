@@ -1,19 +1,20 @@
 import 'dart:ffi';
+
 import 'package:flutter_js/quickjs/utf8_null_terminated.dart';
 
-class JSContext extends Struct {
+final class JSContext extends Struct {
   @Uint8()
-  int? char;
+  external int char;
 }
 
-class JSRuntime extends Struct {
+final class JSRuntime extends Struct {
   @Uint8()
-  int? char;
+  external int char;
 }
 
-class JSValueConst extends Struct {
+final class JSValueConst extends Struct {
   @Uint8()
-  int? char;
+  external int char;
 }
 
 const int JS_EVAL_TYPE_GLOBAL = 0;
@@ -45,6 +46,7 @@ const JS_TAG_FIRST = -11,
     JS_TAG_EXCEPTION = 6,
     JS_TAG_FLOAT64 = 7;
 
+// ignore: camel_case_types
 typedef JS_NewRuntimeDartBridge = Pointer<JSRuntime> Function();
 
 typedef ChannelCallback = Pointer<JSValueConst> Function(
@@ -53,6 +55,7 @@ typedef ChannelCallback = Pointer<JSValueConst> Function(
   Pointer<Utf8NullTerminated>,
 );
 
+// ignore: camel_case_types
 typedef JS_NewContextFn = Pointer<JSContext> Function(
   Pointer<JSRuntime>? jrt,
   Pointer<NativeFunction<ChannelCallback>>? fnConsoleLog,
@@ -70,6 +73,7 @@ typedef JSEvalWrapper = Pointer Function(
     Pointer<JSValueConst> result,
     Pointer<Pointer<Utf8NullTerminated>> stringResult);
 
+// ignore: camel_case_types
 typedef JS_GetNullValue = Pointer Function(
   Pointer<JSContext> ctx,
   Pointer<JSValueConst> v,

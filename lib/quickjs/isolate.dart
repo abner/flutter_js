@@ -20,6 +20,8 @@ abstract class _IsolateEncodable {
 dynamic _encodeData(dynamic data, {Map<dynamic, dynamic>? cache}) {
   if (cache == null) cache = Map();
   if (cache.containsKey(data)) return cache[data];
+  if (data is Error || data is Exception)
+    return _encodeData(JSError(data), cache: cache);
   if (data is _IsolateEncodable) return data._encode();
   if (data is List) {
     final ret = [];
@@ -136,7 +138,7 @@ void _runJsIsolate(Map spawnMessage) async {
     try {
       switch (msg[#type]) {
         case #evaluate:
-          data = await qjs.evaluate(
+          data = qjs.evaluate(
             msg[#command],
             name: msg[#name],
             evalFlags: msg[#flag],

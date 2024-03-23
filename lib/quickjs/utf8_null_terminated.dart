@@ -1,14 +1,12 @@
-
 // Must Fix Utf8 because QuickJS need end with terminator '\0'
 import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
 
-class Utf8NullTerminated extends Struct {
-  
+final class Utf8NullTerminated extends Struct {
   @Uint8()
-  int? char;
+  external int char;
 
   static Pointer<Utf8NullTerminated> toUtf8(String s) {
     final bytes = Utf8Encoder().convert(s);
@@ -27,9 +25,8 @@ class Utf8NullTerminated extends Struct {
     while (true) {
       final char = ptr.elementAt(len++).ref.char;
       if (char == 0) break;
-      bytes.add(char!);
+      bytes.add(char);
     }
     return Utf8Decoder().convert(bytes);
   }
-
 }

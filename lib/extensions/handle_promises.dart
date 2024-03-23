@@ -7,18 +7,14 @@ const REGISTER_PROMISE_FUNCTION = 'FLUTTER_NATIVEJS_REGISTER_PROMISE';
 
 extension HandlePromises on JavascriptRuntime {
   enableHandlePromises() {
-    final fnRegisterPromise = evaluate(""" 
+    evaluate(""" 
      var FLUTTER_NATIVEJS_PENDING_PROMISES = {};
       var FLUTTER_NATIVEJS_PENDING_PROMISES_COUNT = -1;
 
       function $REGISTER_PROMISE_FUNCTION(promise) {
-        //console.log('_______1');
         FLUTTER_NATIVEJS_PENDING_PROMISES_COUNT += 1;
         idx = FLUTTER_NATIVEJS_PENDING_PROMISES_COUNT;
         FLUTTER_NATIVEJS_PENDING_PROMISES[idx] = FLUTTER_NATIVEJS_MakeQuerablePromise(promise);
-        //console.log('_______'  + FLUTTER_NATIVEJS_PENDING_PROMISES[idx]);
-
-        //console.log('_______2');
         return idx;
       }
     """);
@@ -110,7 +106,7 @@ extension HandlePromises on JavascriptRuntime {
       var completed = false;
       Function? fnEvaluatePromise;
       fnEvaluatePromise = () async {
-        await this.executePendingJob();
+        this.executePendingJob();
         if (!completed) {
           await Future.delayed(
               Duration(milliseconds: 20), () => fnEvaluatePromise!.call());

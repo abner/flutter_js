@@ -3,23 +3,23 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
+
 import 'package:flutter_js/flutter_js.dart';
-import 'package:flutter_js/javascript_runtime.dart';
 import 'package:sync_http/sync_http.dart';
 
-ReceivePort _callDartReceivePort = new ReceivePort();
+// ReceivePort _callDartReceivePort = new ReceivePort();
 
-void _setupCallDartPorts() {
-  IsolateNameServer.registerPortWithName(
-      _callDartReceivePort.sendPort, 'QuickJsServiceCallDart');
+// void _setupCallDartPorts() {
+//   IsolateNameServer.registerPortWithName(
+//       _callDartReceivePort.sendPort, 'QuickJsServiceCallDart');
 
-  _callDartReceivePort.listen((portMessage) {
-    final decodedMessage = (portMessage as String).split(':');
-    int idEngine = int.parse(decodedMessage[0]);
-    String channel = decodedMessage[1];
-    String message = utf8.decode(base64.decode(decodedMessage[2]));
-  });
-}
+//   _callDartReceivePort.listen((portMessage) {
+//     final decodedMessage = (portMessage as String).split(':');
+//     int idEngine = int.parse(decodedMessage[0]);
+//     String channel = decodedMessage[1];
+//     String message = utf8.decode(base64.decode(decodedMessage[2]));
+//   });
+// }
 
 class QuickJsService extends JavascriptRuntime {
   ReceivePort _receivePort = new ReceivePort();
@@ -34,7 +34,6 @@ class QuickJsService extends JavascriptRuntime {
     _startServer();
     IsolateNameServer.registerPortWithName(
         _receivePort.sendPort, 'QuickJsService');
-    // TODO: remove from here
     initChannelFunctions();
   }
 
@@ -58,7 +57,7 @@ class QuickJsService extends JavascriptRuntime {
     _flutterJs.dispose();
   }
 
-  JsEvalResult evaluate(String code) {
+  JsEvalResult evaluate(String code, {String? sourceUrl}) {
     var request = SyncHttpClient.postUrl(new Uri.http(
       "localhost:${FlutterJs.httpPort}",
       "",
@@ -127,6 +126,11 @@ class QuickJsService extends JavascriptRuntime {
   }
 
   @override
+  void setInspectable(bool inspectable) {
+    // Nothing to do.
+  }
+
+  @override
   bool setupBridge(String channelName, dynamic Function(dynamic args) fn) {
     // final channelFunctionCallbacks =
     //     JavascriptRuntime.channelFunctionsRegistered[getEngineInstanceId()];
@@ -147,7 +151,7 @@ class QuickJsService extends JavascriptRuntime {
   }
 
   @override
-  Future<JsEvalResult> evaluateAsync(String code) async {
+  Future<JsEvalResult> evaluateAsync(String code, {String? sourceUrl}) async {
     String strResult = await _flutterJs.eval(code);
     return JsEvalResult(
       strResult,

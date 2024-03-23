@@ -1,17 +1,13 @@
 import 'dart:convert';
 import 'dart:ffi';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_js/javascript_runtime.dart';
-import 'package:flutter_js/javascriptcore/binding/js_context_ref.dart';
 import 'package:flutter_js/javascriptcore/binding/js_object_ref.dart'
     as jsObject;
-import 'package:flutter_js/javascriptcore/binding/js_string_ref.dart';
-import 'package:flutter_js/javascriptcore/binding/js_value_ref.dart';
 import 'package:flutter_js/javascriptcore/flutter_jscore.dart';
-import 'package:flutter_js/javascriptcore/jscore/js_value.dart';
 import 'package:flutter_js/javascriptcore/jscore_bindings.dart';
 import 'package:flutter_js/js_eval_result.dart';
 
@@ -61,18 +57,24 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   }
 
   @override
-  JsEvalResult evaluate(String js) {
+  JsEvalResult evaluate(String js, {String? sourceUrl}) {
     Pointer<Utf8> scriptCString = js.toNativeUtf8();
+    Pointer<Utf8>? sourceUrlCString = sourceUrl?.toNativeUtf8();
 
     JSValuePointer exception = JSValuePointer();
     var jsValueRef = jSEvaluateScript(
         _globalContext,
         jSStringCreateWithUTF8CString(scriptCString),
         nullptr,
-        nullptr,
+        sourceUrlCString != null
+            ? jSStringCreateWithUTF8CString(sourceUrlCString)
+            : nullptr,
         1,
         exception.pointer);
     calloc.free(scriptCString);
+    if (sourceUrlCString != null) {
+      calloc.free(sourceUrlCString);
+    }
 
     String result;
 
@@ -80,7 +82,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     bool isPromise = false;
     if (exceptionValue.isObject) {
       result =
-          'ERROR: ${exceptionValue.toObject().getProperty("message").string}';
+          'ERROR: ${exceptionValue.toObject().getProperty("message").string} \n  at ${exceptionValue.toObject().getProperty("stack").string}';
     } else {
       result = _getJsValue(jsValueRef);
       JSValue resultValue = JSValuePointer(jsValueRef).getValue(context);
@@ -100,11 +102,24 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
 
   @override
   void dispose() {
+    jSGlobalContextRelease(_globalContext);
     jSContextGroupRelease(_contextGroup);
   }
 
   @override
   String getEngineInstanceId() => hashCode.abs().toString();
+
+  /// Works only for iOS & MacOS.
+  @override
+  void setInspectable(bool inspectable) {
+    if (Platform.isIOS || Platform.isMacOS) {
+      try {
+        context.setInspectable(inspectable);
+      } on Error {
+        print('Could not set inspectable to $inspectable');
+      }
+    }
+  }
 
   @override
   bool setupBridge(String channelName, Function(dynamic args) fn) {
@@ -162,18 +177,6 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
       int argumentCount,
       Pointer<Pointer> arguments,
       Pointer<Pointer> exception) {
-    String msg = 'No Message';
-    if (argumentCount != 0) {
-      msg = '';
-      for (int i = 0; i < argumentCount; i++) {
-        if (i != 0) {
-          msg += '\n';
-        }
-        var jsValueRef = arguments[i];
-        msg += _getJsValue(jsValueRef);
-      }
-    }
-
     final channelFunctions =
         JavascriptRuntime.channelFunctionsRegistered[getEngineInstanceId()]!;
 
@@ -183,16 +186,47 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     if (channelFunctions.containsKey(channelName)) {
       final result = channelFunctions[channelName]!.call(jsonDecode(message));
       try {
+        if (result is Future) {
+          return _constructPromiseFor(result);
+        }
         final encoded = json.encode(result);
         return JSValue.makeFromJSONString(context, encoded).pointer;
       } catch (err) {
-        print('Could not encode return value of message on channel $channelName to json... returning null');
+        print(
+            'Could not encode return value of message on channel $channelName to json... returning null');
       }
     } else {
       print('No channel $channelName registered');
     }
 
     return nullptr;
+  }
+
+  Pointer<NativeType> _constructPromiseFor(Future future) {
+    final id = future.hashCode;
+    Pointer<Utf8> scriptCString = ('var __JSC_promise_result$id = {};' +
+            'new Promise(function(resolve, reject) { __JSC_promise_result$id.resolve = resolve;' +
+            ' __JSC_promise_result$id.reject = reject;});')
+        .toNativeUtf8();
+
+    var jsValueRef = jSEvaluateScript(
+        _globalContext,
+        jSStringCreateWithUTF8CString(scriptCString),
+        nullptr,
+        nullptr,
+        1,
+        nullptr);
+    calloc.free(scriptCString);
+
+    future.then((value) {
+      final encoded = json.encode(value);
+      evaluate(
+          '__JSC_promise_result$id.resolve($encoded); __JSC_promise_result$id = null;');
+    }).catchError((error) {
+      evaluate(
+          '__JSC_promise_result$id.reject("$error"); __JSC_promise_result$id = null;');
+    });
+    return jsValueRef;
   }
 
   @override
@@ -269,7 +303,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   }
 
   @override
-  Future<JsEvalResult> evaluateAsync(String code) {
-    return Future.value(evaluate(code));
+  Future<JsEvalResult> evaluateAsync(String code, {String? sourceUrl}) {
+    return Future.value(evaluate(code, sourceUrl: sourceUrl));
   }
 }

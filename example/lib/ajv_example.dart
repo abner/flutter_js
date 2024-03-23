@@ -1,23 +1,27 @@
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_js/flutter_js.dart';
+
 import 'ajv_result_screen.dart';
 import 'form.dart';
 
 class AjvExample extends StatefulWidget {
   final JavascriptRuntime jsRuntime;
-  AjvExample(this.jsRuntime, {Key? key}) : super(key: key);
+  const AjvExample(this.jsRuntime, {Key? key}) : super(key: key);
 
+  @override
   _AjvExampleState createState() => _AjvExampleState();
 }
 
 class _AjvExampleState extends State<AjvExample> {
   String _jsResult = '';
 
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  GlobalKey<FormState> _formKey = GlobalKey();
-  GlobalKey<FormWidgetState> _formWidgetKey = GlobalKey();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  final GlobalKey<FormState> _formKey = GlobalKey();
+  final GlobalKey<FormWidgetState> _formWidgetKey = GlobalKey();
 
   Future<dynamic>? _loadingFuture;
 
@@ -34,7 +38,9 @@ class _AjvExampleState extends State<AjvExample> {
         .evaluate("""var ajvIsLoaded = (typeof ajv == 'undefined') ? 
           "0" : "1"; ajvIsLoaded;
         """).stringResult;
-    print("AJV is Loaded $ajvIsLoaded");
+    if (kDebugMode) {
+      print("AJV is Loaded $ajvIsLoaded");
+    }
     if (ajvIsLoaded == "0") {
       try {
         String ajvJS = await rootBundle.loadString("assets/js/ajv.js");
@@ -74,7 +80,9 @@ class _AjvExampleState extends State<AjvExample> {
                     }, "obj1");
       """);
       } on PlatformException catch (e) {
-        print('Failed to init js engine: ${e.details}');
+        if (kDebugMode) {
+          print('Failed to init js engine: ${e.details}');
+        }
       }
     }
 
@@ -89,7 +97,7 @@ class _AjvExampleState extends State<AjvExample> {
       var formData = {};
       formData.addAll(data);
       formData.removeWhere((key, value) => value.toString().trim().isEmpty);
-      if (valor != null && valor.length > 0) {
+      if (valor.isNotEmpty) {
         formData[field] = valor;
       }
       final expression = """ajv.validate(
@@ -100,7 +108,7 @@ class _AjvExampleState extends State<AjvExample> {
                          """;
       JsEvalResult jsResult = widget.jsRuntime.evaluate(expression);
 
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
           _jsResult = jsResult.stringResult;
         });
@@ -113,7 +121,7 @@ class _AjvExampleState extends State<AjvExample> {
 
       final errorsForField = result
           .where((element) =>
-              element.message!.contains("$field") ||
+              element.message!.contains(field) ||
               element.params['missingProperty'] == field ||
               element.dataPath == ".$field")
           .toList();
@@ -133,7 +141,7 @@ class _AjvExampleState extends State<AjvExample> {
         future: _loadingFuture,
         builder: (_, snapshot) =>
             snapshot.connectionState == ConnectionState.waiting
-                ? Center(child: Text('Aguarde...'))
+                ? const Center(child: Text('Aguarde...'))
                 : SingleChildScrollView(
                     child: Column(
                       children: <Widget>[
@@ -142,7 +150,7 @@ class _AjvExampleState extends State<AjvExample> {
                             formWidgetKey: _formWidgetKey,
                             formKey: _formKey,
                             validateFunction: _validateFunctionFor(),
-                            fields: [
+                            fields: const [
                               'id',
                               'name',
                               'email',
@@ -155,7 +163,7 @@ class _AjvExampleState extends State<AjvExample> {
                   ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.info_outline),
+        child: const Icon(Icons.info_outline),
         onPressed: () async {
           Navigator.of(_scaffoldKey.currentContext!).push(
             MaterialPageRoute(

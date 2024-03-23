@@ -265,7 +265,7 @@ typedef JSObjectConvertToTypeCallbackDart = Pointer Function(
 
 /// struct JSStaticValue
 /// This structure describes a statically declared value property.
-class JSStaticValue extends Struct {
+final class JSStaticValue extends Struct {
   /// (const char* ) A null-terminated UTF8 string containing the property's name.
   external Pointer<Utf8> name;
 
@@ -313,7 +313,7 @@ class JSStaticValueStruct {
     Pointer<Utf8>? name,
     Pointer<NativeFunction<JSObjectGetPropertyCallback>>? getProperty,
     Pointer<NativeFunction<JSObjectSetPropertyCallback>>? setProperty,
-    int attributes: JSPropertyAttributes.kJSPropertyAttributeNone,
+    int attributes = JSPropertyAttributes.kJSPropertyAttributeNone,
   })  : this.name = name ?? nullptr,
         this.getProperty = getProperty ?? nullptr,
         this.setProperty = setProperty ?? nullptr,
@@ -322,7 +322,7 @@ class JSStaticValueStruct {
 
 /// struct JSStaticFunction
 /// This structure describes a statically declared function property.
-class JSStaticFunction extends Struct {
+final class JSStaticFunction extends Struct {
   /// (const char* ) A null-terminated UTF8 string containing the property's name.
   external Pointer<Utf8> name;
 
@@ -384,7 +384,7 @@ class JSStaticFunctionStruct {
 /// Standard JavaScript practice calls for storing function objects in prototypes, so they can be shared. The default JSClass created by JSClassCreate follows this idiom, instantiating objects with a shared, automatically generating prototype containing the class's function objects. The kJSClassAttributeNoAutomaticPrototype attribute specifies that a JSClass should not automatically generate such a prototype. The resulting JSClass instantiates objects with the default object prototype, and gives each instance object its own copy of the class's function objects.
 //
 // A NULL callback specifies that the default object callback should substitute, except in the case of hasProperty, where it specifies that getProperty should substitute.
-class JSClassDefinition extends Struct {
+final class JSClassDefinition extends Struct {
   /// (int) The version number of this structure. The current version is 0.
   @Int32()
   external int version;

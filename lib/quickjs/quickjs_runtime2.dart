@@ -5,15 +5,17 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
+
 import 'package:ffi/ffi.dart';
 import 'package:flutter_js/flutter_js.dart';
-import 'package:flutter_js/javascript_runtime.dart';
+
 import 'ffi.dart';
+
 export 'ffi.dart' show JSEvalFlag, JSRef;
 
 part './isolate.dart';
-part './wrapper.dart';
 part './object.dart';
+part './wrapper.dart';
 
 /// Handler function to manage js module.
 typedef _JsModuleHandler = String Function(String name);
@@ -29,6 +31,12 @@ class QuickJsRuntime2 extends JavascriptRuntime {
   /// Max stack size for quickjs.
   int stackSize;
 
+  /// Max stack size for quickjs.
+  final int? timeout;
+
+  /// Max memory for quickjs.
+  final int? memoryLimit;
+
   /// Message Port for event loop. Close it to stop dispatching event loop.
   ReceivePort port = ReceivePort();
 
@@ -41,6 +49,8 @@ class QuickJsRuntime2 extends JavascriptRuntime {
   QuickJsRuntime2({
     this.moduleHandler,
     this.stackSize = 1024 * 1024,
+    this.timeout,
+    this.memoryLimit,
     this.hostPromiseRejectionHandler,
   }) {
     this.init();
@@ -114,8 +124,11 @@ class QuickJsRuntime2 extends JavascriptRuntime {
         }
         return err;
       }
-    }, port);
+    }, timeout ?? 0, port);
+    final stackSize = this.stackSize;
     if (stackSize > 0) jsSetMaxStackSize(rt, stackSize);
+    final memoryLimit = this.memoryLimit ?? 0;
+    if (memoryLimit > 0) jsSetMemoryLimit(rt, memoryLimit);
     _rt = rt;
     _ctx = jsNewContext(rt);
   }
@@ -151,9 +164,14 @@ class QuickJsRuntime2 extends JavascriptRuntime {
 
   /// Dispatch JavaScript Event loop.
   Future<void> dispatch() async {
-    await for (final _ in port) {
-      _executePendingJob();
-    }
+    //await for (final _ in port) {
+    _executePendingJob();
+    //}
+  }
+
+  @override
+  void setInspectable(bool inspectable) {
+    // Nothing to do.
   }
 
   /// Evaluate js script.
@@ -161,6 +179,7 @@ class QuickJsRuntime2 extends JavascriptRuntime {
     String command, {
     String? name,
     int? evalFlags,
+    String? sourceUrl,
   }) {
     _ensureEngine();
     final ctx = _ctx!;
@@ -177,23 +196,12 @@ class QuickJsRuntime2 extends JavascriptRuntime {
       return JsEvalResult(exception.toString(), exception, isError: true);
     }
     final result = _jsToDart(ctx, jsval);
-    // if (result is Future) {
-    //   result.then((e) {
-    //     print('E: $e');
-    //     return e;
-    //   });
-    //   print(
-    //       'RESULT: ${result.whenComplete(() => print('COMPLETED _-----------------'))}');
-    //   print(
-    //       'RESULT: ${result.onError((error, stackTrace) => print('ERROR: $error _-----------------'))}');
-    // }
-    //jsFreeValue(ctx, jsval);
+    jsFreeValue(ctx, jsval);
     return JsEvalResult(result?.toString() ?? "null", result);
   }
 
   @override
   JsEvalResult callFunction(Pointer<NativeType> fn, Pointer<NativeType> obj) {
-    // TODO: implement callFunction
     throw UnimplementedError();
   }
 
@@ -204,12 +212,17 @@ class QuickJsRuntime2 extends JavascriptRuntime {
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    try {
+      port.close(); // stop dispatch loop
+      close(); // close engine
+    } on JSError catch (e) {
+      print(e); // catch reference leak exception
+    }
   }
 
   @override
-  Future<JsEvalResult> evaluateAsync(String code) {
-    return Future.value(evaluate(code));
+  Future<JsEvalResult> evaluateAsync(String code, {String? sourceUrl}) {
+    return Future.value(evaluate(code, sourceUrl: sourceUrl));
   }
 
   @override
@@ -244,18 +257,10 @@ class QuickJsRuntime2 extends JavascriptRuntime {
         }
       }
     ]);
-    //  final sendMessageCreateFnResult = evaluate("""
-    //     function sendMessage(channelName, message) {
-    //       return FLUTTER_JS_NATIVE_BRIDGE_sendMessage.apply(globalThis, [channelName, message]);
-    //     }
-    //     sendMessage
-    //   """);
-    //print('RESULT creating sendMessage function: $sendMessageCreateFnResult');
   }
 
   @override
   String jsonStringify(JsEvalResult jsValue) {
-    // TODO: implement jsonStringify
     throw UnimplementedError();
   }
 
