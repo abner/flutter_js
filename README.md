@@ -1,5 +1,7 @@
 # Flutter JS plugin
 
+## Disclaimer: this libary was a pet-project for me, is not fit for production, and I no longer actively maintain it. I recommend checking out a more active project like [openwebf/mercury](https://github.com/openwebf/mercury) 
+
 A Javascript engine to use with flutter. Now it is using QuickJS on Android   through Dart ffi and JavascriptCore on IOS also through dart-ffi. The Javascript runtimes runs synchronously through the dart ffi. So now you can run javascript code as a native citzen inside yours Flutter ~~Mobile~~ Apps (Android, IOS, Windows, Linux and MacOS are all supported).
 
 In the previous versions we only get the result of evaluated expressions as String. 
