@@ -1,3 +1,8 @@
+# 0.8.1
+
+- fix ffi loading of JavascriptCore which failed to resolve relative path 'JavaScriptCore.framework/JavaScriptCore' in 
+  MacOS and iOS, since Flutter version 3.22.0
+
 # 0.8.0
 
 - upgrade http dependency to ^1.0.0

@@ -1,7 +1,7 @@
 name: flutter_js
 description: A Javascript engine to use with flutter.
   It uses Quickjs on Android and JavascriptCore on IOS
-version: 0.8.0
+version: 0.8.1
 homepage: https://github.com/abner/flutter_js
 repository: https://github.com/abner/flutter_js
 
