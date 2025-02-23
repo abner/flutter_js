@@ -26,8 +26,9 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    namespace 'io.abner.flutter_js'
-    compileSdkVersion 29
+    compileSdkVersion 35
+
+    namespace "io.abner.flutter_js"
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
