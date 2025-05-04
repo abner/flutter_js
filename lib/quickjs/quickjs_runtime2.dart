@@ -143,6 +143,9 @@ class QuickJsRuntime2 extends JavascriptRuntime {
     if (rt == null) return;
     _executePendingJob();
     try {
+      for (final obj in localContext.values) {
+        JSRef.freeRecursive(obj);
+      }
       jsFreeRuntime(rt);
     } on String catch (e) {
       throw JSError(e);
@@ -241,6 +244,7 @@ class QuickJsRuntime2 extends JavascriptRuntime {
     JavascriptRuntime.channelFunctionsRegistered[getEngineInstanceId()] = {};
     final setToGlobalObject =
         evaluate("(key, val) => { this[key] = val; }").rawResult;
+    localContext['setToGlobalObject'] = setToGlobalObject;
     (setToGlobalObject as JSInvokable).invoke([
       'sendMessage',
       (String channelName, String message) {
