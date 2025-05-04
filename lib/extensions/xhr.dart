@@ -344,7 +344,7 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
       });
     });
 
-    this.evaluate("""
+    final evalXhrSendNative = this.evaluate("""
     var xhrRequests = {};
     var idRequest = -1;
     function XMLHttpRequestExtension_send_native() {
@@ -367,7 +367,8 @@ extension JavascriptRuntimeXhrExtension on JavascriptRuntime {
     """);
 
     final evalXhrResult = this.evaluate(xhrJsCode);
-
+    localContext['enableXhr'] = evalXhrResult.rawResult;
+    localContext['xhrSendNative'] = evalXhrSendNative.rawResult;
     if (_XHR_DEBUG) print('RESULT evalXhrResult: $evalXhrResult');
 
     this.onMessage('SendNative', (arguments) {
