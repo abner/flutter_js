@@ -19,7 +19,7 @@ typedef FnBridgeCallback = Function(
 
 final Map<String, FnBridgeCallback> mapJsBridge = {};
 
-Pointer<JSValueConst>? bridgeCallbackGlobalHandler(
+Pointer<JSValueConst> bridgeCallbackGlobalHandler(
   Pointer<JSContext> ctx,
   Pointer<Utf8NullTerminated> channelName,
   Pointer<Utf8NullTerminated> message,
