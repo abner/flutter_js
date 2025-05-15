@@ -7,7 +7,7 @@ const REGISTER_PROMISE_FUNCTION = 'FLUTTER_NATIVEJS_REGISTER_PROMISE';
 
 extension HandlePromises on JavascriptRuntime {
   enableHandlePromises() {
-    evaluate(""" 
+    final fnRegisterPromise = evaluate(""" 
      var FLUTTER_NATIVEJS_PENDING_PROMISES = {};
       var FLUTTER_NATIVEJS_PENDING_PROMISES_COUNT = -1;
 
@@ -18,7 +18,7 @@ extension HandlePromises on JavascriptRuntime {
         return idx;
       }
     """);
-    final fnResult = evaluate("""
+    final fnMakeQPResult = evaluate("""
       function FLUTTER_NATIVEJS_CLEAN_PROMISE(idx) {
         delete FLUTTER_NATIVEJS_PENDING_PROMISES[idx];
       }
@@ -74,7 +74,8 @@ extension HandlePromises on JavascriptRuntime {
       FLUTTER_NATIVEJS_MakeQuerablePromise;
     """);
 
-    localContext['makeQuerablePromise'] = fnResult.rawResult;
+    localContext['makeQuerablePromise'] = fnMakeQPResult.rawResult;
+    localContext['registerPromise'] = fnRegisterPromise.rawResult;
   }
 
   bool isPendingPromise(int idx) {

@@ -28,6 +28,7 @@ apply plugin: 'kotlin-android'
 android {
     minSdkVersion 21
     compileSdkVersion 35
+    namespace "io.abner.flutter_js"
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
