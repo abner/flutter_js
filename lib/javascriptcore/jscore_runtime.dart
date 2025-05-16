@@ -72,7 +72,9 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
         1,
         exception.pointer);
     calloc.free(scriptCString);
-    calloc.free(sourceUrlCString as Pointer<NativeType>);
+    if (sourceUrlCString != null) {
+        calloc.free(sourceUrlCString as Pointer<NativeType>);
+    }
 
     String result;
 
