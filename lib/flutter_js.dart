@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_js/javascript_runtime.dart';
 import 'package:flutter_js/javascriptcore/jscore_runtime.dart';
+import 'package:flutter_js/platform_utils.dart';
 
 import './extensions/fetch.dart';
 import './extensions/handle_promises.dart';
@@ -35,6 +36,9 @@ JavascriptRuntime getJavascriptRuntime({
     runtime = QuickJsRuntime2(stackSize: stackSize);
     // FlutterJs engine = FlutterJs();
     // runtime = QuickJsService(engine);
+  } else if (PlatformUtils.isOhos) {
+    int stackSize = extraArgs?['stackSize'] ?? 1024 * 1024;
+    runtime = QuickJsRuntime2(stackSize: stackSize);
   } else if (Platform.isWindows) {
     runtime = QuickJsRuntime2();
   } else if (Platform.isLinux) {

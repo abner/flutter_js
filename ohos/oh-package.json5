@@ -1,0 +1,11 @@
+{
+  "name": "flutter_js",
+  "version": "1.0.0",
+  "description": "Flutter JS package for OpenHarmony",
+  "main": "index.ets",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@ohos/flutter_ohos": "file:./har/flutter.har"
+  }
+}
