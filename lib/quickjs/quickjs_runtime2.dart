@@ -210,7 +210,7 @@ class QuickJsRuntime2 extends JavascriptRuntime {
 
   @override
   T? convertValue<T>(JsEvalResult jsValue) {
-    return true as T;
+    return jsValue.rawResult as T;
   }
 
   @override
