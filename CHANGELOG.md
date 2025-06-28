@@ -1,3 +1,7 @@
+# 0.8.5
+fix memory leaks reported in https://github.com/abner/flutter_js/issues/153,
+https://github.com/abner/flutter_js/issues/127
+
 # 0.8.4
 fix js_core initialization
 
