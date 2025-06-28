@@ -1,3 +1,13 @@
+# 0.8.4
+fix js_core initialization
+
+# 0.8.3
+Fix reference leaks
+
+# 0.8.2
+
+fix compilation issues
+
 # 0.8.1
 
 - fix ffi loading of JavascriptCore which failed to resolve relative path 'JavaScriptCore.framework/JavaScriptCore' in 
