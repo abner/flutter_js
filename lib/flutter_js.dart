@@ -27,9 +27,11 @@ export 'quickjs-sync-server/quickjs_oasis_jsbridge.dart';
 JavascriptRuntime getJavascriptRuntime({
   bool forceJavascriptCoreOnAndroid = false,
   bool xhr = true,
+  bool useFlutterTerminal = true,
   Map<String, dynamic>? extraArgs = const {},
 }) {
   JavascriptRuntime runtime;
+  JavascriptRuntime.useFlutterTerminal = useFlutterTerminal;
   if ((Platform.isAndroid && !forceJavascriptCoreOnAndroid)) {
     int stackSize = extraArgs?['stackSize'] ?? 1024 * 1024;
     runtime = QuickJsRuntime2(stackSize: stackSize);
@@ -168,6 +170,7 @@ class FlutterJs {
       "convertTo": convertTo
     };
     final rs = await _methodChannel.invokeMethod("evaluate", arguments);
+    
     final String? jsResult = rs is Map || rs is List ? json.encode(rs) : rs;
     if (DEBUG) {
       print("${DateTime.now().toIso8601String()} - JS RESULT : $jsResult");
