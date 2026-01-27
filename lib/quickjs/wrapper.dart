@@ -154,6 +154,8 @@ dynamic _jsToDart(Pointer<JSContext> ctx, Pointer<JSValue> val,
       return jsToInt64(ctx, val);
     case JSTag.STRING:
       return jsToCString(ctx, val);
+    case JSTag.STRING_ROPE:
+      return jsToCString(ctx, val);
     case JSTag.OBJECT:
       final rt = jsGetRuntime(ctx);
       final dartObjectClassId = runtimeOpaques[rt]?.dartObjectClassId;
@@ -244,6 +246,7 @@ dynamic _jsToDart(Pointer<JSContext> ctx, Pointer<JSValue> val,
         return ret;
       }
     default:
+    // print('--- Undefined tag ---');
   }
   return null;
 }

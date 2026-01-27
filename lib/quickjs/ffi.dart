@@ -91,6 +91,7 @@ class JSTag {
   static const BIG_FLOAT = -9;
   static const SYMBOL = -8;
   static const STRING = -7;
+  static const STRING_ROPE = -6;
   static const MODULE = -3; /* used internally */
   static const FUNCTION_BYTECODE = -2; /* used internally */
   static const OBJECT = -1;
