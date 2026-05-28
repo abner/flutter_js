@@ -1,3 +1,6 @@
+# 0.8.8
+- Upgrade Flutter SDK, Gradle wrapper, and Android build toolchain to avoid incompatibility with Kotlin Gradle Plugin usage with Flutter 3.44
+
 # 0.8.7
 Fix performance issue in toUTF8 method
 
