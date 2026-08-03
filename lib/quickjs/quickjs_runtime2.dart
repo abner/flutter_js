@@ -195,7 +195,7 @@ class QuickJsRuntime2 extends JavascriptRuntime {
 
     if (jsIsException(jsval) != 0) {
       jsFreeValue(ctx, jsval);
-      JSError exception = _parseJSException(ctx);
+      final exception = _parseJSException(ctx);
       return JsEvalResult(exception.toString(), exception, isError: true);
     }
     final result = _jsToDart(ctx, jsval);
