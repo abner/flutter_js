@@ -13,7 +13,8 @@ A Javascript engine to use with flutter. It uses quickjs on Android and Javascri
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'flutter_js/Sources/flutter_js/**/*.swift', 'flutter_js/CocoaPods/**/*.{h,m}'
+  s.public_header_files = 'flutter_js/CocoaPods/**/*.h'
   s.dependency 'Flutter'
   s.platform = :ios, '8.0'
   s.frameworks = 'JavaScriptCore'
