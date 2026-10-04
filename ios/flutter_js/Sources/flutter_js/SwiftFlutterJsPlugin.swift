@@ -2,10 +2,14 @@ import Flutter
 import JavaScriptCore
 import UIKit
 
+#if SWIFT_PACKAGE
+    @objc(FlutterJsPlugin)
+#endif
 public class SwiftFlutterJsPlugin: NSObject, FlutterPlugin {
     private var jsEngineMap = [Int: JSContextFoundation]()
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let channel = FlutterMethodChannel(name: "io.abner.flutter_js", binaryMessenger: registrar.messenger())
+        let channel = FlutterMethodChannel(
+            name: "io.abner.flutter_js", binaryMessenger: registrar.messenger())
         let instance = SwiftFlutterJsPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
@@ -25,10 +29,14 @@ public class SwiftFlutterJsPlugin: NSObject, FlutterPlugin {
             if let jsEngine = jsEngineMap[engineId] {
                 jsEngine.exceptionHandler = { _, exception in
                     let exceptionDictionary = exception?.toDictionary()
-                    print("[JSCotextFoundation][Exception] \(String(describing: exception)) at line \(String(describing: exceptionDictionary?["line"])):\(String(describing: exceptionDictionary?["column"]))")
-                    result(FlutterError(code: "EvaluateError",
-                                        message: String(describing: exception),
-                                        details: nil))
+                    print(
+                        "[JSCotextFoundation][Exception] \(String(describing: exception)) at line \(String(describing: exceptionDictionary?["line"])):\(String(describing: exceptionDictionary?["column"]))"
+                    )
+                    result(
+                        FlutterError(
+                            code: "EvaluateError",
+                            message: String(describing: exception),
+                            details: nil))
                 }
 
                 let resultJsValue: JSValue = jsEngine.evaluateScript(command)
@@ -45,9 +53,11 @@ public class SwiftFlutterJsPlugin: NSObject, FlutterPlugin {
                 }
 
             } else {
-                result(FlutterError(code: "EvaluateError",
-                                    message: "jsEngine was not found",
-                                    details: nil))
+                result(
+                    FlutterError(
+                        code: "EvaluateError",
+                        message: "jsEngine was not found",
+                        details: nil))
             }
         case "close":
             result(FlutterMethodNotImplemented)

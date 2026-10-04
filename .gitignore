@@ -40,6 +40,8 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 build/
+.build/
+.swiftpm/
 linked_*.ds
 unlinked.ds
 unlinked_spec.ds
