@@ -217,6 +217,140 @@ XMLHttpRequest.prototype.getResponseHeader = function(name) {
 // XMLHttpRequest.prototype.overrideMimeType = function() {
 //   // TODO
 // };
+(function(global) {
+  // Install Headers before enableFetch awaits the fetch.js asset.
+  if (typeof global.Headers === "function") return;
+
+  function normalizeHeaderName(name) {
+    var normalizedName = String(name);
+    if (!/^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/.test(normalizedName)) {
+      throw new TypeError("Invalid header name");
+    }
+    return normalizedName.toLowerCase();
+  }
+
+  function normalizeHeaderValue(value) {
+    var normalizedValue = String(value);
+    if (/[\\u0000-\\u0008\\u000A-\\u001F\\u007F]/.test(normalizedValue)) {
+      throw new TypeError("Invalid header value");
+    }
+    return normalizedValue.replace(/^[\\t ]+|[\\t ]+$/g, "");
+  }
+
+  function findHeaderIndex(entries, name) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i][0] === name) return i;
+    }
+    return -1;
+  }
+
+  function sortedEntries(entries) {
+    return entries.slice().sort(function(left, right) {
+      if (left[0] < right[0]) return -1;
+      if (left[0] > right[0]) return 1;
+      return 0;
+    });
+  }
+
+  function createIterator(entries, project) {
+    var snapshot = sortedEntries(entries);
+    var index = 0;
+    var iterator = {
+      next: function() {
+        if (index >= snapshot.length) return {done: true, value: undefined};
+        return {done: false, value: project(snapshot[index++])};
+      }
+    };
+    iterator[Symbol.iterator] = function() { return this; };
+    return iterator;
+  }
+
+  function Headers(init) {
+    this._entries = [];
+    if (init == null) return;
+
+    var iteratorMethod = init[Symbol.iterator];
+    if (typeof iteratorMethod === "function") {
+      var iterator = iteratorMethod.call(init);
+      var item = iterator.next();
+      while (!item.done) {
+        if (!item.value || item.value.length !== 2) {
+          throw new TypeError("Headers initializer entries must be pairs");
+        }
+        this.append(item.value[0], item.value[1]);
+        item = iterator.next();
+      }
+    } else if (typeof init === "object") {
+      for (var name in init) {
+        if (Object.prototype.hasOwnProperty.call(init, name)) {
+          this.append(name, init[name]);
+        }
+      }
+    } else {
+      throw new TypeError("Headers initializer must be an object or iterable");
+    }
+  }
+
+  Headers.prototype.append = function(name, value) {
+    var normalizedName = normalizeHeaderName(name);
+    var normalizedValue = normalizeHeaderValue(value);
+    var index = findHeaderIndex(this._entries, normalizedName);
+    if (index === -1) {
+      this._entries.push([normalizedName, normalizedValue]);
+    } else {
+      this._entries[index][1] += ", " + normalizedValue;
+    }
+  };
+
+  Headers.prototype.delete = function(name) {
+    var index = findHeaderIndex(this._entries, normalizeHeaderName(name));
+    if (index !== -1) this._entries.splice(index, 1);
+  };
+
+  Headers.prototype.get = function(name) {
+    var index = findHeaderIndex(this._entries, normalizeHeaderName(name));
+    return index === -1 ? null : this._entries[index][1];
+  };
+
+  Headers.prototype.has = function(name) {
+    return findHeaderIndex(this._entries, normalizeHeaderName(name)) !== -1;
+  };
+
+  Headers.prototype.set = function(name, value) {
+    var normalizedName = normalizeHeaderName(name);
+    var normalizedValue = normalizeHeaderValue(value);
+    var index = findHeaderIndex(this._entries, normalizedName);
+    if (index === -1) {
+      this._entries.push([normalizedName, normalizedValue]);
+    } else {
+      this._entries[index][1] = normalizedValue;
+    }
+  };
+
+  Headers.prototype.forEach = function(callback, thisArg) {
+    var entries = sortedEntries(this._entries);
+    for (var i = 0; i < entries.length; i++) {
+      callback.call(thisArg, entries[i][1], entries[i][0], this);
+    }
+  };
+
+  Headers.prototype.entries = function() {
+    return createIterator(this._entries, function(entry) {
+      return [entry[0], entry[1]];
+    });
+  };
+
+  Headers.prototype.keys = function() {
+    return createIterator(this._entries, function(entry) { return entry[0]; });
+  };
+
+  Headers.prototype.values = function() {
+    return createIterator(this._entries, function(entry) { return entry[1]; });
+  };
+
+  Headers.prototype[Symbol.iterator] = Headers.prototype.entries;
+  global.Headers = Headers;
+})(this);
 this.XMLHttpRequest = XMLHttpRequest;""";
 
 RegExp regexpHeader = RegExp("^([\\w-])+:(?!\\s*\$).+\$");
