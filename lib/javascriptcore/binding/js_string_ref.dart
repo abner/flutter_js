@@ -8,9 +8,9 @@ import 'jsc_ffi.dart';
 /// [chars] (JSChar*) The buffer of Unicode characters to copy into the new JSString.
 /// [numChars] (size_t) The number of characters to copy from the buffer pointed to by chars.
 /// [@result] (JSStringRef) A JSString containing chars. Ownership follows the Create Rule.
-final Pointer Function(Pointer<Pointer> chars, Pointer numChars)
+final Pointer Function(Pointer<Uint16> chars, int numChars)
     jSStringCreateWithCharacters = JscFfi.lib
-        .lookup<NativeFunction<Pointer Function(Pointer<Pointer>, Pointer)>>(
+        .lookup<NativeFunction<Pointer Function(Pointer<Uint16>, Size)>>(
             'JSStringCreateWithCharacters')
         .asFunction();
 
