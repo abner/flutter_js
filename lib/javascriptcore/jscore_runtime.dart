@@ -35,17 +35,17 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     _sendMessageDartFunc = _sendMessage;
 
     Pointer<Utf8> funcNameCString = 'sendMessage'.toNativeUtf8();
-    var functionObject = jSObjectMakeFunctionWithCallback(
-        _globalContext,
-        jSStringCreateWithUTF8CString(funcNameCString),
-        Pointer.fromFunction(sendMessageBridgeFunction));
+    var funcNameJSString = jSStringCreateWithUTF8CString(funcNameCString);
+    var functionObject = jSObjectMakeFunctionWithCallback(_globalContext,
+        funcNameJSString, Pointer.fromFunction(sendMessageBridgeFunction));
     jSObjectSetProperty(
         _globalContext,
         _globalObject,
-        jSStringCreateWithUTF8CString(funcNameCString),
+        funcNameJSString,
         functionObject,
         jsObject.JSPropertyAttributes.kJSPropertyAttributeNone,
         nullptr);
+    jSStringRelease(funcNameJSString);
     calloc.free(funcNameCString);
 
     init();
@@ -62,17 +62,16 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     Pointer<Utf8>? sourceUrlCString = sourceUrl?.toNativeUtf8();
 
     JSValuePointer exception = JSValuePointer();
-    var jsValueRef = jSEvaluateScript(
-        _globalContext,
-        jSStringCreateWithUTF8CString(scriptCString),
-        nullptr,
-        sourceUrlCString != null
-            ? jSStringCreateWithUTF8CString(sourceUrlCString)
-            : nullptr,
-        1,
-        exception.pointer);
+    var scriptJSString = jSStringCreateWithUTF8CString(scriptCString);
+    var sourceUrlJSString = sourceUrlCString != null
+        ? jSStringCreateWithUTF8CString(sourceUrlCString)
+        : nullptr;
+    var jsValueRef = jSEvaluateScript(_globalContext, scriptJSString, nullptr,
+        sourceUrlJSString, 1, exception.pointer);
+    jSStringRelease(scriptJSString);
     calloc.free(scriptCString);
     if (sourceUrlCString != null) {
+        jSStringRelease(sourceUrlJSString);
         calloc.free(sourceUrlCString as Pointer<NativeType>);
     }
 
@@ -189,8 +188,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
         if (result is Future) {
           return _constructPromiseFor(result);
         }
-        final encoded = json.encode(result);
-        return JSValue.makeFromJSONString(context, encoded).pointer;
+        return _makeJSValueFromJSON(json.encode(result));
       } catch (err) {
         print(
             'Could not encode return value of message on channel $channelName to json... returning null');
@@ -203,30 +201,70 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
   }
 
   Pointer<NativeType> _constructPromiseFor(Future future) {
-    final id = future.hashCode;
-    Pointer<Utf8> scriptCString = ('var __JSC_promise_result$id = {};' +
-            'new Promise(function(resolve, reject) { __JSC_promise_result$id.resolve = resolve;' +
-            ' __JSC_promise_result$id.reject = reject;});')
+    Pointer<Utf8> scriptCString = ('(function() { var holder = {};' +
+            ' holder.promise = new Promise(function(resolve, reject) {' +
+            ' holder.resolve = resolve; holder.reject = reject; });' +
+            ' return holder; })()')
         .toNativeUtf8();
-
-    var jsValueRef = jSEvaluateScript(
-        _globalContext,
-        jSStringCreateWithUTF8CString(scriptCString),
-        nullptr,
-        nullptr,
-        1,
-        nullptr);
+    var scriptJSString = jSStringCreateWithUTF8CString(scriptCString);
+    var holder = jSEvaluateScript(
+        _globalContext, scriptJSString, nullptr, nullptr, 1, nullptr);
+    jSStringRelease(scriptJSString);
     calloc.free(scriptCString);
+    if (holder == nullptr) return nullptr;
+    jSValueProtect(_globalContext, holder);
+    // Read it first: a SynchronousFuture settles and unprotects the holder
+    // inside then().
+    final promise = _getProperty(holder, 'promise');
 
+    // The payload goes in as a JS value, never as script source: a source
+    // literal costs JSC several times the payload size to parse.
     future.then((value) {
-      final encoded = json.encode(value);
-      evaluate(
-          '__JSC_promise_result$id.resolve($encoded); __JSC_promise_result$id = null;');
+      _settlePromise(
+          holder,
+          'resolve',
+          value is String
+              ? _makeJSString(value)
+              : _makeJSValueFromJSON(json.encode(value)));
     }).catchError((error) {
-      evaluate(
-          '__JSC_promise_result$id.reject("$error"); __JSC_promise_result$id = null;');
+      _settlePromise(holder, 'reject', _makeJSString('$error'));
     });
-    return jsValueRef;
+    return promise;
+  }
+
+  void _settlePromise(Pointer holder, String functionName, Pointer value) {
+    Pointer<Pointer> arguments = calloc<Pointer>();
+    arguments.value = value;
+    jSObjectCallAsFunction(_globalContext, _getProperty(holder, functionName),
+        nullptr, 1, arguments, nullptr);
+    calloc.free(arguments);
+    jSValueUnprotect(_globalContext, holder);
+  }
+
+  Pointer _getProperty(Pointer object, String name) {
+    Pointer<Utf8> nameCString = name.toNativeUtf8();
+    var nameJSString = jSStringCreateWithUTF8CString(nameCString);
+    var value =
+        jSObjectGetProperty(_globalContext, object, nameJSString, nullptr);
+    jSStringRelease(nameJSString);
+    calloc.free(nameCString);
+    return value;
+  }
+
+  Pointer _makeJSString(String string) =>
+      _withJSString(string, (s) => jSValueMakeString(_globalContext, s));
+
+  Pointer _makeJSValueFromJSON(String json) => _withJSString(
+      json, (s) => jSValueMakeFromJSONString(_globalContext, s));
+
+  /// Copies [string] as UTF-16 code units, so lone surrogates and NUL survive.
+  Pointer _withJSString(String string, Pointer Function(Pointer) makeValue) {
+    Pointer<Utf16> chars = string.toNativeUtf16();
+    var jsString = jSStringCreateWithCharacters(chars.cast(), string.length);
+    malloc.free(chars);
+    var value = makeValue(jsString);
+    jSStringRelease(jsString);
+    return value;
   }
 
   @override

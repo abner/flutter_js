@@ -864,7 +864,7 @@ final Pointer Function(Pointer ctx, Pointer object, Pointer thisObject,
     jSObjectCallAsFunction = JscFfi.lib
         .lookup<
             NativeFunction<
-                Pointer Function(Pointer, Pointer, Pointer, Uint32, Pointer,
+                Pointer Function(Pointer, Pointer, Pointer, Size, Pointer,
                     Pointer<Pointer>)>>('JSObjectCallAsFunction')
         .asFunction();
 
