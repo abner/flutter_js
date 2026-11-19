@@ -211,7 +211,11 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
         _globalContext, scriptJSString, nullptr, nullptr, 1, nullptr);
     jSStringRelease(scriptJSString);
     calloc.free(scriptCString);
+    if (holder == nullptr) return nullptr;
     jSValueProtect(_globalContext, holder);
+    // Read it first: a SynchronousFuture settles and unprotects the holder
+    // inside then().
+    final promise = _getProperty(holder, 'promise');
 
     // The payload goes in as a JS value, never as script source: a source
     // literal costs JSC several times the payload size to parse.
@@ -225,7 +229,7 @@ class JavascriptCoreRuntime extends JavascriptRuntime {
     }).catchError((error) {
       _settlePromise(holder, 'reject', _makeJSString('$error'));
     });
-    return _getProperty(holder, 'promise');
+    return promise;
   }
 
   void _settlePromise(Pointer holder, String functionName, Pointer value) {

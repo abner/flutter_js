@@ -1,6 +1,7 @@
 @TestOn('mac-os')
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_js/javascriptcore/jscore_runtime.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -25,7 +26,8 @@ void main() {
         (v) => sendMessage('report', JSON.stringify({type: typeof v, value: v})),
         (e) => sendMessage('report', JSON.stringify({type: 'rejected', value: e})));
     ''');
-    await reply.catchError((_) {});
+    // SynchronousFuture.catchError never completes.
+    if (reply is! SynchronousFuture) await reply.catchError((_) {});
     await Future<void>.delayed(Duration.zero);
     expect(received, hasLength(1));
     return received.single;
@@ -68,5 +70,10 @@ void main() {
     final error = 'bad "reply"\nnext line';
     expect(await roundTrip(Future.error(error)),
         {'type': 'rejected', 'value': error});
+  });
+
+  test('a SynchronousFuture reply resolves the promise', () async {
+    expect(await roundTrip(SynchronousFuture('now')),
+        {'type': 'string', 'value': 'now'});
   });
 }
